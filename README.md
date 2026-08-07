@@ -167,7 +167,7 @@ arthrocare-ai/
 - Python (v3.8 or higher)
 - npm or yarn
 - Git
-- Firebase account (for authentication)
+- Firebase account authentication
 
 ### Installation
 
