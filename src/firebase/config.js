@@ -14,10 +14,28 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
-const db = getFirestore(app);
+let app = null;
+let analytics = null;
+let auth = null;
+let db = null;
+
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+
+  // Analytics requires a valid measurementId and may fail in dev/localhost
+  try {
+    analytics = getAnalytics(app);
+  } catch (analyticsError) {
+    console.warn("Firebase Analytics not available:", analyticsError.message);
+  }
+} catch (error) {
+  console.error("Firebase initialization failed:", error.message);
+  console.warn(
+    "Make sure you have the required VITE_FIREBASE_* environment variables in your .env file."
+  );
+}
 
 export { app, analytics, auth, db };
 export default app;
