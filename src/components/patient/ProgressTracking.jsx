@@ -186,8 +186,8 @@ const response = await fetch(
   if (loading) {
     return (
       <CardTransition className="bg-white p-8 rounded-2xl shadow-lg border text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading Your Data...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+        <p className="text-slate-600">Loading Your Data...</p>
       </CardTransition>
     );
   }
@@ -200,8 +200,8 @@ const response = await fetch(
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
         </div>
-        <h3 className="text-2xl font-semibold text-gray-900 mb-4">No Previous Test Data Found</h3>
-        <p className="text-gray-600 mb-6">You need to complete your first lab test entry before using progress tracking.</p>
+        <h3 className="text-2xl font-semibold text-slate-900 mb-4">No Previous Test Data Found</h3>
+        <p className="text-slate-600 mb-6">You need to complete your first lab test entry before using progress tracking.</p>
       </CardTransition>
     );
   }
@@ -209,8 +209,8 @@ const response = await fetch(
   return (
     <div className="space-y-6">
       <CardTransition className="bg-white p-6 rounded-2xl shadow-lg border">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">RA Progress Tracking</h2>
-        <p className="text-gray-600 mb-6">
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">RA Progress Tracking</h2>
+        <p className="text-slate-600 mb-6">
           Compare your current lab results with previous tests to track Rheumatoid Arthritis progression over time.
           Our ML model analyzes changes in biomarkers to provide clinical insights.
         </p>
@@ -218,66 +218,66 @@ const response = await fetch(
         <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* 1. Time Information (Blue Box) */}
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <h3 className="text-lg font-semibold text-blue-900 mb-3">⏰ Time Information</h3>
+          <div className="bg-teal-50 p-4 rounded-lg border border-teal-200">
+            <h3 className="text-lg font-semibold text-teal-900 mb-3">⏰ Time Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   How many months since your last test? *
                 </label>
                 <input
                   type="number"
                   value={formData.monthsSinceLastTest}
                   onChange={(e) => handleInputChange('monthsSinceLastTest', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   placeholder="e.g., 6"
                   required
                   min="1"
                 />
-                <p className="text-xs text-gray-500 mt-1">We'll automatically estimate your current age</p>
+                <p className="text-xs text-slate-500 mt-1">We'll automatically estimate your current age</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last Test Date</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Last Test Date</label>
                 <input
                   type="text"
                   value={previousTestData.createdAt ? new Date(previousTestData.createdAt).toLocaleDateString() : 'Unknown'}
                   readOnly
-                  className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 cursor-not-allowed"
+                  className="w-full border border-slate-300 rounded-lg p-2.5 bg-slate-100 cursor-not-allowed"
                 />
               </div>
             </div>
           </div>
 
           {/* 2. Previous Test Results (Gray Box - Auto Filled) */}
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold text-gray-900">📊 Previous Test Results</h3>
+              <h3 className="text-lg font-semibold text-slate-900">📊 Previous Test Results</h3>
               <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Auto-filled from your records</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Age at First Test</label>
-                <input type="text" value={previousTestData.age} readOnly className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 cursor-not-allowed" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Age at First Test</label>
+                <input type="text" value={previousTestData.age} readOnly className="w-full border border-slate-300 rounded-lg p-2.5 bg-slate-100 cursor-not-allowed" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                <input type="text" value={previousTestData.gender} readOnly className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 cursor-not-allowed" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Gender</label>
+                <input type="text" value={previousTestData.gender} readOnly className="w-full border border-slate-300 rounded-lg p-2.5 bg-slate-100 cursor-not-allowed" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">ESR (mm/hr)</label>
-                <input type="text" value={previousTestData.ESR} readOnly className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 cursor-not-allowed" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">ESR (mm/hr)</label>
+                <input type="text" value={previousTestData.ESR} readOnly className="w-full border border-slate-300 rounded-lg p-2.5 bg-slate-100 cursor-not-allowed" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">CRP (mg/L)</label>
-                <input type="text" value={previousTestData.CRP} readOnly className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 cursor-not-allowed" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">CRP (mg/L)</label>
+                <input type="text" value={previousTestData.CRP} readOnly className="w-full border border-slate-300 rounded-lg p-2.5 bg-slate-100 cursor-not-allowed" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">RF (IU/mL)</label>
-                <input type="text" value={previousTestData.RF} readOnly className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 cursor-not-allowed" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">RF (IU/mL)</label>
+                <input type="text" value={previousTestData.RF} readOnly className="w-full border border-slate-300 rounded-lg p-2.5 bg-slate-100 cursor-not-allowed" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Anti-CCP (U/mL)</label>
-                <input type="text" value={previousTestData.antiCCP} readOnly className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 cursor-not-allowed" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Anti-CCP (U/mL)</label>
+                <input type="text" value={previousTestData.antiCCP} readOnly className="w-full border border-slate-300 rounded-lg p-2.5 bg-slate-100 cursor-not-allowed" />
               </div>
             </div>
           </div>
@@ -286,32 +286,32 @@ const response = await fetch(
           <div className="bg-green-50 p-4 rounded-lg border border-green-200">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-semibold text-green-900">🩺 Current Test Results</h3>
-              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Enter your latest results</span>
+              <span className="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full">Enter your latest results</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Current Age *</label>
-                <input type="number" step="0.1" value={formData.currentAge} onChange={(e) => handleInputChange('currentAge', e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500" required />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Current Age *</label>
+                <input type="number" step="0.1" value={formData.currentAge} onChange={(e) => handleInputChange('currentAge', e.target.value)} className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500" required />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
-                <select value={formData.currentGender} onChange={(e) => handleInputChange('currentGender', e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500" required>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Gender *</label>
+                <select value={formData.currentGender} onChange={(e) => handleInputChange('currentGender', e.target.value)} className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500" required>
                   <option value="">Select</option>
                   <option value="M">Male</option>
                   <option value="F">Female</option>
                 </select>
               </div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">ESR (mm/hr) *</label><input type="number" step="0.1" value={formData.currentESR} onChange={(e) => handleInputChange('currentESR', e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500" required /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">CRP (mg/L) *</label><input type="number" step="0.1" value={formData.currentCRP} onChange={(e) => handleInputChange('currentCRP', e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500" required /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">RF (IU/mL) *</label><input type="number" step="0.1" value={formData.currentRF} onChange={(e) => handleInputChange('currentRF', e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500" required /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Anti-CCP (U/mL) *</label><input type="number" step="0.1" value={formData.currentAntiCCP} onChange={(e) => handleInputChange('currentAntiCCP', e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500" required /></div>
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">ESR (mm/hr) *</label><input type="number" step="0.1" value={formData.currentESR} onChange={(e) => handleInputChange('currentESR', e.target.value)} className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500" required /></div>
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">CRP (mg/L) *</label><input type="number" step="0.1" value={formData.currentCRP} onChange={(e) => handleInputChange('currentCRP', e.target.value)} className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500" required /></div>
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">RF (IU/mL) *</label><input type="number" step="0.1" value={formData.currentRF} onChange={(e) => handleInputChange('currentRF', e.target.value)} className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500" required /></div>
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">Anti-CCP (U/mL) *</label><input type="number" step="0.1" value={formData.currentAntiCCP} onChange={(e) => handleInputChange('currentAntiCCP', e.target.value)} className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500" required /></div>
             </div>
           </div>
 
           {/* Buttons */}
           <div className="flex justify-between gap-4 pt-4">
-            <button type="button" onClick={clearForm} className="px-6 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors">Clear Form</button>
-            <button type="submit" disabled={isSubmitting} className="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center gap-2">
+            <button type="button" onClick={clearForm} className="px-6 py-3 bg-slate-500 text-white font-semibold rounded-lg hover:bg-slate-600 transition-colors">Clear Form</button>
+            <button type="submit" disabled={isSubmitting} className="px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 flex items-center gap-2">
               {isSubmitting ? 'Analyzing with ML Model...' : 'Compare Results with AI'}
             </button>
           </div>
@@ -322,7 +322,7 @@ const response = await fetch(
       {comparisonResult && (
         <CardTransition className="bg-white p-6 rounded-2xl shadow-lg border">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-gray-900">ML Analysis Results</h3>
+            <h3 className="text-2xl font-bold text-slate-900">ML Analysis Results</h3>
             <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
               comparisonResult.riskTrend === 'Improved' ? 'bg-green-100 text-green-800' :
               comparisonResult.riskTrend === 'Worsened' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
@@ -333,10 +333,10 @@ const response = await fetch(
           
           {/* Probability Boxes (Blue vs Green) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 text-center">
-              <h4 className="text-lg font-semibold text-blue-900 mb-2">First Appointment</h4>
-              <p className="text-4xl font-bold text-blue-600 mb-2">{comparisonResult.previousProbability}%</p>
-              <p className="text-sm text-blue-700">RA Probability</p>
+            <div className="p-6 bg-teal-50 rounded-xl border border-teal-200 text-center">
+              <h4 className="text-lg font-semibold text-teal-900 mb-2">First Appointment</h4>
+              <p className="text-4xl font-bold text-teal-600 mb-2">{comparisonResult.previousProbability}%</p>
+              <p className="text-sm text-teal-700">RA Probability</p>
             </div>
             <div className="p-6 bg-green-50 rounded-xl border border-green-200 text-center">
               <h4 className="text-lg font-semibold text-green-900 mb-2">Current Appointment</h4>
@@ -358,14 +358,14 @@ const response = await fetch(
           </div>
 
           {/* Biomarkers */}
-          <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">📈 Biomarker Changes</h4>
+          <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 mb-6">
+            <h4 className="text-lg font-semibold text-slate-900 mb-4">📈 Biomarker Changes</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {comparisonResult.biomarkerChanges.map((change, index) => (
                 <div key={index} className="flex justify-between items-center p-3 bg-white rounded-lg border">
-                  <span className="font-medium text-gray-700">{change.name}:</span>
+                  <span className="font-medium text-slate-700">{change.name}:</span>
                   <div className="text-right">
-                    <span className="text-gray-900 font-mono">{change.change}</span>
+                    <span className="text-slate-900 font-mono">{change.change}</span>
                     <span className={`block text-xs ${change.percentChange > 0 ? 'text-red-600' : 'text-green-600'}`}>
                       {change.percentChange > 0 ? '+' : ''}{change.percentChange}%
                     </span>
@@ -378,13 +378,13 @@ const response = await fetch(
           {/* Interpretation (Yellow) */}
           <div className="bg-yellow-50 p-6 rounded-xl border border-yellow-200 mb-6">
             <h4 className="text-lg font-semibold text-yellow-900 mb-3">🧾 Clinical Interpretation</h4>
-            <p className="text-gray-700 leading-relaxed">{comparisonResult.interpretation}</p>
+            <p className="text-slate-700 leading-relaxed">{comparisonResult.interpretation}</p>
           </div>
 
           {/* Summary (Purple) */}
-          <div className="bg-purple-50 p-6 rounded-xl border border-purple-200">
-            <h4 className="text-lg font-semibold text-purple-900 mb-3">🏥 Final Summary Report</h4>
-            <div className="text-gray-700 whitespace-pre-line leading-relaxed">{comparisonResult.summary}</div>
+          <div className="bg-teal-50 p-6 rounded-xl border border-teal-200">
+            <h4 className="text-lg font-semibold text-teal-900 mb-3">🏥 Final Summary Report</h4>
+            <div className="text-slate-700 whitespace-pre-line leading-relaxed">{comparisonResult.summary}</div>
           </div>
 
         </CardTransition>

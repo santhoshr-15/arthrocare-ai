@@ -222,12 +222,12 @@ const ProfileForm = () => {
 
   if (!currentUser) {
     return (
-      <CardTransition className="bg-white/90 p-8 rounded-2xl shadow-lg border border-gray-100 backdrop-blur-sm">
+      <CardTransition className="bg-white/90 p-8 rounded-2xl shadow-lg border border-slate-100 backdrop-blur-sm">
         <div className="text-center py-12">
-          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+          <h3 className="text-xl font-semibold text-slate-700 mb-4">
             Please Log In
           </h3>
-          <p className="text-gray-600">
+          <p className="text-slate-600">
             You need to be logged in to save your profile information.
           </p>
         </div>
@@ -237,22 +237,22 @@ const ProfileForm = () => {
 
   if (loading) {
     return (
-      <CardTransition className="bg-white/90 p-8 rounded-2xl shadow-lg border border-gray-100 backdrop-blur-sm">
+      <CardTransition className="bg-white/90 p-8 rounded-2xl shadow-lg border border-slate-100 backdrop-blur-sm">
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your profile...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading your profile...</p>
         </div>
       </CardTransition>
     );
   }
 
   return (
-    <CardTransition className="bg-white/90 p-8 rounded-2xl shadow-lg border border-gray-100 backdrop-blur-sm">
+    <CardTransition className="bg-white/90 p-8 rounded-2xl shadow-lg border border-slate-100 backdrop-blur-sm">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-semibold text-indigo-700">
+        <h2 className="text-3xl font-semibold text-teal-700">
           Profile & Medical Information
         </h2>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-slate-500">
           User ID: <span className="font-mono text-xs">{currentUser.uid.substring(0, 8)}...</span>
         </div>
       </div>
@@ -263,7 +263,7 @@ const ProfileForm = () => {
       >
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-slate-700">
             Full Name *
           </label>
           <input
@@ -272,13 +272,13 @@ const ProfileForm = () => {
             value={formData.name}
             onChange={handleChange}
             required
-            className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             placeholder="Enter your full name"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-slate-700">
             Date of Birth
           </label>
           <input
@@ -286,12 +286,12 @@ const ProfileForm = () => {
             name="dob"
             value={formData.dob}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-slate-700">
             Age
           </label>
           <input
@@ -299,16 +299,16 @@ const ProfileForm = () => {
             name="age"
             value={formData.age}
             readOnly
-            className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 bg-slate-50 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             placeholder="Auto-calculated from DOB"
           />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Automatically calculated from date of birth
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-slate-700">
             Email *
           </label>
           <input
@@ -317,13 +317,13 @@ const ProfileForm = () => {
             value={formData.email}
             onChange={handleChange}
             required
-            className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             placeholder="example@email.com"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-slate-700">
             Phone
           </label>
           <input
@@ -331,20 +331,20 @@ const ProfileForm = () => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             placeholder="+91 98765 43210"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-slate-700">
             Gender
           </label>
           <select
             name="gender"
             value={formData.gender}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
           >
             <option value="">Select</option>
             <option>Male</option>
@@ -354,7 +354,7 @@ const ProfileForm = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-slate-700">
             BMI
           </label>
           <input
@@ -362,47 +362,47 @@ const ProfileForm = () => {
             name="bmi"
             value={formData.bmi}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             placeholder="e.g., 22.5"
           />
         </div>
 
         <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-slate-700">
             Family History
           </label>
           <textarea
             name="familyHistory"
             value={formData.familyHistory}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 h-24 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 h-24 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             placeholder="Mention relevant family medical history..."
           />
         </div>
 
         <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-slate-700">
             Medical History
           </label>
           <textarea
             name="medicalHistory"
             value={formData.medicalHistory}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 h-24 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 h-24 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             placeholder="Mention any previous illnesses, surgeries, etc..."
           />
         </div>
 
         <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-700">
               Smoking
             </label>
             <select
               name="smoking"
               value={formData.smoking}
               onChange={handleChange}
-              className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             >
               <option>No</option>
               <option>Yes</option>
@@ -410,14 +410,14 @@ const ProfileForm = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-700">
               Alcohol
             </label>
             <select
               name="alcohol"
               value={formData.alcohol}
               onChange={handleChange}
-              className="mt-1 w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             >
               <option>No</option>
               <option>Yes</option>
@@ -429,7 +429,7 @@ const ProfileForm = () => {
           <button
             type="button"
             onClick={handleClearForm}
-            className="px-6 py-3 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition-transform transform hover:scale-105"
+            className="px-6 py-3 bg-slate-500 text-white font-semibold rounded-lg shadow-md hover:bg-slate-600 transition-transform transform hover:scale-105"
           >
             Clear Form
           </button>
@@ -437,7 +437,7 @@ const ProfileForm = () => {
           <button
             type="submit"
             disabled={isSubmitting || !formData.name.trim()}
-            className="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-transform transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg shadow-md hover:bg-teal-700 transition-transform transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {isSubmitting ? (
               <>

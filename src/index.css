@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@theme {
+  --color-healthcare-50: #f0fdfa;
+  --color-healthcare-100: #ccfbf1;
+  --color-healthcare-200: #99f6e4;
+  --color-healthcare-300: #5eead4;
+  --color-healthcare-400: #2dd4bf;
+  --color-healthcare-500: #14b8a6;
+  --color-healthcare-600: #0d9488;
+  --color-healthcare-700: #0f766e;
+  --color-healthcare-800: #115e59;
+  --color-healthcare-900: #134e4a;
+
+  --color-clinical-50: #f0f9ff;
+  --color-clinical-100: #e0f2fe;
+  --color-clinical-200: #bae6fd;
+  --color-clinical-300: #7dd3fc;
+  --color-clinical-400: #38bdf8;
+  --color-clinical-500: #0ea5e9;
+  --color-clinical-600: #0284c7;
+  --color-clinical-700: #0369a1;
+  --color-clinical-800: #075985;
+  --color-clinical-900: #0c4a6e;
+}

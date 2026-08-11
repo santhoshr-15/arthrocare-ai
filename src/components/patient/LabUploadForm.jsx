@@ -168,8 +168,8 @@ const LabUploadForm = ({ setSelectedTab }) => {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2"></h1>
-          <p className="text-gray-600"></p>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2"></h1>
+          <p className="text-slate-600"></p>
         </div>
       </motion.div>
 
@@ -201,17 +201,17 @@ const LabUploadForm = ({ setSelectedTab }) => {
           </motion.div>
         )}
 
-        <CardTransition className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-            <User className="w-6 h-6 text-blue-600" />
+        <CardTransition className="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
+          <h2 className="text-xl font-semibold text-slate-900 mb-6 flex items-center gap-2">
+            <User className="w-6 h-6 text-teal-600" />
             Patient Information (Auto-filled)
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <div className="space-y-3 p-4 bg-blue-50 rounded-xl">
+            <div className="space-y-3 p-4 bg-teal-50 rounded-xl">
               <div className="flex items-center justify-between">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-slate-700">
                   Age *
                 </label>
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
@@ -225,19 +225,19 @@ const LabUploadForm = ({ setSelectedTab }) => {
                     type="text"
                     value={userData.age}
                     readOnly
-                    className="w-full px-4 py-3 bg-white border border-blue-200 rounded-xl cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-white border border-teal-200 rounded-xl cursor-not-allowed"
                     placeholder="Loading from profile..."
                   />
                 </div>
-                <p className="text-xs text-blue-600">
+                <p className="text-xs text-teal-600">
                   {userData.age ? "✅ Loaded from your profile" : "Please complete your profile first"}
                 </p>
               </div>
             </div>
 
-            <div className="space-y-3 p-4 bg-blue-50 rounded-xl">
+            <div className="space-y-3 p-4 bg-teal-50 rounded-xl">
               <div className="flex items-center justify-between">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-slate-700">
                   Gender *
                 </label>
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
@@ -251,11 +251,11 @@ const LabUploadForm = ({ setSelectedTab }) => {
                     type="text"
                     value={userData.gender}
                     readOnly
-                    className="w-full px-4 py-3 bg-white border border-blue-200 rounded-xl cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-white border border-teal-200 rounded-xl cursor-not-allowed"
                     placeholder="Loading from profile..."
                   />
                 </div>
-                <p className="text-xs text-blue-600">
+                <p className="text-xs text-teal-600">
                   {userData.gender ? "✅ Loaded from your profile" : "Please complete your profile first"}
                 </p>
               </div>
@@ -264,17 +264,17 @@ const LabUploadForm = ({ setSelectedTab }) => {
           </div>
         </CardTransition>
 
-        <CardTransition className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-            <TestTube className="w-6 h-6 text-purple-600" />
+        <CardTransition className="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
+          <h2 className="text-xl font-semibold text-slate-900 mb-6 flex items-center gap-2">
+            <TestTube className="w-6 h-6 text-teal-600" />
             Lab Test Values (Manual Entry)
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {labTests.map((test) => (
-              <div key={test.key} className="space-y-3 p-4 bg-gray-50 rounded-xl">
+              <div key={test.key} className="space-y-3 p-4 bg-slate-50 rounded-xl">
                 <div className="flex items-center justify-between">
-                  <label className="block text-sm font-semibold text-gray-700">
+                  <label className="block text-sm font-semibold text-slate-700">
                     {test.label} *
                   </label>
                 </div>
@@ -286,15 +286,15 @@ const LabUploadForm = ({ setSelectedTab }) => {
                       value={labValues[test.key]}
                       onChange={(e) => handleInputChange(test.key, e.target.value)}
                       placeholder={`Enter ${test.unit}`}
-                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl"
+                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl"
                       required
                     />
-                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-sm text-slate-500">
                       {test.unit}
                     </span>
                   </div>
 
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-slate-500">
                     Normal range: {test.normalRange}
                   </p>
                 </div>
@@ -311,7 +311,7 @@ const LabUploadForm = ({ setSelectedTab }) => {
               onClick={handleClearForm}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-6 py-4 bg-gray-500 text-white font-semibold rounded-xl shadow-lg flex items-center gap-3"
+              className="px-6 py-4 bg-slate-500 text-white font-semibold rounded-xl shadow-lg flex items-center gap-3"
             >
               <RefreshCw className="w-5 h-5" />
               Clear Lab Values
@@ -322,7 +322,7 @@ const LabUploadForm = ({ setSelectedTab }) => {
               disabled={loading || !userData.age || !userData.gender}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white font-semibold rounded-xl flex items-center gap-3 disabled:opacity-50"
+              className="px-8 py-4 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold rounded-xl flex items-center gap-3 disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -342,8 +342,8 @@ const LabUploadForm = ({ setSelectedTab }) => {
             whileTap={{ scale: submissionSuccess ? 0.98 : 1 }}
             className={`px-8 py-4 font-semibold rounded-xl flex items-center gap-3 ${
               submissionSuccess 
-                ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white" 
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                ? "bg-gradient-to-r from-teal-600 to-teal-700 text-white" 
+                : "bg-slate-300 text-slate-500 cursor-not-allowed"
             }`}
           >
             <Activity className="w-5 h-5" />

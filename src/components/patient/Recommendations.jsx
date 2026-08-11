@@ -142,10 +142,10 @@ const response = await fetch(
       'Severe - Urgent': 'bg-red-100 text-red-800 border-red-200',
       'Severe': 'bg-orange-100 text-orange-800 border-orange-200',
       'Moderate': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      'Borderline': 'bg-blue-100 text-blue-800 border-blue-200',
+      'Borderline': 'bg-teal-100 text-teal-800 border-teal-200',
       'Low/Normal': 'bg-green-100 text-green-800 border-green-200'
     };
-    return colors[severity] || 'bg-gray-100 text-gray-800 border-gray-200';
+    return colors[severity] || 'bg-slate-100 text-slate-800 border-slate-200';
   };
 
   const getSectionIcon = (section) => {
@@ -162,9 +162,9 @@ const response = await fetch(
     return (
       <CardTransition className="bg-white p-8 rounded-2xl shadow-lg border text-center">
         <div className="flex flex-col items-center py-12">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mb-4"></div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Generating Your Personalized Plan</h3>
-          <p className="text-gray-600">Analyzing your health profile and creating tailored recommendations...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600 mb-4"></div>
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">Generating Your Personalized Plan</h3>
+          <p className="text-slate-600">Analyzing your health profile and creating tailored recommendations...</p>
         </div>
       </CardTransition>
     );
@@ -174,26 +174,26 @@ const response = await fetch(
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Personalized RA Recommendations</h1>
-        <p className="text-gray-600">AI-powered lifestyle guidance tailored to your health profile</p>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">Personalized RA Recommendations</h1>
+        <p className="text-slate-600">AI-powered lifestyle guidance tailored to your health profile</p>
       </div>
 
       {/* Action Card */}
-      <CardTransition className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-2xl shadow-lg border border-blue-100">
+      <CardTransition className="bg-gradient-to-r from-teal-50 to-sky-50 p-6 rounded-2xl shadow-lg border border-teal-100">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center space-x-4 mb-4 md:mb-0">
-            <div className="p-3 bg-blue-100 rounded-xl">
-              <Sparkles className="w-8 h-8 text-blue-600" />
+            <div className="p-3 bg-teal-100 rounded-xl">
+              <Sparkles className="w-8 h-8 text-teal-600" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Generate Your Personalized Plan</h2>
-              <p className="text-gray-600">Get customized diet, exercise, and lifestyle recommendations based on your health data</p>
+              <h2 className="text-xl font-semibold text-slate-900">Generate Your Personalized Plan</h2>
+              <p className="text-slate-600">Get customized diet, exercise, and lifestyle recommendations based on your health data</p>
             </div>
           </div>
           <button
             onClick={generateRecommendations}
             disabled={loading}
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-xl hover:shadow-lg transition-all duration-300 flex items-center gap-2 disabled:opacity-50"
           >
             <Sparkles className="w-5 h-5" />
             {loading ? 'Generating...' : 'Generate Recommendations'}
@@ -220,28 +220,28 @@ const response = await fetch(
           {/* Patient Summary */}
           <CardTransition className="bg-white p-6 rounded-2xl shadow-lg border">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900">Your Health Summary</h2>
+              <h2 className="text-2xl font-bold text-slate-900">Your Health Summary</h2>
               <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getSeverityColor(recommendations.patientSummary.severity)}`}>
                 {recommendations.patientSummary.severity}
               </span>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-gray-50 rounded-xl">
-                <p className="text-sm text-gray-600">Age</p>
-                <p className="text-lg font-semibold text-gray-900">{recommendations.patientSummary.age}</p>
+              <div className="text-center p-4 bg-slate-50 rounded-xl">
+                <p className="text-sm text-slate-600">Age</p>
+                <p className="text-lg font-semibold text-slate-900">{recommendations.patientSummary.age}</p>
               </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl">
-                <p className="text-sm text-gray-600">Gender</p>
-                <p className="text-lg font-semibold text-gray-900">{recommendations.patientSummary.gender}</p>
+              <div className="text-center p-4 bg-slate-50 rounded-xl">
+                <p className="text-sm text-slate-600">Gender</p>
+                <p className="text-lg font-semibold text-slate-900">{recommendations.patientSummary.gender}</p>
               </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl">
-                <p className="text-sm text-gray-600">Risk Score</p>
-                <p className="text-lg font-semibold text-gray-900">{recommendations.patientSummary.riskScore}%</p>
+              <div className="text-center p-4 bg-slate-50 rounded-xl">
+                <p className="text-sm text-slate-600">Risk Score</p>
+                <p className="text-lg font-semibold text-slate-900">{recommendations.patientSummary.riskScore}%</p>
               </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl">
-                <p className="text-sm text-gray-600">ML Probability</p>
-                <p className="text-lg font-semibold text-gray-900">
+              <div className="text-center p-4 bg-slate-50 rounded-xl">
+                <p className="text-sm text-slate-600">ML Probability</p>
+                <p className="text-lg font-semibold text-slate-900">
                   {recommendations.patientSummary.modelProbability ? 
                     `${(recommendations.patientSummary.modelProbability * 100).toFixed(1)}%` : 'N/A'}
                 </p>
@@ -254,41 +254,41 @@ const response = await fetch(
             <CardTransition key={sectionKey} className="bg-white rounded-2xl shadow-lg border overflow-hidden">
               <button
                 onClick={() => toggleSection(sectionKey)}
-                className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full p-6 text-left flex items-center justify-between hover:bg-slate-50 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-100 rounded-xl">
+                  <div className="p-3 bg-teal-100 rounded-xl">
                     {getSectionIcon(sectionKey)}
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">{sectionData.title}</h3>
-                    <p className="text-gray-600 text-sm">
+                    <h3 className="text-xl font-semibold text-slate-900">{sectionData.title}</h3>
+                    <p className="text-slate-600 text-sm">
                       {sectionData.sections.length} sections • Click to {expandedSections[sectionKey] ? 'collapse' : 'expand'}
                     </p>
                   </div>
                 </div>
                 {expandedSections[sectionKey] ? (
-                  <ChevronUp className="w-6 h-6 text-gray-400" />
+                  <ChevronUp className="w-6 h-6 text-slate-400" />
                 ) : (
-                  <ChevronDown className="w-6 h-6 text-gray-400" />
+                  <ChevronDown className="w-6 h-6 text-slate-400" />
                 )}
               </button>
 
               {expandedSections[sectionKey] && (
-                <div className="p-6 border-t border-gray-100 space-y-6">
+                <div className="p-6 border-t border-slate-100 space-y-6">
                   {sectionData.sections.map((subsection, index) => (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="bg-gray-50 p-4 rounded-xl"
+                      className="bg-slate-50 p-4 rounded-xl"
                     >
-                      <h4 className="font-semibold text-gray-900 mb-3 text-lg">{subsection.title}</h4>
+                      <h4 className="font-semibold text-slate-900 mb-3 text-lg">{subsection.title}</h4>
                       <ul className="space-y-2">
                         {subsection.items.map((item, itemIndex) => (
-                          <li key={itemIndex} className="flex items-start gap-3 text-gray-700">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <li key={itemIndex} className="flex items-start gap-3 text-slate-700">
+                            <div className="w-2 h-2 bg-teal-500 rounded-full mt-2 flex-shrink-0"></div>
                             <span>{item}</span>
                           </li>
                         ))}
@@ -301,15 +301,15 @@ const response = await fetch(
           ))}
 
           {/* Key Messages */}
-          <CardTransition className="bg-blue-50 p-6 rounded-2xl border border-blue-200">
+          <CardTransition className="bg-teal-50 p-6 rounded-2xl border border-teal-200">
             <div className="flex items-start gap-3">
-              <Shield className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+              <Shield className="w-6 h-6 text-teal-600 mt-1 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold text-blue-900 mb-3">Important Notes</h3>
-                <ul className="space-y-2 text-blue-800">
+                <h3 className="font-semibold text-teal-900 mb-3">Important Notes</h3>
+                <ul className="space-y-2 text-teal-800">
                   {recommendations.keyMessages.map((message, index) => (
                     <li key={index} className="flex items-start gap-2">
-                      <span className="text-blue-600">•</span>
+                      <span className="text-teal-600">•</span>
                       <span>{message}</span>
                     </li>
                   ))}
@@ -322,7 +322,7 @@ const response = await fetch(
           <div className="text-center">
             <button
               onClick={generateRecommendations}
-              className="px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 flex items-center gap-2 mx-auto"
+              className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-xl hover:shadow-lg transition-all duration-300 flex items-center gap-2 mx-auto"
             >
               <Sparkles className="w-5 h-5" />
               Regenerate Recommendations
@@ -335,15 +335,15 @@ const response = await fetch(
       {!recommendations && !loading && !error && (
         <CardTransition className="bg-white p-12 rounded-2xl shadow-lg border text-center">
           <div className="max-w-md mx-auto">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Sparkles className="w-10 h-10 text-blue-600" />
+            <div className="w-20 h-20 bg-gradient-to-r from-teal-100 to-sky-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Sparkles className="w-10 h-10 text-teal-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Your Personalized Plan Awaits</h3>
-            <p className="text-gray-600 mb-6">
+            <h3 className="text-xl font-semibold text-slate-900 mb-3">Your Personalized Plan Awaits</h3>
+            <p className="text-slate-600 mb-6">
               Click the button above to generate customized recommendations based on your health profile, 
               lab results, and lifestyle factors.
             </p>
-            <div className="grid grid-cols-2 gap-4 text-sm text-gray-500">
+            <div className="grid grid-cols-2 gap-4 text-sm text-slate-500">
               <div className="flex items-center gap-2">
                 <Apple className="w-4 h-4" />
                 <span>Diet Plans</span>

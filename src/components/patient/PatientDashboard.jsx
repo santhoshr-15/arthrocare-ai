@@ -24,7 +24,7 @@ import Recommendations from './Recommendations';
 import Monitoring from './Monitoring';
 
 const NeuroMorphicCard = ({ children, className = "" }) => (
-  <div className={`bg-[#f0f2f5] rounded-2xl shadow-neuro ${className}`}>
+  <div className={`bg-white rounded-2xl border border-slate-200/60 shadow-sm ${className}`}>
     {children}
   </div>
 );
@@ -130,10 +130,10 @@ const PatientDashboard = () => {
         return (
           <NeuroMorphicCard className="p-8 flex items-center justify-center min-h-[400px]">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-700 mb-2">
+              <h2 className="text-2xl font-bold text-slate-700 mb-2">
                 Welcome to Your Dashboard
               </h2>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 Select a section from the sidebar to view details
               </p>
             </div>
@@ -187,22 +187,22 @@ const PatientDashboard = () => {
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+          <div className="w-16 h-16 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30">
       {/* Header */}
       <motion.header 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="fixed top-0 w-full z-50 backdrop-blur-md border-b border-gray-200/30"
+        className="fixed top-0 w-full z-50 backdrop-blur-md border-b border-slate-200/30"
       >
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -211,10 +211,10 @@ const PatientDashboard = () => {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center space-x-3"
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-teal-600 to-teal-700 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-sm">AI</span>
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-teal-700 bg-clip-text text-transparent">
                 ArthroCare
               </span>
             </motion.div>
@@ -222,27 +222,27 @@ const PatientDashboard = () => {
             {/* Search Bar */}
             <div className="hidden md:flex items-center space-x-4 flex-1 max-w-md mx-8">
               <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search dashboard..."
-                  className="w-full pl-12 pr-4 py-2 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  className="w-full pl-12 pr-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300"
                 />
               </div>
             </div>
 
             {/* User Menu */}
             <div className="flex items-center space-x-4">
-              <button className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors">
+              <button className="relative p-2 text-slate-600 hover:text-teal-600 transition-colors">
                 <Bell className="w-6 h-6" />
               </button>
               
               <div className="flex items-center space-x-3">
                 <div className="text-right hidden sm:block">
-                  <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                  <p className="text-xs text-gray-600">{user.patientId}</p>
+                  <p className="text-sm font-semibold text-slate-900">{user.name}</p>
+                  <p className="text-xs text-slate-600">{user.patientId}</p>
                 </div>
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-semibold">
+                <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl flex items-center justify-center text-white font-semibold">
                   {getUserInitial()}
                 </div>
               </div>
@@ -257,7 +257,7 @@ const PatientDashboard = () => {
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-64 bg-white/80 backdrop-blur-md border-r border-gray-200/30 flex flex-col justify-between p-6 h-[calc(100vh-5rem)] sticky top-20"
+          className="w-64 bg-white/80 backdrop-blur-md border-r border-slate-200/30 flex flex-col justify-between p-6 h-[calc(100vh-5rem)] sticky top-20"
         >
           <div className="flex flex-col gap-6">
             {/* Welcome Section */}
@@ -266,11 +266,11 @@ const PatientDashboard = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-xl font-bold text-gray-900"
+                className="text-xl font-bold text-slate-900"
               >
                 Welcome, {getUserFirstName()}!
               </motion.h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-slate-600">
                 Patient ID: {user.patientId.substring(0, 8)}...
               </p>
             </div>
@@ -285,11 +285,11 @@ const PatientDashboard = () => {
                   onClick={() => setSelectedTab(tab.name)}
                   className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-left ${
                     selectedTab === tab.name 
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg' 
-                      : 'bg-white/50 text-gray-700 hover:bg-white/80 hover:shadow-md'
+                      ? 'bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-lg' 
+                      : 'bg-white/50 text-slate-700 hover:bg-white/80 hover:shadow-md'
                   }`}
                 >
-                  <div className={`${selectedTab === tab.name ? 'text-white' : 'text-blue-600'}`}>
+                  <div className={`${selectedTab === tab.name ? 'text-white' : 'text-teal-600'}`}>
                     {tab.icon}
                   </div>
                   <p className="font-semibold text-sm">{tab.name}</p>
@@ -303,9 +303,9 @@ const PatientDashboard = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/50 text-gray-700 hover:bg-white/80 hover:shadow-md transition-all duration-300 w-full"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/50 text-slate-700 hover:bg-white/80 hover:shadow-md transition-all duration-300 w-full"
             >
-              <Settings className="w-5 h-5 text-gray-600" />
+              <Settings className="w-5 h-5 text-slate-600" />
               <span className="font-medium text-sm">Settings</span>
             </motion.button>
             
@@ -331,10 +331,10 @@ const PatientDashboard = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-3xl font-bold text-slate-900 mb-2">
                   {selectedTab}
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-slate-600">
                   {getTabDescription()}
                 </p>
               </div>
@@ -342,9 +342,9 @@ const PatientDashboard = () => {
               {/* Quick Stats for Progress Tracking */}
               {selectedTab === "Progress Tracking" && (
                 <div className="flex gap-4">
-                  <div className="bg-blue-50 px-4 py-2 rounded-lg border border-blue-200">
-                    <p className="text-sm text-blue-700 font-medium">Compare Tests</p>
-                    <p className="text-xs text-blue-600">Track disease progression</p>
+                  <div className="bg-teal-50 px-4 py-2 rounded-lg border border-teal-200">
+                    <p className="text-sm text-teal-700 font-medium">Compare Tests</p>
+                    <p className="text-xs text-teal-600">Track disease progression</p>
                   </div>
                 </div>
               )}

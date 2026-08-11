@@ -331,7 +331,7 @@ const Monitoring = () => {
       case 'Low': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
       case 'Moderate': return 'text-orange-600 bg-orange-50 border-orange-200';
       case 'High': return 'text-red-600 bg-red-50 border-red-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      default: return 'text-slate-600 bg-slate-50 border-slate-200';
     }
   };
 
@@ -341,7 +341,7 @@ const Monitoring = () => {
       case 'Low': return <CheckCircle className="w-4 h-4 text-yellow-600" />;
       case 'Moderate': return <AlertTriangle className="w-4 h-4 text-orange-600" />;
       case 'High': return <AlertTriangle className="w-4 h-4 text-red-600" />;
-      default: return <Activity className="w-4 h-4 text-gray-600" />;
+      default: return <Activity className="w-4 h-4 text-slate-600" />;
     }
   };
 
@@ -355,9 +355,9 @@ const Monitoring = () => {
     return (
       <CardTransition className="bg-white p-8 rounded-2xl shadow-lg border text-center">
         <div className="flex flex-col items-center py-12">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600 mb-4"></div>
           <h3 className="text-xl font-semibold">Loading Monitoring Data</h3>
-          <p className="text-gray-600 mt-2">Processing your historical predictions...</p>
+          <p className="text-slate-600 mt-2">Processing your historical predictions...</p>
         </div>
       </CardTransition>
     );
@@ -368,13 +368,13 @@ const Monitoring = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">RA Risk Monitoring</h1>
-          <p className="text-gray-600">Track your RA risk predictions based on 6 clinical factors</p>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">RA Risk Monitoring</h1>
+          <p className="text-slate-600">Track your RA risk predictions based on 6 clinical factors</p>
         </div>
         <div className="flex items-center gap-4 mt-4 md:mt-0">
           <button
             onClick={refreshData}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors flex items-center gap-2"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh Data
@@ -387,18 +387,18 @@ const Monitoring = () => {
         <CardTransition className="bg-white p-4 rounded-xl shadow-lg border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Predictions</p>
-              <p className="text-2xl font-bold text-gray-900">{predictionHistory.length}</p>
+              <p className="text-sm text-slate-600">Total Predictions</p>
+              <p className="text-2xl font-bold text-slate-900">{predictionHistory.length}</p>
             </div>
-            <Stethoscope className="w-8 h-8 text-blue-600" />
+            <Stethoscope className="w-8 h-8 text-teal-600" />
           </div>
         </CardTransition>
 
         <CardTransition className="bg-white p-4 rounded-xl shadow-lg border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Current Risk Score</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-slate-600">Current Risk Score</p>
+              <p className="text-2xl font-bold text-slate-900">
                 {predictionHistory[0]?.risk_score || 0}%
               </p>
             </div>
@@ -409,8 +409,8 @@ const Monitoring = () => {
         <CardTransition className="bg-white p-4 rounded-xl shadow-lg border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Risk Level</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-slate-600">Risk Level</p>
+              <p className="text-xl font-bold text-slate-900">
                 {predictionHistory[0]?.risk_level || 'N/A'}
               </p>
             </div>
@@ -421,12 +421,12 @@ const Monitoring = () => {
         <CardTransition className="bg-white p-4 rounded-xl shadow-lg border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Last Prediction</p>
-              <p className="text-lg font-bold text-gray-900">
+              <p className="text-sm text-slate-600">Last Prediction</p>
+              <p className="text-lg font-bold text-slate-900">
                 {predictionHistory[0]?.date || 'N/A'}
               </p>
             </div>
-            <Calendar className="w-8 h-8 text-purple-600" />
+            <Calendar className="w-8 h-8 text-teal-600" />
           </div>
         </CardTransition>
       </div>
@@ -435,7 +435,7 @@ const Monitoring = () => {
       <CardTransition className="bg-white p-4 rounded-xl shadow-lg border">
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-700">Time Range:</span>
+            <span className="text-sm font-medium text-slate-700">Time Range:</span>
           </div>
           {['week', 'month', 'all'].map(range => (
             <button
@@ -443,8 +443,8 @@ const Monitoring = () => {
               onClick={() => setTimeRange(range)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 timeRange === range
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-teal-600 text-white'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
               {range.charAt(0).toUpperCase() + range.slice(1)}
@@ -452,7 +452,7 @@ const Monitoring = () => {
           ))}
 
           <div className="flex items-center gap-2 ml-4">
-            <span className="text-sm font-medium text-gray-700">View:</span>
+            <span className="text-sm font-medium text-slate-700">View:</span>
           </div>
           {['risk_score', 'lab_values'].map(metric => (
             <button
@@ -460,8 +460,8 @@ const Monitoring = () => {
               onClick={() => setSelectedMetric(metric)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 selectedMetric === metric
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-teal-600 text-white'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
               {metric === 'risk_score' ? 'Risk Score' : 'Lab Values'}
@@ -475,10 +475,10 @@ const Monitoring = () => {
         {/* Main Chart */}
         <CardTransition className="bg-white p-6 rounded-xl shadow-lg border">
           <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-blue-600" />
+            <TrendingUp className="w-5 h-5 text-teal-600" />
             {selectedMetric === 'risk_score' ? 'RA Risk Score Trend' : 'Lab Values Trend'}
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-slate-600 mb-4">
             {selectedMetric === 'risk_score' 
               ? 'Based on AI analysis of your 6 clinical factors' 
               : 'Actual lab values used for risk prediction'
@@ -499,7 +499,7 @@ const Monitoring = () => {
             <Activity className="w-5 h-5 text-green-600" />
             Risk Level Distribution
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-slate-600 mb-4">
             Distribution of your historical risk levels
           </p>
           <div className="h-80">
@@ -522,41 +522,41 @@ const Monitoring = () => {
       {/* Detailed Prediction History */}
       <CardTransition className="bg-white p-6 rounded-xl shadow-lg border">
         <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-purple-600" />
+          <Calendar className="w-5 h-5 text-teal-600" />
           Detailed Prediction History
         </h3>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-sm text-slate-600 mb-4">
           All predictions based on your actual lab values and personal factors
         </p>
         
         {filteredHistory.length === 0 ? (
           <div className="text-center py-8">
-            <TestTube className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">No prediction data available for the selected time range.</p>
-            <p className="text-sm text-gray-500 mt-2">Submit lab results to see your monitoring data.</p>
+            <TestTube className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+            <p className="text-slate-600">No prediction data available for the selected time range.</p>
+            <p className="text-sm text-slate-500 mt-2">Submit lab results to see your monitoring data.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Date</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Risk Score</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Risk Level</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Probability</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Age</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Gender</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">RF</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Anti-CCP</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">CRP</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">ESR</th>
+                <tr className="border-b border-slate-200">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Date</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Risk Score</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Risk Level</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Probability</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Age</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Gender</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">RF</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Anti-CCP</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">CRP</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">ESR</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredHistory.map((entry) => (
-                  <tr key={entry.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 px-4 text-sm text-gray-900">{entry.date}</td>
-                    <td className="py-3 px-4 text-sm font-semibold text-gray-900">
+                  <tr key={entry.id} className="border-b border-slate-100 hover:bg-slate-50">
+                    <td className="py-3 px-4 text-sm text-slate-900">{entry.date}</td>
+                    <td className="py-3 px-4 text-sm font-semibold text-slate-900">
                       {entry.risk_score}%
                     </td>
                     <td className="py-3 px-4">
@@ -565,13 +565,13 @@ const Monitoring = () => {
                         <span className="ml-1">{entry.risk_level}</span>
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-900">{entry.risk_probability}</td>
-                    <td className="py-3 px-4 text-sm text-gray-900">{entry.factors.age}</td>
-                    <td className="py-3 px-4 text-sm text-gray-900">{entry.factors.gender}</td>
-                    <td className="py-3 px-4 text-sm text-gray-900">{entry.factors.rheumatoidFactor}</td>
-                    <td className="py-3 px-4 text-sm text-gray-900">{entry.factors.antiCCP}</td>
-                    <td className="py-3 px-4 text-sm text-gray-900">{entry.factors.cReactiveProtein}</td>
-                    <td className="py-3 px-4 text-sm text-gray-900">{entry.factors.erythrocyteSedimentationRate}</td>
+                    <td className="py-3 px-4 text-sm text-slate-900">{entry.risk_probability}</td>
+                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.age}</td>
+                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.gender}</td>
+                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.rheumatoidFactor}</td>
+                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.antiCCP}</td>
+                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.cReactiveProtein}</td>
+                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.erythrocyteSedimentationRate}</td>
                   </tr>
                 ))}
               </tbody>
@@ -581,12 +581,12 @@ const Monitoring = () => {
       </CardTransition>
 
       {/* Factors Information */}
-      <CardTransition className="bg-blue-50 p-6 rounded-xl border border-blue-200">
-        <h3 className="text-lg font-semibold mb-3 text-blue-900 flex items-center gap-2">
+      <CardTransition className="bg-teal-50 p-6 rounded-xl border border-teal-200">
+        <h3 className="text-lg font-semibold mb-3 text-teal-900 flex items-center gap-2">
           <User className="w-5 h-5" />
           Prediction Factors Used
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-teal-800">
           <div>
             <p className="font-semibold">Personal Factors:</p>
             <ul className="list-disc list-inside mt-1 space-y-1">
@@ -604,7 +604,7 @@ const Monitoring = () => {
             </ul>
           </div>
         </div>
-        <p className="text-sm text-blue-700 mt-3">
+        <p className="text-sm text-teal-700 mt-3">
           All 6 factors are processed by the AI model to generate your RA risk score.
         </p>
       </CardTransition>

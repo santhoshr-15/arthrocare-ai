@@ -14,8 +14,8 @@ const Sidebar = () => {
   return (
     <div className="w-64 bg-white shadow-lg h-full">
       <div className="p-6">
-        <h2 className="text-xl font-bold text-gray-800">ArthroCare AI</h2>
-        <p className="text-sm text-gray-600 mt-1">Patient Portal</p>
+        <h2 className="text-xl font-bold text-slate-800">ArthroCare AI</h2>
+        <p className="text-sm text-slate-600 mt-1">Patient Portal</p>
       </div>
       
       <nav className="mt-6">
@@ -26,8 +26,8 @@ const Sidebar = () => {
                 to={item.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   location.pathname === item.path
-                    ? 'bg-blue-100 text-blue-700 font-semibold'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-teal-100 text-teal-700 font-semibold'
+                    : 'text-slate-700 hover:bg-slate-100'
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
@@ -45,7 +45,7 @@ const Sidebar = () => {
             sessionStorage.removeItem('currentUser');
             window.location.href = '/login';
           }}
-          className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          className="w-full flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
         >
           <span className="text-lg">🚪</span>
           <span>Logout</span>

@@ -8,7 +8,7 @@ import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 
 const NeuroMorphicCard = ({ children, className = "" }) => (
-  <div className={`bg-[#f0f2f5] rounded-2xl shadow-neuro ${className}`}>
+  <div className={`bg-white rounded-2xl border border-slate-200/60 shadow-sm ${className}`}>
     {children}
   </div>
 );
@@ -165,13 +165,13 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 overflow-hidden">
 
       {/* Background floating shapes */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <FloatingElement delay={0} className="absolute top-20 left-10 w-6 h-6 bg-blue-400 rounded-full opacity-20" />
-        <FloatingElement delay={0.5} className="absolute top-40 right-20 w-8 h-8 bg-purple-400 rounded-full opacity-30" />
-        <FloatingElement delay={1} className="absolute bottom-40 left-20 w-10 h-10 bg-indigo-300 rounded-full opacity-25" />
+        <FloatingElement delay={0} className="absolute top-20 left-10 w-6 h-6 bg-teal-400 rounded-full opacity-20" />
+        <FloatingElement delay={0.5} className="absolute top-40 right-20 w-8 h-8 bg-sky-300 rounded-full opacity-30" />
+        <FloatingElement delay={1} className="absolute bottom-40 left-20 w-10 h-10 bg-teal-300 rounded-full opacity-25" />
       </div>
 
       {/* Navbar */}
@@ -187,10 +187,10 @@ const LoginPage = () => {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center space-x-3"
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-teal-600 to-teal-700 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-sm">AI</span>
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-teal-700 bg-clip-text text-transparent">
                 ArthroCare
               </span>
             </motion.div>
@@ -216,20 +216,20 @@ const LoginPage = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-medium text-sm"
+                className="inline-flex items-center px-4 py-2 rounded-full bg-teal-100 text-teal-700 font-medium text-sm"
               >
                 🔒 Secure AI Platform
               </motion.div>
 
               <h1 className="text-4xl font-bold leading-tight">
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-teal-600 via-teal-500 to-sky-600 bg-clip-text text-transparent">
                   Welcome to
                 </span>
                 <br />
-                <span className="text-gray-900">ArthroCare AI</span>
+                <span className="text-slate-800">ArthroCare AI</span>
               </h1>
 
-              <p className="text-lg text-gray-600 leading-relaxed">
+              <p className="text-lg text-slate-500 leading-relaxed">
                 AI-powered early detection and personalized health insights for rheumatoid arthritis prevention.
               </p>
             </div>
@@ -266,12 +266,12 @@ const LoginPage = () => {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: "spring" }}
-                  className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                  className="w-16 h-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl flex items-center justify-center mx-auto mb-4"
                 >
                   <Shield className="w-8 h-8 text-white" />
                 </motion.div>
-                <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
-                <p className="text-gray-600 mt-2">
+                <h2 className="text-3xl font-bold text-slate-800">Welcome Back</h2>
+                <p className="text-slate-500 mt-2">
                   Sign in to your ArthroCare account
                 </p>
               </div>
@@ -279,41 +279,41 @@ const LoginPage = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Email Address *
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                     <input
                       type="email"
                       placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300"
                     />
                   </div>
                 </div>
 
                 {/* Password */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Password *
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="w-full pl-12 pr-12 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full pl-12 pr-12 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -332,8 +332,8 @@ const LoginPage = () => {
                       />
                       <div className={`w-5 h-5 border-2 rounded-md transition-all duration-200 ${
                         remember 
-                          ? 'bg-blue-600 border-blue-600' 
-                          : 'bg-white border-gray-300'
+                          ? 'bg-teal-600 border-teal-600' 
+                          : 'bg-white border-slate-300'
                       }`}>
                         {remember && (
                           <motion.svg
@@ -349,11 +349,11 @@ const LoginPage = () => {
                         )}
                       </div>
                     </div>
-                    <span className="text-sm text-gray-700">Remember me</span>
+                    <span className="text-sm text-slate-700">Remember me</span>
                   </label>
                   <Link
                     to="/forgot"
-                    className="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                    className="text-sm font-medium text-teal-600 hover:text-teal-500 transition-colors"
                   >
                     Forgot password?
                   </Link>
@@ -376,7 +376,7 @@ const LoginPage = () => {
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-4 px-6 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center space-x-2">
@@ -396,11 +396,11 @@ const LoginPage = () => {
                 transition={{ delay: 0.6 }}
                 className="mt-8 text-center"
               >
-                <p className="text-gray-600">
+                <p className="text-slate-500">
                   Don't have an account?{" "}
                   <Link
                     to="/register"
-                    className="font-semibold text-blue-600 hover:text-blue-500 transition-colors"
+                    className="font-semibold text-teal-600 hover:text-teal-500 transition-colors"
                   >
                     Create account
                   </Link>
@@ -412,7 +412,7 @@ const LoginPage = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
-                className="mt-6 flex items-center justify-center space-x-2 text-xs text-gray-500"
+                className="mt-6 flex items-center justify-center space-x-2 text-xs text-slate-500"
               >
                 <Shield className="w-4 h-4" />
                 <span>Protected by end-to-end encryption</span>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 const NeuroMorphicCard = ({ children, className = "" }) => (
-  <div className={`bg-[#f0f2f5] rounded-2xl shadow-neuro ${className}`}>
+  <div className={`bg-white rounded-2xl border border-slate-200/60 shadow-sm ${className}`}>
     {children}
   </div>
 );
@@ -30,19 +30,19 @@ const features = [
     title: "Early Detection Capabilities",
     description: "Identification of pre-clinical and early-stage rheumatoid indicators",
     icon: "🧠",
-    gradient: "from-purple-500 to-blue-500"
+    gradient: "from-teal-500 to-sky-500"
   },
   {
     title: "Dynamic Recommendation Engine",
     description: "Automatically adjusts all wellness components based on real-time symptom feedback and biomarker changes",
     icon: "🔍",
-    gradient: "from-green-500 to-teal-500"
+    gradient: "from-emerald-500 to-teal-500"
   },
   {
     title: "Dynamic Health Trajectory",
     description: "Real-time monitoring of lifestyle impact with predictive modeling of health outcomes",
     icon: "📊",
-    gradient: "from-orange-500 to-red-500"
+    gradient: "from-amber-500 to-orange-500"
   }
 ];
 
@@ -85,12 +85,12 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <FloatingElement delay={0} className="absolute top-20 left-10 w-6 h-6 bg-blue-400 rounded-full opacity-20" />
-        <FloatingElement delay={0.5} className="absolute top-40 right-20 w-8 h-8 bg-purple-400 rounded-full opacity-30" />
-        <FloatingElement delay={1} className="absolute bottom-40 left-20 w-10 h-10 bg-indigo-300 rounded-full opacity-25" />
+        <FloatingElement delay={0} className="absolute top-20 left-10 w-6 h-6 bg-teal-400 rounded-full opacity-20" />
+        <FloatingElement delay={0.5} className="absolute top-40 right-20 w-8 h-8 bg-sky-300 rounded-full opacity-20" />
+        <FloatingElement delay={1} className="absolute bottom-40 left-20 w-10 h-10 bg-teal-300 rounded-full opacity-25" />
       </div>
 
       {/* Enhanced Header */}
@@ -107,10 +107,10 @@ const HomePage = () => {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center space-x-3"
             >
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl flex items-center justify-center">
                 <span className="text-white font-bold text-lg">AI</span>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-teal-700 bg-clip-text text-transparent">
                 ArthroCare
               </span>
             </motion.div>
@@ -121,7 +121,7 @@ const HomePage = () => {
                   key={item}
                   href={`#${item.toLowerCase()}`}
                   whileHover={{ scale: 1.05 }}
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className="text-slate-700 hover:text-teal-600 font-medium transition-colors"
                 >
                   {item}
                 </motion.a>
@@ -136,7 +136,7 @@ const HomePage = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+                  className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
                 >
                   Begin Assessment
                 </motion.button>
@@ -160,18 +160,18 @@ const HomePage = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-medium text-sm"
+                className="inline-flex items-center px-4 py-2 rounded-full bg-teal-100 text-teal-700 font-medium text-sm"
               >
                 Reinventing Healthcare With Predictive Intelligence
               </motion.div>
               <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-teal-600 via-teal-500 to-sky-600 bg-clip-text text-transparent">
                   Smart Predictive Analytics
                 </span>
                 <br />
-                <span className="text-gray-900">for Rheumatoid Joint Wellness</span>
+                <span className="text-slate-800">for Rheumatoid Joint Wellness</span>
               </h1>
-              <p className="text-xl text-gray-600 leading-relaxed">
+              <p className="text-xl text-slate-500 leading-relaxed">
                 An intelligent RA risk assessment system combining blood biomarkers and AI models to support early diagnosis and patient-specific lifestyle guidance.
               </p>
             </div>
@@ -181,7 +181,7 @@ const HomePage = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-2xl hover:shadow-3xl transition-all"
+                  className="w-full sm:w-auto bg-gradient-to-r from-teal-600 to-teal-700 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-2xl hover:shadow-3xl transition-all"
                 >
                   Start Risk Assessment
                 </motion.button>
@@ -189,7 +189,7 @@ const HomePage = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-semibold text-lg hover:border-blue-400 transition-all"
+                className="w-full sm:w-auto border-2 border-slate-300 text-slate-700 px-8 py-4 rounded-xl font-semibold text-lg hover:border-teal-400 transition-all"
               >
                 View Clinical Research
               </motion.button>
@@ -203,18 +203,18 @@ const HomePage = () => {
             className="relative"
           >
             <NeuroMorphicCard className="p-8 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10" />
+              <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-sky-500/10" />
               <div className="relative z-10 grid grid-cols-2 gap-4">
                 {/* Interactive dashboard preview */}
                 {[1, 2, 3, 4].map((item) => (
                   <motion.div
                     key={item}
                     whileHover={{ y: -5 }}
-                    className="bg-white rounded-xl p-4 shadow-lg border border-gray-100"
+                    className="bg-white rounded-xl p-4 shadow-sm border border-slate-100"
                   >
-                    <div className="h-4 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mb-3" />
-                    <div className="h-3 bg-gray-200 rounded-full mb-2 w-3/4" />
-                    <div className="h-3 bg-gray-200 rounded-full w-1/2" />
+                    <div className="h-4 bg-gradient-to-r from-teal-400 to-sky-400 rounded-full mb-3" />
+                    <div className="h-3 bg-slate-200 rounded-full mb-2 w-3/4" />
+                    <div className="h-3 bg-slate-200 rounded-full w-1/2" />
                   </motion.div>
                 ))}
               </div>
@@ -233,13 +233,13 @@ const HomePage = () => {
             className="text-center mb-20"
           >
             <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-teal-600 to-teal-700 bg-clip-text text-transparent">
                 Multi Factor 
               </span>
               <br />
-              <span className="text-gray-900">RA Prediction & Recommendation</span>
+              <span className="text-slate-800">RA Prediction & Recommendation</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-500 max-w-3xl mx-auto">
               The model combines biomarker trends, age-gender adjusted thresholds, and clinical scoring techniques to deliver accurate, real-time RA risk assessment and health insights.
             </p>
           </motion.div>
@@ -259,14 +259,14 @@ const HomePage = () => {
                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center text-2xl mb-6 transform group-hover:scale-110 transition-transform duration-300`}>
                     {feature.icon}
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-4">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-slate-500 leading-relaxed">
                     {feature.description}
                   </p>
                   <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full flex items-center justify-center">
                       <span className="text-white text-lg">→</span>
                     </div>
                   </div>
@@ -278,7 +278,7 @@ const HomePage = () => {
       </section>
 
       {/* Advanced Services Section */}
-      <section id="technology" className="py-24 bg-gradient-to-br from-white to-blue-50/30">
+      <section id="technology" className="py-24 bg-gradient-to-br from-white to-slate-50">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -286,9 +286,9 @@ const HomePage = () => {
             viewport={{ once: true }}
             className="text-center mb-20"
           >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-gray-900">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-slate-800">
               Advanced Clinical<br />
-              <span className="bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 Technology Suite
               </span>
             </h2>
@@ -312,7 +312,7 @@ const HomePage = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                     <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
-                    <p className="text-blue-100">{service.description}</p>
+                    <p className="text-slate-100">{service.description}</p>
                   </div>
                 </div>
               </motion.div>
@@ -330,13 +330,13 @@ const HomePage = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-gray-900">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-slate-800">
               Advanced Health
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-sky-600 to-teal-600 bg-clip-text text-transparent">
                 {" "}Analytics
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-500 max-w-3xl mx-auto">
               Our comprehensive approach combines multiple data streams to deliver 
               precise health insights and proactive care recommendations.
             </p>
@@ -350,13 +350,13 @@ const HomePage = () => {
               transition={{ delay: 0.1 }}
               className="text-center"
             >
-              <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto">
+              <div className="w-20 h-20 bg-gradient-to-r from-teal-500 to-sky-500 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto">
                 🧠
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">
                 Smart RA Risk Insights
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-slate-500 leading-relaxed">
                 Your clinical inputs — ESR, CRP, RF, Anti-CCP, age, and gender — are analyzed to give a clear, easy-to-understand risk assessment for early rheumatoid arthritis.
               </p>
             </motion.div>
@@ -368,13 +368,13 @@ const HomePage = () => {
               transition={{ delay: 0.2 }}
               className="text-center"
             >
-              <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto">
+              <div className="w-20 h-20 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto">
                 🔍
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">
                 Pattern & Symptom Analysis
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-slate-500 leading-relaxed">
                 The system compares your biomarkers with age- and gender-specific medical ranges to help identify early inflammatory patterns and possible RA warning signs.
               </p>
             </motion.div>
@@ -386,13 +386,13 @@ const HomePage = () => {
               transition={{ delay: 0.3 }}
               className="text-center"
             >
-              <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto">
+              <div className="w-20 h-20 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto">
                 📊
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">
                 Progress Tracking
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-slate-500 leading-relaxed">
                 Track how your health markers change over time. The platform highlights improvement, stability, or worsening trends across follow-up tests.
               </p>
             </motion.div>
@@ -408,7 +408,7 @@ const HomePage = () => {
             {/* Brand Column */}
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-r from-teal-600 to-teal-700 rounded-xl flex items-center justify-center">
                   <span className="font-bold text-white">AI</span>
                 </div>
                 <span className="text-2xl font-bold">ArthroCare</span>
@@ -422,10 +422,10 @@ const HomePage = () => {
             <div>
               <h4 className="font-bold text-lg mb-6">Platform</h4>
               <ul className="space-y-3 text-slate-400">
-                <li><a href="#features" className="hover:text-blue-400 transition-colors">Features</a></li>
-                <li><a href="#technology" className="hover:text-blue-400 transition-colors">Technology</a></li>
-                <li><a href="#research" className="hover:text-blue-400 transition-colors">Clinical Research</a></li>
-                <li><Link to="/login" className="hover:text-blue-400 transition-colors">Assessment</Link></li>
+                <li><a href="#features" className="hover:text-teal-400 transition-colors">Features</a></li>
+                <li><a href="#technology" className="hover:text-teal-400 transition-colors">Technology</a></li>
+                <li><a href="#research" className="hover:text-teal-400 transition-colors">Clinical Research</a></li>
+                <li><Link to="/login" className="hover:text-teal-400 transition-colors">Assessment</Link></li>
               </ul>
             </div>
 
@@ -433,10 +433,10 @@ const HomePage = () => {
             <div>
               <h4 className="font-bold text-lg mb-6">Legal</h4>
               <ul className="space-y-3 text-slate-400">
-                <li><a href="#" className="hover:text-blue-400 transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-blue-400 transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-blue-400 transition-colors">Cookie Policy</a></li>
-                <li><a href="#" className="hover:text-blue-400 transition-colors">Disclaimer</a></li>
+                <li><a href="#" className="hover:text-teal-400 transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-teal-400 transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-teal-400 transition-colors">Cookie Policy</a></li>
+                <li><a href="#" className="hover:text-teal-400 transition-colors">Disclaimer</a></li>
               </ul>
             </div>
 
@@ -445,13 +445,13 @@ const HomePage = () => {
               <h4 className="font-bold text-lg mb-6">Contact Us</h4>
               <ul className="space-y-4 text-slate-400">
                 <li className="flex items-center space-x-3 group cursor-pointer">
-                  <span className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                  <span className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-teal-600 transition-colors">
                     📧
                   </span>
                   <a href="mailto:info@arthrocare.com" className="group-hover:text-white transition-colors">info@arthrocare.com</a>
                 </li>
                 <li className="flex items-center space-x-3 group cursor-pointer">
-                  <span className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-green-600 transition-colors">
+                  <span className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-emerald-600 transition-colors">
                     📞
                   </span>
                   <a href="tel:+1555432584" className="group-hover:text-white transition-colors">+1 (555) 432-584</a>
