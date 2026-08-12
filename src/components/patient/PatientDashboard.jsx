@@ -2,32 +2,27 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   User, 
-  Upload, 
+  FlaskConical, 
   BarChart3, 
   ListChecks, 
   Activity,
   LogOut,
-  Settings,
-  Bell,
+  TrendingUp,
+  Shield,
   Search,
-  TrendingUp // ADDED THIS IMPORT
+  Bell,
+  Stethoscope,
+  ChevronRight
 } from "lucide-react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 
-// Import your components using actual paths
 import ProfileForm from './ProfileForm';
 import LabUploadForm from './LabUploadForm';
 import RiskPrediction from './RiskPrediction';
-import ProgressTracking from './ProgressTracking'; // ADDED THIS IMPORT
+import ProgressTracking from './ProgressTracking';
 import Recommendations from './Recommendations';
 import Monitoring from './Monitoring';
-
-const NeuroMorphicCard = ({ children, className = "" }) => (
-  <div className={`bg-white rounded-2xl border border-slate-200/60 shadow-sm ${className}`}>
-    {children}
-  </div>
-);
 
 const PatientDashboard = () => {
   const [selectedTab, setSelectedTab] = useState("Profile & Medical Info");
@@ -42,22 +37,17 @@ const PatientDashboard = () => {
   const auth = getAuth();
   const db = getFirestore();
 
-  // Make setSelectedTab available globally for child components
   useEffect(() => {
     window.dashboardSetTab = setSelectedTab;
-    
-    // Cleanup on unmount
     return () => {
       window.dashboardSetTab = null;
     };
   }, []);
 
-  // Get user data from Firebase Auth and Firestore
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         try {
-          // Get user data from Firestore
           const userDocRef = doc(db, "users", currentUser.uid);
           const userDoc = await getDoc(userDocRef);
           
@@ -70,7 +60,6 @@ const PatientDashboard = () => {
               uid: currentUser.uid
             });
           } else {
-            // If no Firestore document, use Auth data
             setUser({
               name: currentUser.displayName || "User",
               email: currentUser.email,
@@ -80,7 +69,6 @@ const PatientDashboard = () => {
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
-          // Fallback to Auth data
           setUser({
             name: currentUser.displayName || "User",
             email: currentUser.email,
@@ -89,8 +77,6 @@ const PatientDashboard = () => {
           });
         }
       } else {
-        // No user logged in, redirect to login
-        console.log("No user logged in, redirecting to login...");
         window.location.href = '/login';
       }
       setLoading(false);
@@ -99,19 +85,15 @@ const PatientDashboard = () => {
     return () => unsubscribe();
   }, [auth, db]);
 
-  // Handle sign out
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      console.log("User signed out successfully");
-      // Redirect to login page
       window.location.href = '/login';
     } catch (error) {
       console.error("Error signing out:", error);
     }
   };
 
-  // Render the correct component based on selected tab
   const renderContent = () => {
     switch (selectedTab) {
       case "Profile & Medical Info":
@@ -120,248 +102,179 @@ const PatientDashboard = () => {
         return <LabUploadForm setSelectedTab={setSelectedTab} />;
       case "Risk Prediction":
         return <RiskPrediction />;
-      case "Progress Tracking": // ADDED THIS CASE
+      case "Progress Tracking":
         return <ProgressTracking />;
       case "Recommendations":
         return <Recommendations />;
       case "Monitoring":
         return <Monitoring />;
       default:
-        return (
-          <NeuroMorphicCard className="p-8 flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-slate-700 mb-2">
-                Welcome to Your Dashboard
-              </h2>
-              <p className="text-slate-600">
-                Select a section from the sidebar to view details
-              </p>
-            </div>
-          </NeuroMorphicCard>
-        );
+        return <ProfileForm />;
     }
   };
 
-  // UPDATED TABS ARRAY - Added "Progress Tracking"
   const tabs = [
-    { name: "Profile & Medical Info", icon: <User size={20} /> },
-    { name: "Lab Test Entry", icon: <Upload size={20} /> },
-    { name: "Risk Prediction", icon: <BarChart3 size={20} /> },
-    { name: "Progress Tracking", icon: <TrendingUp size={20} /> }, // NEW TAB
-    { name: "Recommendations", icon: <ListChecks size={20} /> },
-    { name: "Monitoring", icon: <Activity size={20} /> },
+    { name: "Profile & Medical Info", label: "Patient Demographics", icon: User },
+    { name: "Lab Test Entry", label: "Biomarker Entry", icon: FlaskConical },
+    { name: "Risk Prediction", label: "AI Risk Prediction", icon: BarChart3 },
+    { name: "Progress Tracking", label: "Comparative Analysis", icon: TrendingUp },
+    { name: "Recommendations", label: "Clinical Protocol", icon: ListChecks },
+    { name: "Monitoring", label: "Longitudinal Trends", icon: Activity },
   ];
 
-  // Get user's first name for welcome message
   const getUserFirstName = () => {
-    if (!user.name) return 'User';
+    if (!user.name) return 'Patient';
     return user.name.split(' ')[0];
   };
 
-  // Get user initial for avatar
   const getUserInitial = () => {
-    if (!user.name) return 'U';
+    if (!user.name) return 'P';
     return user.name.charAt(0).toUpperCase();
   };
 
-  // Get description for selected tab
   const getTabDescription = () => {
     switch (selectedTab) {
       case "Profile & Medical Info":
-        return "Manage your personal and medical information";
+        return "Demographic baselines, clinical history, and lifestyle factors";
       case "Lab Test Entry":
-        return "Enter your lab values for RA risk prediction";
+        return "Input quantitative RF, Anti-CCP, CRP, and ESR serology values";
       case "Risk Prediction":
-        return "AI-powered prediction for new patients based on lab results";
-      case "Progress Tracking": // ADDED DESCRIPTION
-        return "Compare current and previous tests to track disease progression";
+        return "Age & gender-adjusted machine learning RA risk scoring";
+      case "Progress Tracking":
+        return "Compare current and baseline laboratory measurements";
       case "Recommendations":
-        return "Personalized health recommendations based on your results";
+        return "Targeted lifestyle, joint preservation, and dietary guidance";
       case "Monitoring":
-        return "Track your health metrics over time";
+        return "Longitudinal health metrics and serial biomarker visualization";
       default:
-        return "Manage your health journey with ArthroCare AI";
+        return "Patient Clinical Dashboard";
     }
   };
 
-  // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading your dashboard...</p>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 border-3 border-teal-700 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Loading Patient Portal...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30">
-      {/* Header */}
-      <motion.header 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed top-0 w-full z-50 backdrop-blur-md border-b border-slate-200/30"
-      >
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center space-x-3"
-            >
-              <div className="w-10 h-10 bg-gradient-to-r from-teal-600 to-teal-700 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AI</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-teal-700 bg-clip-text text-transparent">
-                ArthroCare
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+      
+      {/* Top Clinical Navigation Bar */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 bg-teal-700 rounded-xl flex items-center justify-center text-white shadow-sm">
+              <Activity className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-lg font-bold text-slate-900 tracking-tight">
+                ArthroCare <span className="text-teal-700">AI</span>
               </span>
-            </motion.div>
+              <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Patient Workspace
+              </span>
+            </div>
+          </div>
 
-            {/* Search Bar */}
-            <div className="hidden md:flex items-center space-x-4 flex-1 max-w-md mx-8">
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search dashboard..."
-                  className="w-full pl-12 pr-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300"
-                />
-              </div>
+          <div className="flex items-center space-x-4">
+            <div className="hidden sm:flex items-center space-x-2 text-xs bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+              <Shield className="w-3.5 h-3.5 text-teal-600" />
+              <span className="text-slate-600 font-medium">Patient ID:</span>
+              <span className="font-bold text-slate-800 font-mono">{user.patientId ? user.patientId.substring(0, 10) : 'P-8012'}</span>
             </div>
 
-            {/* User Menu */}
-            <div className="flex items-center space-x-4">
-              <button className="relative p-2 text-slate-600 hover:text-teal-600 transition-colors">
-                <Bell className="w-6 h-6" />
-              </button>
-              
-              <div className="flex items-center space-x-3">
-                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-semibold text-slate-900">{user.name}</p>
-                  <p className="text-xs text-slate-600">{user.patientId}</p>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl flex items-center justify-center text-white font-semibold">
-                  {getUserInitial()}
-                </div>
+            <div className="flex items-center space-x-3 pl-2 border-l border-slate-200">
+              <div className="w-9 h-9 bg-teal-700 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                {getUserInitial()}
+              </div>
+              <div className="hidden md:block text-left">
+                <div className="text-xs font-bold text-slate-900 leading-tight">{user.name}</div>
+                <div className="text-[10px] text-slate-500">{user.email}</div>
               </div>
             </div>
           </div>
+
         </div>
-      </motion.header>
+      </header>
 
-      <div className="pt-20 flex">
+      {/* Main Workspace Layout */}
+      <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col md:flex-row gap-6 p-6">
+        
         {/* Sidebar */}
-        <motion.aside 
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-          className="w-64 bg-white/80 backdrop-blur-md border-r border-slate-200/30 flex flex-col justify-between p-6 h-[calc(100vh-5rem)] sticky top-20"
-        >
-          <div className="flex flex-col gap-6">
-            {/* Welcome Section */}
-            <div className="space-y-2">
-              <motion.h2 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="text-xl font-bold text-slate-900"
-              >
-                Welcome, {getUserFirstName()}!
-              </motion.h2>
-              <p className="text-sm text-slate-600">
-                Patient ID: {user.patientId.substring(0, 8)}...
-              </p>
-            </div>
-
-            {/* Navigation */}
-            <nav className="flex flex-col gap-2">
-              {tabs.map((tab, i) => (
-                <motion.button
-                  key={i}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setSelectedTab(tab.name)}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-left ${
-                    selectedTab === tab.name 
-                      ? 'bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-lg' 
-                      : 'bg-white/50 text-slate-700 hover:bg-white/80 hover:shadow-md'
-                  }`}
-                >
-                  <div className={`${selectedTab === tab.name ? 'text-white' : 'text-teal-600'}`}>
-                    {tab.icon}
-                  </div>
-                  <p className="font-semibold text-sm">{tab.name}</p>
-                </motion.button>
-              ))}
-            </nav>
-          </div>
-
-          {/* Bottom Actions */}
-          <div className="space-y-2">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/50 text-slate-700 hover:bg-white/80 hover:shadow-md transition-all duration-300 w-full"
-            >
-              <Settings className="w-5 h-5 text-slate-600" />
-              <span className="font-medium text-sm">Settings</span>
-            </motion.button>
+        <aside className="w-full md:w-64 shrink-0 flex flex-col justify-between space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 space-y-4">
             
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleSignOut}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 hover:shadow-md transition-all duration-300 w-full"
-            >
-              <LogOut className="w-5 h-5" />
-              <span className="font-medium text-sm">Sign Out</span>
-            </motion.button>
-          </div>
-        </motion.aside>
-
-        {/* Main Content */}
-        <main className="flex-1 p-8 overflow-auto">
-          {/* Content Header */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-slate-900 mb-2">
-                  {selectedTab}
-                </h1>
-                <p className="text-slate-600">
-                  {getTabDescription()}
-                </p>
-              </div>
-              
-              {/* Quick Stats for Progress Tracking */}
-              {selectedTab === "Progress Tracking" && (
-                <div className="flex gap-4">
-                  <div className="bg-teal-50 px-4 py-2 rounded-lg border border-teal-200">
-                    <p className="text-sm text-teal-700 font-medium">Compare Tests</p>
-                    <p className="text-xs text-teal-600">Track disease progression</p>
-                  </div>
-                </div>
-              )}
+            <div className="px-2 py-1">
+              <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Navigation</div>
+              <div className="text-sm font-bold text-slate-900 mt-0.5">Clinical Modules</div>
             </div>
-          </motion.div>
 
-          {/* Main Content Area */}
-          <motion.div
-            key={selectedTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+            <nav className="space-y-1">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = selectedTab === tab.name;
+                return (
+                  <button
+                    key={tab.name}
+                    onClick={() => setSelectedTab(tab.name)}
+                    className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 text-left ${
+                      isActive
+                        ? "bg-teal-700 text-white shadow-sm"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-400"}`} />
+                    <span className="truncate">{tab.name}</span>
+                  </button>
+                );
+              })}
+            </nav>
+
+          </div>
+
+          {/* Bottom Action */}
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4">
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 rounded-xl text-xs font-bold transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out Portal</span>
+            </button>
+          </div>
+        </aside>
+
+        {/* Content Area */}
+        <main className="flex-1 space-y-6">
+          
+          {/* Module Header Card */}
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 flex items-center justify-between">
+            <div>
+              <div className="inline-flex items-center space-x-2 text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-md border border-teal-200/60 mb-2">
+                <Stethoscope className="w-3.5 h-3.5" />
+                <span>ArthroCare Assessment Module</span>
+              </div>
+              <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">{selectedTab}</h1>
+              <p className="text-xs text-slate-500 mt-1">{getTabDescription()}</p>
+            </div>
+          </div>
+
+          {/* Render Active Component */}
+          <div>
             {renderContent()}
-          </motion.div>
+          </div>
+
         </main>
+
       </div>
+
     </div>
   );
 };

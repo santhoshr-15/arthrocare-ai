@@ -1,34 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, Shield } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ShieldCheck, Activity, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/config";
+import { auth, db } from "../firebase/config";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
-import { db } from "../firebase/config";
-
-const NeuroMorphicCard = ({ children, className = "" }) => (
-  <div className={`bg-white rounded-2xl border border-slate-200/60 shadow-sm ${className}`}>
-    {children}
-  </div>
-);
-
-const FloatingElement = ({ delay = 0, children, className = "" }) => (
-  <motion.div
-    initial={{ y: 20, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{
-      duration: 1.5,
-      delay,
-      repeat: Infinity,
-      repeatType: "reverse",
-      ease: "easeInOut"
-    }}
-    className={className}
-  >
-    {children}
-  </motion.div>
-);
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -165,264 +141,178 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 overflow-hidden">
-
-      {/* Background floating shapes */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <FloatingElement delay={0} className="absolute top-20 left-10 w-6 h-6 bg-teal-400 rounded-full opacity-20" />
-        <FloatingElement delay={0.5} className="absolute top-40 right-20 w-8 h-8 bg-sky-300 rounded-full opacity-30" />
-        <FloatingElement delay={1} className="absolute bottom-40 left-20 w-10 h-10 bg-teal-300 rounded-full opacity-25" />
-      </div>
-
-      {/* Navbar */}
-      <motion.header 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed top-0 w-full z-50 backdrop-blur-md"
-      >
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center space-x-3"
-            >
-              <div className="w-10 h-10 bg-gradient-to-r from-teal-600 to-teal-700 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AI</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-teal-700 bg-clip-text text-transparent">
-                ArthroCare
-              </span>
-            </motion.div>
-          </div>
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
+      
+      {/* Top Navbar */}
+      <header className="w-full bg-white border-b border-slate-200 py-3.5 px-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-3">
+            <div className="w-9 h-9 bg-teal-700 rounded-xl flex items-center justify-center text-white shadow-sm">
+              <Activity className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-lg font-bold text-slate-900">ArthroCare <span className="text-teal-700">AI</span></span>
+              <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Clinical Portal</span>
+            </div>
+          </Link>
+          <Link to="/" className="text-xs font-semibold text-slate-500 hover:text-teal-700 transition-colors">
+            Return to Homepage
+          </Link>
         </div>
-      </motion.header>
+      </header>
 
-      {/* MAIN LAYOUT */}
-      <div className="flex min-h-screen items-center justify-center px-4 pt-16">
-        <div className="grid lg:grid-cols-2 gap-12 max-w-7xl w-full items-center">
+      {/* Main Container */}
+      <div className="flex-1 flex items-center justify-center p-6 my-8">
+        <div className="w-full max-w-5xl grid lg:grid-cols-12 gap-8 items-center bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+          
+          {/* Left Column: Clinical Info Panel */}
+          <div className="lg:col-span-6 bg-slate-900 text-white p-8 lg:p-12 flex flex-col justify-between min-h-[460px]">
+            <div>
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-900/60 border border-teal-700/80 text-teal-300 text-xs font-medium mb-6">
+                <ShieldCheck className="w-4 h-4" />
+                <span>Encrypted Health Portal</span>
+              </div>
 
-          {/* LEFT PANEL */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="hidden lg:block space-y-8"
-          >
-
-            {/* Heading */}
-            <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="inline-flex items-center px-4 py-2 rounded-full bg-teal-100 text-teal-700 font-medium text-sm"
-              >
-                🔒 Secure AI Platform
-              </motion.div>
-
-              <h1 className="text-4xl font-bold leading-tight">
-                <span className="bg-gradient-to-r from-teal-600 via-teal-500 to-sky-600 bg-clip-text text-transparent">
-                  Welcome to
-                </span>
-                <br />
-                <span className="text-slate-800">ArthroCare AI</span>
+              <h1 className="text-3xl font-extrabold text-white tracking-tight mb-4">
+                Clinical Decision Support System
               </h1>
 
-              <p className="text-lg text-slate-500 leading-relaxed">
-                AI-powered early detection and personalized health insights for rheumatoid arthritis prevention.
+              <p className="text-slate-300 text-sm leading-relaxed mb-8">
+                Access your personalized rheumatoid arthritis risk assessments, biomarker tracking metrics, and clinical recommendations.
               </p>
+
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3 text-xs text-slate-300">
+                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                  <span>4-Biomarker Analysis (RF, Anti-CCP, CRP, ESR)</span>
+                </div>
+                <div className="flex items-start space-x-3 text-xs text-slate-300">
+                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                  <span>Age & Gender Adjusted ML Risk Scoring</span>
+                </div>
+                <div className="flex items-start space-x-3 text-xs text-slate-300">
+                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                  <span>Longitudinal Trend & Progression Matrix</span>
+                </div>
+              </div>
             </div>
 
-            {/* Image */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="relative rounded-2xl overflow-hidden shadow-2xl"
-            >
-              <img 
-                src="https://image2url.com/images/1763462809734-70bb6d55-ddcc-49f7-9711-6282dada2adb.png"
-                alt="AI Health Analytics Dashboard"
-                className="w-full h-64 object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-            </motion.div>
+            <div className="pt-8 border-t border-slate-800 text-[11px] text-slate-500 flex items-center justify-between">
+              <span>ArthroCare AI Healthcare Suite</span>
+              <span>Secure Authorization</span>
+            </div>
+          </div>
 
-            {/* ❌ STATS REMOVED AS REQUESTED */}
+          {/* Right Column: Login Form */}
+          <div className="lg:col-span-6 p-8 lg:p-10">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Sign In to Account</h2>
+              <p className="text-slate-500 text-xs mt-1">Enter your clinical credentials to continue.</p>
+            </div>
 
-          </motion.div>
-
-          {/* RIGHT LOGIN CARD */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="flex justify-center lg:justify-end"
-          >
-            <NeuroMorphicCard className="w-full max-w-md p-8">
-              <div className="text-center mb-8">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring" }}
-                  className="w-16 h-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                >
-                  <Shield className="w-8 h-8 text-white" />
-                </motion.div>
-                <h2 className="text-3xl font-bold text-slate-800">Welcome Back</h2>
-                <p className="text-slate-500 mt-2">
-                  Sign in to your ArthroCare account
-                </p>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              
+              {/* Email Input */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <input
+                    type="email"
+                    placeholder="patient@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-600 transition-all"
+                  />
+                </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Email */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Email Address *
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                    <input
-                      type="email"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300"
-                    />
-                  </div>
-                </div>
-
-                {/* Password */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Password *
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="w-full pl-12 pr-12 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Remember + Forgot */}
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        checked={remember}
-                        onChange={() => setRemember(!remember)}
-                        className="sr-only"
-                      />
-                      <div className={`w-5 h-5 border-2 rounded-md transition-all duration-200 ${
-                        remember 
-                          ? 'bg-teal-600 border-teal-600' 
-                          : 'bg-white border-slate-300'
-                      }`}>
-                        {remember && (
-                          <motion.svg
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="w-3 h-3 text-white mx-auto mt-0.5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </motion.svg>
-                        )}
-                      </div>
-                    </div>
-                    <span className="text-sm text-slate-700">Remember me</span>
-                  </label>
-                  <Link
-                    to="/forgot"
-                    className="text-sm font-medium text-teal-600 hover:text-teal-500 transition-colors"
+              {/* Password Input */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full pl-10 pr-10 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-600 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                   >
-                    Forgot password?
-                  </Link>
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
+              </div>
 
-                {/* Error */}
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"
-                  >
-                    {error}
-                  </motion.div>
+              {/* Remember + Forgot */}
+              <div className="flex items-center justify-between text-xs pt-1">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    onChange={() => setRemember(!remember)}
+                    className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4"
+                  />
+                  <span className="text-slate-600 font-medium">Keep me signed in</span>
+                </label>
+              </div>
+
+              {/* Error Alert */}
+              {error && (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-start space-x-2">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 px-4 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm rounded-xl shadow-sm transition-all duration-150 flex items-center justify-center space-x-2 disabled:opacity-50"
+              >
+                {loading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Authenticating...</span>
+                  </div>
+                ) : (
+                  <>
+                    <span>Sign In to Portal</span>
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </>
                 )}
+              </button>
 
-                {/* Submit */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-4 px-6 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Signing In...</span>
-                    </div>
-                  ) : (
-                    "Sign In to Dashboard"
-                  )}
-                </motion.button>
-              </form>
+            </form>
 
-              {/* Create account */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="mt-8 text-center"
-              >
-                <p className="text-slate-500">
-                  Don't have an account?{" "}
-                  <Link
-                    to="/register"
-                    className="font-semibold text-teal-600 hover:text-teal-500 transition-colors"
-                  >
-                    Create account
-                  </Link>
-                </p>
-              </motion.div>
-
-              {/* Security Badge */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                className="mt-6 flex items-center justify-center space-x-2 text-xs text-slate-500"
-              >
-                <Shield className="w-4 h-4" />
-                <span>Protected by end-to-end encryption</span>
-              </motion.div>
-
-            </NeuroMorphicCard>
-          </motion.div>
+            <div className="mt-6 pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
+              New patient or clinician?{" "}
+              <Link to="/register" className="font-bold text-teal-700 hover:text-teal-800 transition-colors">
+                Create an account
+              </Link>
+            </div>
+          </div>
 
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="py-4 text-center text-xs text-slate-400 border-t border-slate-200">
+        © {new Date().getFullYear()} ArthroCare AI System. Confidential & HIPAA Compliant Data Infrastructure.
+      </footer>
+
     </div>
   );
 };

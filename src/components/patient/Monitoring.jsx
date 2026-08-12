@@ -17,13 +17,13 @@ import {
   TrendingUp, 
   Activity, 
   Calendar, 
-  TestTube, 
+  FlaskConical, 
   AlertTriangle,
-  CheckCircle,
+  CheckCircle2,
   RefreshCw,
   User,
   Stethoscope,
-  Heart
+  BarChart3
 } from 'lucide-react';
 import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { auth, db } from "../../firebase/config";
@@ -74,20 +74,18 @@ const Monitoring = () => {
       const snapshot = await getDocs(labQuery);
 
       if (snapshot.empty) {
-        console.log("No lab data found for monitoring");
         setPredictionHistory([]);
         setLoading(false);
         return;
       }
 
       const history = [];
+      const backendURL = import.meta.env.VITE_BACKEND_URL;
       
-      // Process each lab entry with actual prediction
-      for (const doc of snapshot.docs) {
-        const labData = doc.data();
+      for (const docSnapshot of snapshot.docs) {
+        const labData = docSnapshot.data();
         
         try {
-          // Prepare payload with all 6 factors
           const payload = {
             age: parseFloat(labData.userAge),
             gender: labData.userGender,
@@ -97,9 +95,6 @@ const Monitoring = () => {
             erythrocyteSedimentationRate: parseFloat(labData.erythrocyteSedimentationRate)
           };
 
-          console.log("🚀 Sending prediction request for:", payload);
-
-          const backendURL = import.meta.env.VITE_BACKEND_URL;
           const response = await fetch(`${backendURL}/api/predict-ra-risk`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -110,7 +105,7 @@ const Monitoring = () => {
             const prediction = await response.json();
             
             history.push({
-              id: doc.id,
+              id: docSnapshot.id,
               date: new Date(labData.createdAt).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'short',
@@ -121,7 +116,6 @@ const Monitoring = () => {
               risk_level: prediction.risk_level,
               risk_probability: prediction.risk_probability,
               binary_prediction: prediction.binary_prediction,
-              // All 6 factors used for prediction
               factors: {
                 age: payload.age,
                 gender: payload.gender,
@@ -133,20 +127,15 @@ const Monitoring = () => {
               recommendations: prediction.recommendations,
               full_prediction: prediction
             });
-
-            console.log("✅ Prediction added to history:", prediction.risk_score);
-          } else {
-            console.error("❌ Prediction failed for lab entry:", doc.id);
           }
-        } catch (error) {
-          console.error("❌ Error processing lab entry:", error);
+        } catch (err) {
+          console.error("Error processing lab entry:", err);
         }
       }
 
-      console.log("✅ Final prediction history:", history);
       setPredictionHistory(history);
-    } catch (error) {
-      console.error("❌ Error loading prediction history:", error);
+    } catch (err) {
+      console.error("Error loading prediction history:", err);
     } finally {
       setLoading(false);
     }
@@ -168,100 +157,86 @@ const Monitoring = () => {
     }
   });
 
-  // Risk Score Chart Data - USING REAL PREDICTION DATA
   const riskScoreChartData = {
     labels: filteredHistory.map(entry => entry.date),
     datasets: [
       {
         label: 'RA Risk Score (%)',
         data: filteredHistory.map(entry => entry.risk_score),
-        borderColor: 'rgb(239, 68, 68)',
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-        borderWidth: 3,
+        borderColor: '#0f766e',
+        backgroundColor: 'rgba(15, 118, 110, 0.08)',
+        borderWidth: 2.5,
         fill: true,
-        tension: 0.4,
+        tension: 0.3,
         pointBackgroundColor: filteredHistory.map(entry => 
-          entry.risk_level === 'High' ? 'rgb(239, 68, 68)' :
-          entry.risk_level === 'Moderate' ? 'rgb(249, 115, 22)' :
-          entry.risk_level === 'Low' ? 'rgb(234, 179, 8)' :
-          'rgb(34, 197, 94)'
+          entry.risk_level === 'High' ? '#dc2626' :
+          entry.risk_level === 'Moderate' ? '#ea580c' :
+          entry.risk_level === 'Low' ? '#d97706' :
+          '#16a34a'
         ),
-        pointBorderColor: '#fff',
+        pointBorderColor: '#ffffff',
         pointBorderWidth: 2,
-        pointRadius: 6,
-        pointHoverRadius: 8
+        pointRadius: 5
       }
     ]
   };
 
-  // Lab Values Chart Data - USING REAL LAB VALUES
   const labValuesChartData = {
     labels: filteredHistory.map(entry => entry.date),
     datasets: [
       {
         label: 'Rheumatoid Factor (RF)',
         data: filteredHistory.map(entry => entry.factors.rheumatoidFactor),
-        borderColor: 'rgb(139, 69, 255)',
-        backgroundColor: 'rgba(139, 69, 255, 0.1)',
-        borderWidth: 3,
-        fill: false,
-        tension: 0.4
+        borderColor: '#7c3aed',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.3
       },
       {
-        label: 'Anti-CCP',
+        label: 'Anti-CCP Antibodies',
         data: filteredHistory.map(entry => entry.factors.antiCCP),
-        borderColor: 'rgb(255, 69, 139)',
-        backgroundColor: 'rgba(255, 69, 139, 0.1)',
-        borderWidth: 3,
-        fill: false,
-        tension: 0.4
+        borderColor: '#db2777',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.3
       },
       {
         label: 'C-Reactive Protein (CRP)',
         data: filteredHistory.map(entry => entry.factors.cReactiveProtein),
-        borderColor: 'rgb(69, 139, 255)',
-        backgroundColor: 'rgba(69, 139, 255, 0.1)',
-        borderWidth: 3,
-        fill: false,
-        tension: 0.4
+        borderColor: '#0284c7',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.3
       },
       {
-        label: 'ESR',
+        label: 'ESR Rate',
         data: filteredHistory.map(entry => entry.factors.erythrocyteSedimentationRate),
-        borderColor: 'rgb(255, 165, 69)',
-        backgroundColor: 'rgba(255, 165, 69, 0.1)',
-        borderWidth: 3,
-        fill: false,
-        tension: 0.4
+        borderColor: '#d97706',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.3
       }
     ]
   };
 
-  // Risk Level Distribution - USING REAL RISK LEVELS
   const riskLevelDistribution = {
     labels: ['Very Low', 'Low', 'Moderate', 'High'],
     datasets: [
       {
-        label: 'Risk Level Distribution',
+        label: 'Frequency',
         data: [
-          filteredHistory.filter(entry => entry.risk_level === 'Very Low').length,
-          filteredHistory.filter(entry => entry.risk_level === 'Low').length,
-          filteredHistory.filter(entry => entry.risk_level === 'Moderate').length,
-          filteredHistory.filter(entry => entry.risk_level === 'High').length
+          filteredHistory.filter(e => e.risk_level === 'Very Low').length,
+          filteredHistory.filter(e => e.risk_level === 'Low').length,
+          filteredHistory.filter(e => e.risk_level === 'Moderate').length,
+          filteredHistory.filter(e => e.risk_level === 'High').length
         ],
         backgroundColor: [
-          'rgba(34, 197, 94, 0.8)',
-          'rgba(234, 179, 8, 0.8)',
-          'rgba(249, 115, 22, 0.8)',
-          'rgba(239, 68, 68, 0.8)'
+          'rgba(22, 163, 74, 0.8)',
+          'rgba(217, 119, 6, 0.8)',
+          'rgba(234, 88, 12, 0.8)',
+          'rgba(220, 38, 38, 0.8)'
         ],
-        borderColor: [
-          'rgb(34, 197, 94)',
-          'rgb(234, 179, 8)',
-          'rgb(249, 115, 22)',
-          'rgb(239, 68, 68)'
-        ],
-        borderWidth: 2
+        borderRadius: 8
       }
     ]
   };
@@ -270,345 +245,194 @@ const Monitoring = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: 'top',
-      },
-      tooltip: {
-        mode: 'index',
-        intersect: false,
-        callbacks: {
-          label: function(context) {
-            let label = context.dataset.label || '';
-            if (label) {
-              label += ': ';
-            }
-            if (context.parsed.y !== null) {
-              label += context.parsed.y + '%';
-            }
-            return label;
-          }
-        }
-      }
+      legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } }
     },
     scales: {
-      y: {
-        beginAtZero: true,
-        max: 100,
-        title: {
-          display: true,
-          text: 'Risk Score (%)'
-        }
-      }
-    }
-  };
-
-  const labChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      tooltip: {
-        mode: 'index',
-        intersect: false,
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Lab Values'
-        }
-      }
-    }
-  };
-
-  const getRiskLevelColor = (level) => {
-    switch (level) {
-      case 'Very Low': return 'text-green-600 bg-green-50 border-green-200';
-      case 'Low': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'Moderate': return 'text-orange-600 bg-orange-50 border-orange-200';
-      case 'High': return 'text-red-600 bg-red-50 border-red-200';
-      default: return 'text-slate-600 bg-slate-50 border-slate-200';
-    }
-  };
-
-  const getRiskIcon = (risk) => {
-    switch (risk) {
-      case 'Very Low': return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case 'Low': return <CheckCircle className="w-4 h-4 text-yellow-600" />;
-      case 'Moderate': return <AlertTriangle className="w-4 h-4 text-orange-600" />;
-      case 'High': return <AlertTriangle className="w-4 h-4 text-red-600" />;
-      default: return <Activity className="w-4 h-4 text-slate-600" />;
+      y: { beginAtZero: true, max: 100, ticks: { font: { size: 11 } } },
+      x: { ticks: { font: { size: 11 } } }
     }
   };
 
   const refreshData = () => {
-    if (currentUser) {
-      loadPredictionHistory(currentUser.uid);
-    }
+    if (currentUser) loadPredictionHistory(currentUser.uid);
   };
 
   if (loading) {
     return (
-      <CardTransition className="bg-white p-8 rounded-2xl shadow-lg border text-center">
-        <div className="flex flex-col items-center py-12">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600 mb-4"></div>
-          <h3 className="text-xl font-semibold">Loading Monitoring Data</h3>
-          <p className="text-slate-600 mt-2">Processing your historical predictions...</p>
-        </div>
+      <CardTransition className="bg-white p-8 rounded-2xl border border-slate-200/90 shadow-sm text-center">
+        <div className="w-8 h-8 border-3 border-teal-700 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Generating Serial Measurement Analytics...</p>
       </CardTransition>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">RA Risk Monitoring</h1>
-          <p className="text-slate-600">Track your RA risk predictions based on 6 clinical factors</p>
+    <CardTransition className="space-y-6">
+      
+      {/* Header Bar */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-teal-700 rounded-xl flex items-center justify-center text-white shadow-sm">
+            <Activity className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">Longitudinal Risk & Biomarker Analytics</h2>
+            <p className="text-xs text-slate-500">Track changes across serial blood tests over time</p>
+          </div>
         </div>
-        <div className="flex items-center gap-4 mt-4 md:mt-0">
-          <button
-            onClick={refreshData}
-            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh Data
-          </button>
+
+        <button
+          onClick={refreshData}
+          className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-semibold rounded-xl text-xs transition-colors flex items-center space-x-2 shadow-sm"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          <span>Refresh Data</span>
+        </button>
+      </div>
+
+      {/* Metric Stat Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm space-y-1">
+          <span className="text-slate-500 font-medium">Serial Tests Recorded</span>
+          <div className="text-2xl font-extrabold text-slate-900">{predictionHistory.length}</div>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm space-y-1">
+          <span className="text-slate-500 font-medium">Latest Risk Score</span>
+          <div className="text-2xl font-extrabold text-teal-700">{predictionHistory[0]?.risk_score || 0}%</div>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm space-y-1">
+          <span className="text-slate-500 font-medium">Current Risk Band</span>
+          <div className="text-sm font-extrabold text-slate-900 mt-1">{predictionHistory[0]?.risk_level || 'N/A'}</div>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm space-y-1">
+          <span className="text-slate-500 font-medium">Last Assessed Date</span>
+          <div className="text-xs font-bold text-slate-800 mt-1">{predictionHistory[0]?.date || 'N/A'}</div>
         </div>
       </div>
 
-      {/* Statistics Cards with REAL DATA */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <CardTransition className="bg-white p-4 rounded-xl shadow-lg border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-slate-600">Total Predictions</p>
-              <p className="text-2xl font-bold text-slate-900">{predictionHistory.length}</p>
-            </div>
-            <Stethoscope className="w-8 h-8 text-teal-600" />
-          </div>
-        </CardTransition>
-
-        <CardTransition className="bg-white p-4 rounded-xl shadow-lg border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-slate-600">Current Risk Score</p>
-              <p className="text-2xl font-bold text-slate-900">
-                {predictionHistory[0]?.risk_score || 0}%
-              </p>
-            </div>
-            <TrendingUp className="w-8 h-8 text-green-600" />
-          </div>
-        </CardTransition>
-
-        <CardTransition className="bg-white p-4 rounded-xl shadow-lg border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-slate-600">Risk Level</p>
-              <p className="text-xl font-bold text-slate-900">
-                {predictionHistory[0]?.risk_level || 'N/A'}
-              </p>
-            </div>
-            {getRiskIcon(predictionHistory[0]?.risk_level)}
-          </div>
-        </CardTransition>
-
-        <CardTransition className="bg-white p-4 rounded-xl shadow-lg border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-slate-600">Last Prediction</p>
-              <p className="text-lg font-bold text-slate-900">
-                {predictionHistory[0]?.date || 'N/A'}
-              </p>
-            </div>
-            <Calendar className="w-8 h-8 text-teal-600" />
-          </div>
-        </CardTransition>
-      </div>
-
-      {/* Filters */}
-      <CardTransition className="bg-white p-4 rounded-xl shadow-lg border">
-        <div className="flex flex-wrap gap-4 items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-slate-700">Time Range:</span>
-          </div>
-          {['week', 'month', 'all'].map(range => (
+      {/* Filter Controls */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 flex flex-wrap items-center justify-between gap-4 text-xs">
+        <div className="flex items-center space-x-2">
+          <span className="font-bold text-slate-700">Time Range:</span>
+          {['week', 'month', 'all'].map(r => (
             <button
-              key={range}
-              onClick={() => setTimeRange(range)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                timeRange === range
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              key={r}
+              onClick={() => setTimeRange(r)}
+              className={`px-3 py-1.5 rounded-lg font-semibold capitalize transition-all ${
+                timeRange === r ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              {range.charAt(0).toUpperCase() + range.slice(1)}
-            </button>
-          ))}
-
-          <div className="flex items-center gap-2 ml-4">
-            <span className="text-sm font-medium text-slate-700">View:</span>
-          </div>
-          {['risk_score', 'lab_values'].map(metric => (
-            <button
-              key={metric}
-              onClick={() => setSelectedMetric(metric)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedMetric === metric
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              {metric === 'risk_score' ? 'Risk Score' : 'Lab Values'}
+              {r}
             </button>
           ))}
         </div>
-      </CardTransition>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Main Chart */}
-        <CardTransition className="bg-white p-6 rounded-xl shadow-lg border">
-          <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-teal-600" />
-            {selectedMetric === 'risk_score' ? 'RA Risk Score Trend' : 'Lab Values Trend'}
-          </h3>
-          <p className="text-sm text-slate-600 mb-4">
-            {selectedMetric === 'risk_score' 
-              ? 'Based on AI analysis of your 6 clinical factors' 
-              : 'Actual lab values used for risk prediction'
-            }
-          </p>
-          <div className="h-80">
+        <div className="flex items-center space-x-2">
+          <span className="font-bold text-slate-700">Display Metric:</span>
+          {['risk_score', 'lab_values'].map(m => (
+            <button
+              key={m}
+              onClick={() => setSelectedMetric(m)}
+              className={`px-3 py-1.5 rounded-lg font-semibold capitalize transition-all ${
+                selectedMetric === m ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              {m === 'risk_score' ? 'Risk Trajectory' : 'Biomarker Levels'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid lg:grid-cols-12 gap-6">
+        
+        {/* Main Line Chart */}
+        <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
+          <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
+            <TrendingUp className="w-4 h-4 text-teal-700" />
+            <h3 className="text-sm font-bold text-slate-900">
+              {selectedMetric === 'risk_score' ? 'Longitudinal Risk Score Trajectory' : 'Serial Lab Biomarker Concentrations'}
+            </h3>
+          </div>
+
+          <div className="h-72">
             {selectedMetric === 'risk_score' ? (
               <Line data={riskScoreChartData} options={chartOptions} />
             ) : (
-              <Line data={labValuesChartData} options={labChartOptions} />
+              <Line data={labValuesChartData} options={chartOptions} />
             )}
           </div>
-        </CardTransition>
+        </div>
 
-        {/* Risk Distribution */}
-        <CardTransition className="bg-white p-6 rounded-xl shadow-lg border">
-          <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Activity className="w-5 h-5 text-green-600" />
-            Risk Level Distribution
-          </h3>
-          <p className="text-sm text-slate-600 mb-4">
-            Distribution of your historical risk levels
-          </p>
-          <div className="h-80">
-            <Bar 
-              data={riskLevelDistribution} 
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false
-                  }
-                }
-              }} 
-            />
+        {/* Risk Distribution Bar Chart */}
+        <div className="lg:col-span-4 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
+          <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
+            <BarChart3 className="w-4 h-4 text-teal-700" />
+            <h3 className="text-sm font-bold text-slate-900">Risk Band Frequency</h3>
           </div>
-        </CardTransition>
+
+          <div className="h-72">
+            <Bar data={riskLevelDistribution} options={chartOptions} />
+          </div>
+        </div>
+
       </div>
 
-      {/* Detailed Prediction History */}
-      <CardTransition className="bg-white p-6 rounded-xl shadow-lg border">
-        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-teal-600" />
-          Detailed Prediction History
-        </h3>
-        <p className="text-sm text-slate-600 mb-4">
-          All predictions based on your actual lab values and personal factors
-        </p>
-        
+      {/* Historical Data Table */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <h3 className="text-sm font-bold text-slate-900">Historical Serology & Risk Records</h3>
+          <span className="text-xs text-slate-500">{filteredHistory.length} total entries</span>
+        </div>
+
         {filteredHistory.length === 0 ? (
-          <div className="text-center py-8">
-            <TestTube className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-            <p className="text-slate-600">No prediction data available for the selected time range.</p>
-            <p className="text-sm text-slate-500 mt-2">Submit lab results to see your monitoring data.</p>
+          <div className="text-center py-8 text-xs text-slate-500">
+            No lab test records found for the selected time filter.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Date</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Risk Score</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Risk Level</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Probability</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Age</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Gender</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">RF</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">Anti-CCP</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">CRP</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-700">ESR</th>
+                <tr className="border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                  <th className="py-2.5 px-3">Date</th>
+                  <th className="py-2.5 px-3">Risk Score</th>
+                  <th className="py-2.5 px-3">Risk Band</th>
+                  <th className="py-2.5 px-3">RF (IU/mL)</th>
+                  <th className="py-2.5 px-3">Anti-CCP (U/mL)</th>
+                  <th className="py-2.5 px-3">CRP (mg/L)</th>
+                  <th className="py-2.5 px-3">ESR (mm/hr)</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {filteredHistory.map((entry) => (
-                  <tr key={entry.id} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="py-3 px-4 text-sm text-slate-900">{entry.date}</td>
-                    <td className="py-3 px-4 text-sm font-semibold text-slate-900">
-                      {entry.risk_score}%
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRiskLevelColor(entry.risk_level)}`}>
-                        {getRiskIcon(entry.risk_level)}
-                        <span className="ml-1">{entry.risk_level}</span>
+                  <tr key={entry.id} className="hover:bg-slate-50/80">
+                    <td className="py-2.5 px-3 font-semibold text-slate-900">{entry.date}</td>
+                    <td className="py-2.5 px-3 font-bold text-teal-700">{entry.risk_score}%</td>
+                    <td className="py-2.5 px-3">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${
+                        entry.risk_level === 'High' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                        entry.risk_level === 'Moderate' ? 'bg-amber-50 text-amber-800 border border-amber-200' :
+                        'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                      }`}>
+                        {entry.risk_level}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-sm text-slate-900">{entry.risk_probability}</td>
-                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.age}</td>
-                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.gender}</td>
-                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.rheumatoidFactor}</td>
-                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.antiCCP}</td>
-                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.cReactiveProtein}</td>
-                    <td className="py-3 px-4 text-sm text-slate-900">{entry.factors.erythrocyteSedimentationRate}</td>
+                    <td className="py-2.5 px-3 font-mono text-slate-700">{entry.factors.rheumatoidFactor}</td>
+                    <td className="py-2.5 px-3 font-mono text-slate-700">{entry.factors.antiCCP}</td>
+                    <td className="py-2.5 px-3 font-mono text-slate-700">{entry.factors.cReactiveProtein}</td>
+                    <td className="py-2.5 px-3 font-mono text-slate-700">{entry.factors.erythrocyteSedimentationRate}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
-      </CardTransition>
+      </div>
 
-      {/* Factors Information */}
-      <CardTransition className="bg-teal-50 p-6 rounded-xl border border-teal-200">
-        <h3 className="text-lg font-semibold mb-3 text-teal-900 flex items-center gap-2">
-          <User className="w-5 h-5" />
-          Prediction Factors Used
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-teal-800">
-          <div>
-            <p className="font-semibold">Personal Factors:</p>
-            <ul className="list-disc list-inside mt-1 space-y-1">
-              <li>Age</li>
-              <li>Gender</li>
-            </ul>
-          </div>
-          <div>
-            <p className="font-semibold">Lab Markers:</p>
-            <ul className="list-disc list-inside mt-1 space-y-1">
-              <li>Rheumatoid Factor (RF)</li>
-              <li>Anti-CCP Antibodies</li>
-              <li>C-Reactive Protein (CRP)</li>
-              <li>Erythrocyte Sedimentation Rate (ESR)</li>
-            </ul>
-          </div>
-        </div>
-        <p className="text-sm text-teal-700 mt-3">
-          All 6 factors are processed by the AI model to generate your RA risk score.
-        </p>
-      </CardTransition>
-    </div>
+    </CardTransition>
   );
 };
 

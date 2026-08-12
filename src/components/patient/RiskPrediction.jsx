@@ -2,18 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   AlertTriangle, 
-  CheckCircle, 
+  CheckCircle2, 
   AlertCircle, 
   TrendingUp, 
   Activity, 
   Stethoscope, 
-  Heart, 
   RefreshCw,
-  User,
-  TestTube,
-  Calendar,
-  Activity as ActivityIcon,
-  Shield
+  FlaskConical,
+  ShieldCheck,
+  FileSpreadsheet,
+  Info
 } from 'lucide-react';
 import { collection, query, where, getDocs, orderBy, limit } from "firebase/firestore";
 import { auth, db } from "../../firebase/config";
@@ -33,7 +31,6 @@ const RiskPrediction = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user);
-        console.log("✅ Authenticated user:", user.uid);
       } else {
         setError('Please log in to view predictions.');
         setCurrentUser(null);
@@ -68,7 +65,7 @@ const RiskPrediction = () => {
       const snapshot = await getDocs(labQuery);
 
       if (snapshot.empty) {
-        setError('No lab data found. Please submit your lab test results.');
+        setError('No lab measurement records found. Please enter lab test results first.');
         setHasLabData(false);
         setLoading(false);
         return;
@@ -87,7 +84,6 @@ const RiskPrediction = () => {
       };
 
       console.log("🚀 Sending payload:", payload);
-      console.log("🌐 Backend URL:", `${backendURL}/api/predict-ra-risk`);
 
       const response = await fetch(`${backendURL}/api/predict-ra-risk`, {
         method: 'POST',
@@ -106,249 +102,202 @@ const RiskPrediction = () => {
       setPredictionData(result);
     } catch (err) {
       console.error("❌ Prediction error:", err);
-      setError(err.message || 'Unable to load prediction.');
+      setError(err.message || 'Unable to load prediction report.');
     } finally {
       setLoading(false);
     }
   };
 
-  const getRiskColor = (risk) => ({
-    "Very Low": "from-green-500 to-green-600",
-    "Low": "from-yellow-500 to-yellow-600",
-    "Moderate": "from-orange-500 to-orange-600",
-    "High": "from-red-500 to-red-600"
-  }[risk] || "from-slate-500 to-slate-600");
-
-  const getRiskIcon = (risk) => {
+  const getRiskBadge = (risk) => {
     switch (risk) {
-      case 'Very Low': return <CheckCircle className="w-8 h-8 text-green-600" />;
-      case 'Low': return <CheckCircle className="w-8 h-8 text-yellow-600" />;
-      case 'Moderate': return <AlertCircle className="w-8 h-8 text-orange-600" />;
-      case 'High': return <AlertTriangle className="w-8 h-8 text-red-600" />;
-      default: return <Activity className="w-8 h-8 text-slate-600" />;
+      case 'Very Low':
+        return {
+          bg: "bg-emerald-50 text-emerald-800 border-emerald-200",
+          bar: "bg-emerald-600",
+          icon: <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+        };
+      case 'Low':
+        return {
+          bg: "bg-amber-50 text-amber-800 border-amber-200",
+          bar: "bg-amber-500",
+          icon: <CheckCircle2 className="w-5 h-5 text-amber-600" />
+        };
+      case 'Moderate':
+        return {
+          bg: "bg-orange-50 text-orange-800 border-orange-200",
+          bar: "bg-orange-500",
+          icon: <AlertCircle className="w-5 h-5 text-orange-600" />
+        };
+      case 'High':
+        return {
+          bg: "bg-rose-50 text-rose-800 border-rose-200",
+          bar: "bg-rose-600",
+          icon: <AlertTriangle className="w-5 h-5 text-rose-600" />
+        };
+      default:
+        return {
+          bg: "bg-slate-50 text-slate-800 border-slate-200",
+          bar: "bg-slate-500",
+          icon: <Activity className="w-5 h-5 text-slate-600" />
+        };
     }
   };
 
-  const getRiskBorderColor = (risk) => ({
-    "Very Low": "border-green-200",
-    "Low": "border-yellow-200",
-    "Moderate": "border-orange-200",
-    "High": "border-red-200"
-  }[risk] || "border-slate-200");
-
-  const getRiskBgColor = (risk) => ({
-    "Very Low": "bg-green-50",
-    "Low": "bg-yellow-50",
-    "Moderate": "bg-orange-50",
-    "High": "bg-red-50"
-  }[risk] || "bg-slate-50");
-
   if (loading) return (
-    <CardTransition className="bg-white p-8 rounded-2xl shadow-lg border text-center">
-      <div className="flex flex-col items-center py-12">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600 mb-4"></div>
-        <h3 className="text-xl font-semibold">Analyzing Your Risk</h3>
-        <p className="text-slate-600 mt-2">Processing your lab results with AI...</p>
+    <CardTransition className="bg-white p-8 rounded-2xl border border-slate-200/90 shadow-sm text-center">
+      <div className="flex flex-col items-center py-12 space-y-3">
+        <div className="w-10 h-10 border-3 border-teal-700 border-t-transparent rounded-full animate-spin"></div>
+        <h3 className="text-base font-bold text-slate-900">Running Machine Learning Model</h3>
+        <p className="text-xs text-slate-500">Evaluating age & gender adjusted serology thresholds...</p>
       </div>
     </CardTransition>
   );
 
   if (error) return (
-    <CardTransition className="bg-white p-8 rounded-2xl shadow-lg border text-center">
-      <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
-      <h3 className="text-xl font-semibold text-red-700 mb-2">Unable to Load Prediction</h3>
-      <p className="text-slate-600 mb-4">{error}</p>
+    <CardTransition className="bg-white p-8 rounded-2xl border border-slate-200/90 shadow-sm text-center">
+      <AlertCircle className="w-12 h-12 text-rose-600 mx-auto mb-4" />
+      <h3 className="text-lg font-bold text-rose-800 mb-2">Unable to Generate Risk Report</h3>
+      <p className="text-xs text-slate-600 max-w-md mx-auto mb-6">{error}</p>
       <button
         onClick={loadLatestLabDataAndPredict}
-        className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors flex items-center gap-2 mx-auto"
+        className="px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-xl text-xs transition-colors inline-flex items-center space-x-2 shadow-sm mx-auto"
       >
-        <RefreshCw className="w-4 h-4" /> Try Again
+        <RefreshCw className="w-4 h-4" />
+        <span>Retry Analysis</span>
       </button>
-      {error.includes('5000') && (
-        <div className="text-sm text-slate-500 bg-slate-50 p-3 mt-3 rounded-lg">
-          💡 Make sure backend is running:<br />
-          <code className="text-xs bg-slate-200 px-2 py-1 rounded">python app.py</code>
-        </div>
-      )}
     </CardTransition>
   );
 
-  if (!hasLabData && !predictionData)
-    return (
-      <CardTransition className="bg-white p-8 rounded-2xl shadow-lg border text-center">
-        <Stethoscope className="w-16 h-16 text-slate-400 mb-4" />
-        <h3 className="text-xl font-semibold">No Lab Data Found</h3>
-        <p className="text-slate-600 mb-6">Submit your test results to get a prediction.</p>
-      </CardTransition>
-    );
+  if (!hasLabData && !predictionData) return (
+    <CardTransition className="bg-white p-8 rounded-2xl border border-slate-200/90 shadow-sm text-center space-y-4">
+      <Stethoscope className="w-12 h-12 text-slate-400 mx-auto" />
+      <h3 className="text-lg font-bold text-slate-900">No Lab Biomarkers Recorded</h3>
+      <p className="text-xs text-slate-500 max-w-sm mx-auto">Please enter your serological laboratory measurements first to calculate RA risk probability.</p>
+    </CardTransition>
+  );
+
+  const riskBadge = getRiskBadge(predictionData.risk_level);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">RA Risk Prediction</h1>
-        <p className="text-slate-600">AI-powered analysis of your lab results</p>
-      </div>
-
-      {/* Main Risk Card */}
-      <CardTransition className="bg-white p-8 rounded-2xl shadow-lg border">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold mb-2">Your Rheumatoid Arthritis Risk</h2>
-          <p className="text-slate-600">AI prediction based on your lab data</p>
-        </div>
-
-        {/* Risk Level */}
-        <div className="flex flex-col items-center mb-8">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 200 }}
-            className={`p-8 rounded-full bg-gradient-to-r ${getRiskColor(predictionData.risk_level)} w-48 h-48 flex items-center justify-center mb-6 shadow-lg`}
-          >
-            <div className="text-center text-white">
-              {getRiskIcon(predictionData.risk_level)}
-              <div className="text-2xl font-bold mt-2">{predictionData.risk_level}</div>
-              <div className="text-sm opacity-90">{predictionData.risk_score}% Risk</div>
+    <CardTransition className="space-y-6">
+      
+      {/* Risk Score Summary Card */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-slate-100 pb-6 mb-6 gap-4">
+          <div>
+            <div className="inline-flex items-center space-x-2 text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-md border border-teal-200/60 mb-2">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Diagnostic Risk Probability Report</span>
             </div>
-          </motion.div>
+            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">Rheumatoid Arthritis Risk Profile</h2>
+            <p className="text-xs text-slate-500 mt-1">Multi-factor Machine Learning output with physiological baselines</p>
+          </div>
 
-          {/* Probability Score */}
-          <div className="text-center">
-            <p className="text-lg text-slate-700 mb-2">
-              Probability: <strong>{predictionData.risk_probability}</strong>
-            </p>
-            <p className="text-sm text-slate-500">
-              Binary Prediction: <strong>{predictionData.binary_prediction === 1 ? 'RA Positive' : 'RA Negative'}</strong>
-            </p>
+          <div className="flex items-center space-x-3">
+            <span className={`inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-bold border ${riskBadge.bg}`}>
+              {riskBadge.icon}
+              <span>Risk Classification: {predictionData.risk_level}</span>
+            </span>
           </div>
         </div>
 
-        {/* Recommendations */}
-        <div className={`border-l-4 ${getRiskBorderColor(predictionData.risk_level)} ${getRiskBgColor(predictionData.risk_level)} p-6 rounded-lg mb-6`}>
-          <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <AlertCircle className="w-5 h-5" />
-            Assessment & Recommendations
-          </h3>
+        {/* Gauge Bar & Numerical Score */}
+        <div className="grid md:grid-cols-12 gap-8 items-center bg-slate-50/70 p-6 rounded-xl border border-slate-200">
+          
+          <div className="md:col-span-5 text-center md:text-left space-y-2">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Calculated Risk Index</div>
+            <div className="text-5xl font-extrabold text-slate-900 tracking-tight">
+              {predictionData.risk_score}<span className="text-2xl text-slate-500">%</span>
+            </div>
+            <div className="text-xs text-slate-600 font-medium">
+              Probability Ratio: <span className="font-bold text-slate-900">{predictionData.risk_probability}</span>
+            </div>
+            <div className="text-xs text-slate-500">
+              Binary Model Output: <span className="font-bold text-slate-800">{predictionData.binary_prediction === 1 ? 'Positive Sign' : 'Negative Sign'}</span>
+            </div>
+          </div>
+
+          <div className="md:col-span-7 space-y-3">
+            <div className="flex justify-between items-center text-xs font-semibold text-slate-600">
+              <span>Very Low (0-40%)</span>
+              <span>Low (40-65%)</span>
+              <span>Moderate (65-85%)</span>
+              <span>High (85-100%)</span>
+            </div>
+            <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden flex">
+              <div className={`h-full ${riskBadge.bar} transition-all duration-500`} style={{ width: `${Math.max(predictionData.risk_score, 4)}%` }} />
+            </div>
+            <div className="text-[11px] text-slate-500 text-right">
+              Assessed on 4-biomarker quantitative serology panel
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Clinical Assessment & Next Steps */}
+      <div className="grid lg:grid-cols-12 gap-6">
+        
+        {/* Assessment Recommendations */}
+        <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
+          <div className="flex items-center space-x-2 border-b border-slate-100 pb-4">
+            <Stethoscope className="w-5 h-5 text-teal-700" />
+            <h3 className="text-base font-bold text-slate-900">Clinical Observations & Guidance</h3>
+          </div>
+
           <div className="space-y-3">
-            {predictionData.recommendations.map((recommendation, index) => (
-              <motion.p
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="text-slate-700 leading-relaxed"
-              >
-                {recommendation}
-              </motion.p>
+            {predictionData.recommendations && predictionData.recommendations.map((rec, idx) => (
+              <div key={idx} className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl text-xs text-slate-700 leading-relaxed font-medium">
+                {rec}
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Lab Values Used */}
-        <CardTransition className="bg-slate-50 p-6 rounded-xl border">
-          <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <TestTube className="w-5 h-5 text-teal-600" />
-            Lab Values Analyzed
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-              <span className="text-slate-600">Age</span>
-              <span className="font-semibold">{predictionData.factors_analyzed.age}</span>
+        {/* Analyzed Biomarker Matrix */}
+        <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className="flex items-center space-x-2">
+              <FlaskConical className="w-5 h-5 text-teal-700" />
+              <h3 className="text-base font-bold text-slate-900">Analyzed Parameters</h3>
             </div>
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-              <span className="text-slate-600">Gender</span>
-              <span className="font-semibold">{predictionData.factors_analyzed.gender}</span>
+            <button
+              onClick={loadLatestLabDataAndPredict}
+              className="text-xs text-slate-500 hover:text-teal-700 flex items-center space-x-1"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Refresh</span>
+            </button>
+          </div>
+
+          <div className="space-y-2.5 text-xs">
+            <div className="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-slate-500 font-medium">Age / Gender</span>
+              <span className="font-bold text-slate-900">{predictionData.factors_analyzed.age} yrs ({predictionData.factors_analyzed.gender})</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-              <span className="text-slate-600">Rheumatoid Factor</span>
-              <span className="font-semibold">{predictionData.factors_analyzed.rheumatoid_factor}</span>
+            <div className="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-slate-500 font-medium">Rheumatoid Factor</span>
+              <span className="font-bold text-slate-900">{predictionData.factors_analyzed.rheumatoid_factor} IU/mL</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-              <span className="text-slate-600">Anti-CCP</span>
-              <span className="font-semibold">{predictionData.factors_analyzed.anti_ccp}</span>
+            <div className="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-slate-500 font-medium">Anti-CCP Antibodies</span>
+              <span className="font-bold text-slate-900">{predictionData.factors_analyzed.anti_ccp} U/mL</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-              <span className="text-slate-600">C-Reactive Protein</span>
-              <span className="font-semibold">{predictionData.factors_analyzed.c_reactive_protein}</span>
+            <div className="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-slate-500 font-medium">C-Reactive Protein</span>
+              <span className="font-bold text-slate-900">{predictionData.factors_analyzed.c_reactive_protein} mg/L</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-              <span className="text-slate-600">ESR</span>
-              <span className="font-semibold">{predictionData.factors_analyzed.esr}</span>
+            <div className="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-slate-500 font-medium">ESR Rate</span>
+              <span className="font-bold text-slate-900">{predictionData.factors_analyzed.esr} mm/hr</span>
             </div>
           </div>
-        </CardTransition>
-
-        {/* ❌ MODEL INFORMATION REMOVED AS YOU REQUESTED */}
-
-        {/* Refresh Button */}
-        <div className="flex justify-center mt-6">
-          <button
-            onClick={loadLatestLabDataAndPredict}
-            className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh Prediction
-          </button>
         </div>
-      </CardTransition>
-
-      {/* Additional Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        {/* Risk Interpretation Guide */}
-        <CardTransition className="bg-white p-6 rounded-xl shadow-lg border">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <ActivityIcon className="w-5 h-5 text-green-600" />
-            Risk Level Guide
-          </h3>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between p-2 bg-green-50 rounded">
-              <span>Very Low (0-40%)</span>
-              <CheckCircle className="w-4 h-4 text-green-600" />
-            </div>
-            <div className="flex items-center justify-between p-2 bg-yellow-50 rounded">
-              <span>Low (40-65%)</span>
-              <CheckCircle className="w-4 h-4 text-yellow-600" />
-            </div>
-            <div className="flex items-center justify-between p-2 bg-orange-50 rounded">
-              <span>Moderate (65-85%)</span>
-              <AlertCircle className="w-4 h-4 text-orange-600" />
-            </div>
-            <div className="flex items-center justify-between p-2 bg-red-50 rounded">
-              <span>High (85-100%)</span>
-              <AlertTriangle className="w-4 h-4 text-red-600" />
-            </div>
-          </div>
-        </CardTransition>
-
-        {/* Next Steps */}
-        <CardTransition className="bg-white p-6 rounded-xl shadow-lg border">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-teal-600" />
-            Recommended Next Steps
-          </h3>
-          <ul className="space-y-2 text-sm text-slate-700">
-            <li className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-teal-600 rounded-full"></div>
-              Consult with a rheumatologist for clinical evaluation
-            </li>
-            <li className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-teal-600 rounded-full"></div>
-              Monitor symptoms and lab values regularly
-            </li>
-            <li className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-teal-600 rounded-full"></div>
-              Consider lifestyle modifications if at moderate risk
-            </li>
-            <li className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-teal-600 rounded-full"></div>
-              Follow up with additional testing if recommended
-            </li>
-          </ul>
-        </CardTransition>
 
       </div>
-    </div>
+
+    </CardTransition>
   );
 };
 

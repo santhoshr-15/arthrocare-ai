@@ -3,6 +3,7 @@ import { collection, doc, setDoc, getDocs, query, where, getDoc } from "firebase
 import { auth, db } from "../../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
 import CardTransition from "../animations/CardTransition";
+import { User, Calendar, Mail, Phone, Heart, FileText, Save, RefreshCw, AlertCircle } from "lucide-react";
 
 const ProfileForm = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -43,7 +44,6 @@ const ProfileForm = () => {
   const loadUserProfile = async (userId) => {
     try {
       setLoading(true);
-      
       const collections = ['personalInformation', 'users', 'userProfiles', 'profiles'];
       
       for (const collectionName of collections) {
@@ -61,12 +61,12 @@ const ProfileForm = () => {
             }));
             break;
           }
-        } catch (error) {
+        } catch (err) {
           continue;
         }
       }
-    } catch (error) {
-      console.error("Error loading profile:", error);
+    } catch (err) {
+      console.error("Error loading profile:", err);
     } finally {
       setLoading(false);
     }
@@ -74,7 +74,6 @@ const ProfileForm = () => {
 
   const calculateAge = (dob) => {
     if (!dob) return "";
-    
     const birthDate = new Date(dob);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -99,52 +98,6 @@ const ProfileForm = () => {
       }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!currentUser) {
-      alert("⚠️ Please log in to save your profile.");
-      return;
-    }
-
-    if (!formData.name.trim()) {
-      alert("⚠️ Please enter your name.");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const userDocRef = doc(db, "personalInformation", currentUser.uid);
-
-      const profileData = {
-        ...formData,
-        userId: currentUser.uid,
-        createdAt: new Date(),
-        lastUpdated: new Date()
-      };
-
-      await setDoc(userDocRef, profileData, { merge: true });
-
-      alert("✅ Profile saved successfully in Firebase!");
-
-      if (window.dashboardSetTab) {
-        window.dashboardSetTab("Lab Test Entry");
-      }
-
-    } catch (error) {
-      let errorMessage = `⚠️ Error saving profile: ${error.message}`;
-      
-      if (error.code === 'permission-denied') {
-        errorMessage += "\n\nThis is usually due to:\n• Firestore security rules\n• Document ID mismatch\n• Missing userId in data";
-      }
-      
-      alert(errorMessage);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -181,8 +134,8 @@ const ProfileForm = () => {
           await setDoc(userDocRef, profileData, { merge: true });
           savedSuccessfully = true;
           break;
-        } catch (error) {
-          lastError = error;
+        } catch (err) {
+          lastError = err;
           continue;
         }
       }
@@ -197,8 +150,8 @@ const ProfileForm = () => {
         window.dashboardSetTab("Lab Test Entry");
       }
 
-    } catch (error) {
-      alert(`⚠️ Error saving profile: ${error.message}`);
+    } catch (err) {
+      alert(`⚠️ Error saving profile: ${err.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -222,236 +175,259 @@ const ProfileForm = () => {
 
   if (!currentUser) {
     return (
-      <CardTransition className="bg-white/90 p-8 rounded-2xl shadow-lg border border-slate-100 backdrop-blur-sm">
-        <div className="text-center py-12">
-          <h3 className="text-xl font-semibold text-slate-700 mb-4">
-            Please Log In
-          </h3>
-          <p className="text-slate-600">
-            You need to be logged in to save your profile information.
-          </p>
-        </div>
+      <CardTransition className="bg-white p-8 rounded-2xl border border-slate-200/90 shadow-sm text-center">
+        <AlertCircle className="w-10 h-10 text-amber-500 mx-auto mb-3" />
+        <h3 className="text-base font-bold text-slate-900">Authentication Required</h3>
+        <p className="text-xs text-slate-500">Please sign in to access your personal medical profile.</p>
       </CardTransition>
     );
   }
 
   if (loading) {
     return (
-      <CardTransition className="bg-white/90 p-8 rounded-2xl shadow-lg border border-slate-100 backdrop-blur-sm">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading your profile...</p>
-        </div>
+      <CardTransition className="bg-white p-8 rounded-2xl border border-slate-200/90 shadow-sm text-center">
+        <div className="w-8 h-8 border-3 border-teal-700 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Retrieving Medical Profile...</p>
       </CardTransition>
     );
   }
 
   return (
-    <CardTransition className="bg-white/90 p-8 rounded-2xl shadow-lg border border-slate-100 backdrop-blur-sm">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-semibold text-teal-700">
-          Profile & Medical Information
-        </h2>
-        <div className="text-sm text-slate-500">
-          User ID: <span className="font-mono text-xs">{currentUser.uid.substring(0, 8)}...</span>
+    <CardTransition className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-6">
+      
+      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-teal-700 rounded-xl flex items-center justify-center text-white shadow-sm">
+            <User className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">Personal Demographics & Clinical Profile</h2>
+            <p className="text-xs text-slate-500">Essential baseline info for age/gender adjusted risk scoring</p>
+          </div>
         </div>
+
+        <button
+          type="button"
+          onClick={handleClearForm}
+          className="text-xs font-semibold text-slate-500 hover:text-slate-700 flex items-center space-x-1"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          <span>Reset Fields</span>
+        </button>
       </div>
 
-      <form
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        onSubmit={handleSubmitAlternative} 
-      >
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700">
-            Full Name *
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-            placeholder="Enter your full name"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700">
-            Date of Birth
-          </label>
-          <input
-            type="date"
-            name="dob"
-            value={formData.dob}
-            onChange={handleChange}
-            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700">
-            Age
-          </label>
-          <input
-            type="text"
-            name="age"
-            value={formData.age}
-            readOnly
-            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 bg-slate-50 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-            placeholder="Auto-calculated from DOB"
-          />
-          <p className="text-xs text-slate-500 mt-1">
-            Automatically calculated from date of birth
-          </p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700">
-            Email *
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-            placeholder="example@email.com"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700">
-            Phone
-          </label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-            placeholder="+91 98765 43210"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700">
-            Gender
-          </label>
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-          >
-            <option value="">Select</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700">
-            BMI
-          </label>
-          <input
-            type="text"
-            name="bmi"
-            value={formData.bmi}
-            onChange={handleChange}
-            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-            placeholder="e.g., 22.5"
-          />
-        </div>
-
-        <div className="col-span-2">
-          <label className="block text-sm font-medium text-slate-700">
-            Family History
-          </label>
-          <textarea
-            name="familyHistory"
-            value={formData.familyHistory}
-            onChange={handleChange}
-            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 h-24 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-            placeholder="Mention relevant family medical history..."
-          />
-        </div>
-
-        <div className="col-span-2">
-          <label className="block text-sm font-medium text-slate-700">
-            Medical History
-          </label>
-          <textarea
-            name="medicalHistory"
-            value={formData.medicalHistory}
-            onChange={handleChange}
-            className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 h-24 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-            placeholder="Mention any previous illnesses, surgeries, etc..."
-          />
-        </div>
-
-        <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-slate-700">
-              Smoking
-            </label>
-            <select
-              name="smoking"
-              value={formData.smoking}
-              onChange={handleChange}
-              className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-            >
-              <option>No</option>
-              <option>Yes</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700">
-              Alcohol
-            </label>
-            <select
-              name="alcohol"
-              value={formData.alcohol}
-              onChange={handleChange}
-              className="mt-1 w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-            >
-              <option>No</option>
-              <option>Yes</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="col-span-2 flex justify-end gap-4 mt-6">
-          <button
-            type="button"
-            onClick={handleClearForm}
-            className="px-6 py-3 bg-slate-500 text-white font-semibold rounded-lg shadow-md hover:bg-slate-600 transition-transform transform hover:scale-105"
-          >
-            Clear Form
-          </button>
+      <form onSubmit={handleSubmitAlternative} className="space-y-6">
+        
+        {/* Section 1: Demographics */}
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+            1. Patient Demographics
+          </h3>
           
+          <div className="grid md:grid-cols-3 gap-4 text-xs">
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Full Name *
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                placeholder="Jane Doe"
+                className="w-full px-3.5 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Date of Birth
+              </label>
+              <input
+                type="date"
+                name="dob"
+                value={formData.dob}
+                onChange={handleChange}
+                className="w-full px-3.5 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Calculated Age
+              </label>
+              <input
+                type="text"
+                name="age"
+                value={formData.age ? `${formData.age} years` : ''}
+                readOnly
+                placeholder="Auto-calculated"
+                className="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-700 font-bold cursor-not-allowed"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="jane@example.com"
+                className="w-full px-3.5 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="+1 (555) 000-0000"
+                className="w-full px-3.5 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Gender *
+              </label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                required
+                className="w-full px-3.5 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+              >
+                <option value="">Select Gender</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2: Clinical Baselines & Lifestyle */}
+        <div className="space-y-4 pt-2">
+          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+            2. Health Baselines & Lifestyle Indicators
+          </h3>
+
+          <div className="grid md:grid-cols-3 gap-4 text-xs">
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Body Mass Index (BMI)
+              </label>
+              <input
+                type="text"
+                name="bmi"
+                value={formData.bmi}
+                onChange={handleChange}
+                placeholder="e.g. 23.4"
+                className="w-full px-3.5 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Smoking History
+              </label>
+              <select
+                name="smoking"
+                value={formData.smoking}
+                onChange={handleChange}
+                className="w-full px-3.5 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+              >
+                <option>No</option>
+                <option>Yes</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Alcohol Intake
+              </label>
+              <select
+                name="alcohol"
+                value={formData.alcohol}
+                onChange={handleChange}
+                className="w-full px-3.5 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+              >
+                <option>No</option>
+                <option>Yes</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 3: Medical Notes */}
+        <div className="space-y-4 pt-2">
+          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+            3. Medical & Family History
+          </h3>
+
+          <div className="grid md:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Family Medical History
+              </label>
+              <textarea
+                name="familyHistory"
+                value={formData.familyHistory}
+                onChange={handleChange}
+                rows={3}
+                placeholder="Mention any family history of rheumatoid arthritis, autoimmune conditions..."
+                className="w-full p-3 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Personal Medical History
+              </label>
+              <textarea
+                name="medicalHistory"
+                value={formData.medicalHistory}
+                onChange={handleChange}
+                rows={3}
+                placeholder="Mention prior surgeries, chronic conditions, current joint pain, or medications..."
+                className="w-full p-3 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <div className="flex justify-end border-t border-slate-100 pt-4">
           <button
             type="submit"
             disabled={isSubmitting || !formData.name.trim()}
-            className="px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg shadow-md hover:bg-teal-700 transition-transform transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-6 py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm rounded-xl shadow-sm transition-all duration-150 flex items-center space-x-2 disabled:opacity-50"
           >
             {isSubmitting ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Saving to Firebase...
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Saving Profile Data...</span>
               </>
             ) : (
-              "Save Profile"
+              <>
+                <Save className="w-4 h-4" />
+                <span>Save Medical Profile</span>
+              </>
             )}
           </button>
         </div>
-      </form>
 
-      {/* DEBUG INFO REMOVED AS REQUESTED */}
+      </form>
 
     </CardTransition>
   );

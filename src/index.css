@@ -23,3 +23,39 @@
   --color-clinical-800: #075985;
   --color-clinical-900: #0c4a6e;
 }
+
+@layer base {
+  body {
+    @apply text-slate-900 bg-slate-50 antialiased selection:bg-teal-500/20 selection:text-teal-900;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Custom clinical UI helpers */
+.clinical-card {
+  @apply bg-white rounded-2xl border border-slate-200/80 shadow-sm transition-all duration-200 hover:border-slate-300;
+}
+
+.clinical-input {
+  @apply w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-600 transition-all duration-200 text-sm font-medium;
+}
+
+.clinical-badge {
+  @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide border;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
