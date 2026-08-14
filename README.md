@@ -112,10 +112,10 @@ arthrocare-ai/
 │
 ├── src/                        # React frontend
 │   ├── components/            # Reusable UI components
-│   │   ├── common/            # Shared layout (AppShell)
-│   │   ├── ui/                # Design-system primitives (Logo, Badge, Field…)
-│   │   ├── patient/           # Patient workspace modules
-│   │   └── dashboard/         # Admin console
+│   │   ├── common/            # Header, Sidebar, Layout
+│   │   ├── patient/           # Patient dashboard components
+│   │   ├── dashboard/         # Admin dashboard
+│   │   └── animations/        # Framer Motion components
 │   ├── pages/                 # Page components
 │   │   ├── LoginPage.jsx
 │   │   ├── RegisterPage.jsx
@@ -141,8 +141,9 @@ arthrocare-ai/
 ### Frontend
 - **Framework**: React 19+ with JSX
 - **Build Tool**: Vite (lightning-fast bundler)
-- **Styling**: Tailwind CSS v4
-- **UI Components**: Lucide React Icons
+- **Styling**: Tailwind CSS + Emotion
+- **UI Components**: Material-UI, Lucide React Icons
+- **Animations**: Framer Motion
 - **Charts**: Chart.js + react-chartjs-2
 - **Routing**: React Router v7
 
