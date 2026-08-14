@@ -19,12 +19,16 @@ const getCurrentUser = () => {
   if (sessionUser) {
     try {
       return JSON.parse(sessionUser);
-    } catch {}
+    } catch {
+      return null;
+    }
   }
   if (localUser) {
     try {
       return JSON.parse(localUser);
-    } catch {}
+    } catch {
+      return null;
+    }
   }
   return null;
 };

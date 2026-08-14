@@ -2,28 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { auth, db } from '../../firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import CardTransition from '../animations/CardTransition';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Minus, 
-  Clock, 
-  FileSpreadsheet, 
-  Activity, 
-  CheckCircle2, 
-  AlertTriangle,
-  RefreshCw,
-  FlaskConical,
-  Stethoscope,
-  Info
-} from 'lucide-react';
+import { Activity, AlertTriangle, TrendingUp, RotateCcw } from 'lucide-react';
+import Field from '../ui/Field';
+import Badge from '../ui/Badge';
+import Loader from '../ui/Loader';
+import EmptyState from '../ui/EmptyState';
 
 const ProgressTracking = () => {
-  const [currentUser, setCurrentUser] = useState(null);
   const [previousTestData, setPreviousTestData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     monthsSinceLastTest: '',
     currentAge: '',
@@ -33,16 +22,14 @@ const ProgressTracking = () => {
     currentRF: '',
     currentAntiCCP: ''
   });
-  
+
   const [comparisonResult, setComparisonResult] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setCurrentUser(user);
         await loadPreviousTestData(user.uid);
       } else {
-        setCurrentUser(null);
         setLoading(false);
       }
     });
@@ -57,17 +44,17 @@ const ProgressTracking = () => {
       for (const collectionName of collections) {
         try {
           const labInfoQuery = query(
-            collection(db, collectionName), 
+            collection(db, collectionName),
             where("userId", "==", userId),
             orderBy("createdAt", "desc"),
             limit(1)
           );
           const querySnapshot = await getDocs(labInfoQuery);
-          
+
           if (!querySnapshot.empty) {
             const latestTest = querySnapshot.docs[0];
             const testData = latestTest.data();
-            
+
             foundData = {
               age: Number(testData.userAge || testData.age),
               gender: testData.userGender || testData.gender,
@@ -80,7 +67,9 @@ const ProgressTracking = () => {
             };
             break;
           }
-        } catch (err) { continue; }
+        } catch {
+          continue;
+        }
       }
 
       if (foundData) {
@@ -116,14 +105,14 @@ const ProgressTracking = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setComparisonResult(null);
-    
+
     if (!previousTestData || !formData.monthsSinceLastTest) {
       alert("Please ensure all required input fields are filled.");
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
       const payload = {
         monthsSinceLastTest: Number(formData.monthsSinceLastTest),
@@ -153,10 +142,10 @@ const ProgressTracking = () => {
 
       const responseText = await response.text();
       let result;
-      
+
       try {
         result = JSON.parse(responseText);
-      } catch (err) {
+      } catch {
         throw new Error("Backend returned HTML instead of JSON. Check server logs.");
       }
 
@@ -185,266 +174,228 @@ const ProgressTracking = () => {
   };
 
   if (loading) {
-    return (
-      <CardTransition className="bg-white p-8 rounded-2xl border border-slate-200/90 shadow-sm text-center">
-        <div className="w-8 h-8 border-3 border-teal-700 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Retrieving Historical Lab Measurements...</p>
-      </CardTransition>
-    );
+    return <Loader label="Retrieving historical lab measurements…" />;
   }
 
   if (!previousTestData) {
     return (
-      <CardTransition className="bg-white p-8 rounded-2xl border border-slate-200/90 shadow-sm text-center space-y-4">
-        <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto" />
-        <h3 className="text-lg font-bold text-slate-900">Initial Lab Test Required</h3>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto">You must submit at least one laboratory measurement entry before running comparative progression tracking.</p>
-      </CardTransition>
+      <EmptyState
+        icon={AlertTriangle}
+        title="Initial lab test required"
+        description="Submit at least one laboratory measurement entry before running comparative progression tracking."
+      />
     );
   }
 
+  const baselineDate = previousTestData.createdAt
+    ? new Date(previousTestData.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+    : 'Recorded baseline';
+
+  const baselineFields = [
+    { label: 'Age', value: `${previousTestData.age} yrs` },
+    { label: 'Sex', value: previousTestData.gender },
+    { label: 'ESR (mm/hr)', value: previousTestData.ESR },
+    { label: 'CRP (mg/L)', value: previousTestData.CRP },
+    { label: 'RF (IU/mL)', value: previousTestData.RF },
+    { label: 'Anti-CCP (U/mL)', value: previousTestData.antiCCP }
+  ];
+
+  const trendTone =
+    comparisonResult?.riskTrend === 'Improved' ? 'emerald' :
+    comparisonResult?.riskTrend === 'Worsened' ? 'rose' : 'amber';
+
   return (
-    <CardTransition className="space-y-6">
-      
-      {/* Comparative Form Card */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-teal-700 rounded-xl flex items-center justify-center text-white shadow-sm">
-              <TrendingUp className="w-5 h-5" />
+    <div className="space-y-6">
+      {/* Comparison form */}
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+              <TrendingUp className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Comparative Disease Progression Analysis</h2>
-              <p className="text-xs text-slate-500">Evaluate serial lab measurements against historical baseline panel</p>
+              <h2 className="text-sm font-semibold text-slate-900">Comparative disease progression analysis</h2>
+              <p className="mt-0.5 text-xs text-slate-500">Evaluate serial lab measurements against the historical baseline panel.</p>
             </div>
           </div>
-
-          <button
-            onClick={clearForm}
-            className="text-xs font-semibold text-slate-500 hover:text-slate-700"
-          >
-            Clear Form
+          <button type="button" onClick={clearForm} className="btn-ghost">
+            <RotateCcw className="h-4 w-4" />
+            Clear
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          
-          {/* Time & Interval Card */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
-            <div className="flex items-center space-x-2 text-xs font-bold text-slate-900 uppercase tracking-wider">
-              <Clock className="w-4 h-4 text-teal-700" />
-              <span>Interval Information</span>
-            </div>
+        {/* Interval */}
+        <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+          <Field
+            label="Months elapsed since baseline test"
+            htmlFor="months"
+            required
+            hint="e.g. 6"
+          >
+            <input
+              id="months"
+              type="number"
+              min="1"
+              placeholder="e.g. 6"
+              value={formData.monthsSinceLastTest}
+              onChange={(e) => handleInputChange('monthsSinceLastTest', e.target.value)}
+              required
+              className="field"
+            />
+          </Field>
 
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Months Elapsed Since Baseline Test *
-                </label>
-                <input
-                  type="number"
-                  value={formData.monthsSinceLastTest}
-                  onChange={(e) => handleInputChange('monthsSinceLastTest', e.target.value)}
-                  placeholder="e.g. 6"
-                  required
-                  min="1"
-                  className="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500/30"
-                />
-              </div>
+          <Field label="Baseline test record date" htmlFor="baselineDate">
+            <input
+              id="baselineDate"
+              type="text"
+              value={baselineDate}
+              readOnly
+              className="field bg-slate-100 text-slate-500"
+            />
+          </Field>
+        </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Baseline Test Record Date
-                </label>
-                <input
-                  type="text"
-                  value={previousTestData.createdAt ? new Date(previousTestData.createdAt).toLocaleDateString() : 'Baseline Recorded'}
-                  readOnly
-                  className="w-full px-4 py-2 bg-slate-100 border border-slate-200 rounded-xl text-slate-600 text-sm font-medium cursor-not-allowed"
-                />
-              </div>
+        {/* Baseline + follow-up */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="space-y-3 rounded-lg border border-slate-200 p-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+              <h3 className="text-sm font-semibold text-slate-900">Baseline measurements</h3>
+              <Badge tone="teal">Recorded baseline</Badge>
             </div>
+            <dl className="grid grid-cols-2 gap-3 text-sm">
+              {baselineFields.map((field) => (
+                <div key={field.label}>
+                  <dt className="text-xs text-slate-500">{field.label}</dt>
+                  <dd className="mt-0.5 font-semibold text-slate-900">{field.value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
-          {/* Side by Side Inputs */}
-          <div className="grid lg:grid-cols-2 gap-6">
-            
-            {/* Baseline Record (Read-Only) */}
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-200/80 pb-2">
-                <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">Baseline Measurements (Auto-Filled)</span>
-                <span className="text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-0.5 rounded">Recorded Baseline</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div>
-                  <label className="text-slate-500 font-medium">Age</label>
-                  <input type="text" value={`${previousTestData.age} yrs`} readOnly className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold" />
-                </div>
-                <div>
-                  <label className="text-slate-500 font-medium">Gender</label>
-                  <input type="text" value={previousTestData.gender} readOnly className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold" />
-                </div>
-                <div>
-                  <label className="text-slate-500 font-medium">ESR (mm/hr)</label>
-                  <input type="text" value={previousTestData.ESR} readOnly className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold" />
-                </div>
-                <div>
-                  <label className="text-slate-500 font-medium">CRP (mg/L)</label>
-                  <input type="text" value={previousTestData.CRP} readOnly className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold" />
-                </div>
-                <div>
-                  <label className="text-slate-500 font-medium">RF (IU/mL)</label>
-                  <input type="text" value={previousTestData.RF} readOnly className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold" />
-                </div>
-                <div>
-                  <label className="text-slate-500 font-medium">Anti-CCP (U/mL)</label>
-                  <input type="text" value={previousTestData.antiCCP} readOnly className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold" />
-                </div>
-              </div>
+          <div className="space-y-4 rounded-lg border border-teal-200 bg-teal-50/40 p-4">
+            <div className="flex items-center justify-between border-b border-teal-200 pb-2">
+              <h3 className="text-sm font-semibold text-teal-900">Follow-up measurements</h3>
+              <Badge tone="teal">Current input</Badge>
             </div>
-
-            {/* Follow-up Test Inputs */}
-            <div className="p-4 bg-teal-50/40 border border-teal-200/80 rounded-xl space-y-3">
-              <div className="flex items-center justify-between border-b border-teal-200/80 pb-2">
-                <span className="text-xs font-bold text-teal-900 uppercase tracking-wider">Follow-Up Measurements</span>
-                <span className="text-[10px] font-bold bg-teal-700 text-white px-2 py-0.5 rounded">Current Input</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div>
-                  <label className="text-slate-700 font-medium">Current Age *</label>
-                  <input type="number" step="0.1" value={formData.currentAge} onChange={(e) => handleInputChange('currentAge', e.target.value)} required className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold focus:ring-2 focus:ring-teal-500/30" />
-                </div>
-                <div>
-                  <label className="text-slate-700 font-medium">Gender *</label>
-                  <select value={formData.currentGender} onChange={(e) => handleInputChange('currentGender', e.target.value)} required className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold focus:ring-2 focus:ring-teal-500/30">
-                    <option value="">Select</option>
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-slate-700 font-medium">ESR (mm/hr) *</label>
-                  <input type="number" step="0.1" value={formData.currentESR} onChange={(e) => handleInputChange('currentESR', e.target.value)} required className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold focus:ring-2 focus:ring-teal-500/30" />
-                </div>
-                <div>
-                  <label className="text-slate-700 font-medium">CRP (mg/L) *</label>
-                  <input type="number" step="0.1" value={formData.currentCRP} onChange={(e) => handleInputChange('currentCRP', e.target.value)} required className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold focus:ring-2 focus:ring-teal-500/30" />
-                </div>
-                <div>
-                  <label className="text-slate-700 font-medium">RF (IU/mL) *</label>
-                  <input type="number" step="0.1" value={formData.currentRF} onChange={(e) => handleInputChange('currentRF', e.target.value)} required className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold focus:ring-2 focus:ring-teal-500/30" />
-                </div>
-                <div>
-                  <label className="text-slate-700 font-medium">Anti-CCP (U/mL) *</label>
-                  <input type="number" step="0.1" value={formData.currentAntiCCP} onChange={(e) => handleInputChange('currentAntiCCP', e.target.value)} required className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg font-semibold focus:ring-2 focus:ring-teal-500/30" />
-                </div>
-              </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Current age" htmlFor="currentAge" required>
+                <input id="currentAge" type="number" step="0.1" value={formData.currentAge}
+                  onChange={(e) => handleInputChange('currentAge', e.target.value)} required className="field" />
+              </Field>
+              <Field label="Sex" htmlFor="currentGender" required>
+                <select id="currentGender" value={formData.currentGender}
+                  onChange={(e) => handleInputChange('currentGender', e.target.value)} required className="field">
+                  <option value="">Select</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                </select>
+              </Field>
+              <Field label="ESR (mm/hr)" htmlFor="currentESR" required>
+                <input id="currentESR" type="number" step="0.1" value={formData.currentESR}
+                  onChange={(e) => handleInputChange('currentESR', e.target.value)} required className="field" />
+              </Field>
+              <Field label="CRP (mg/L)" htmlFor="currentCRP" required>
+                <input id="currentCRP" type="number" step="0.1" value={formData.currentCRP}
+                  onChange={(e) => handleInputChange('currentCRP', e.target.value)} required className="field" />
+              </Field>
+              <Field label="RF (IU/mL)" htmlFor="currentRF" required>
+                <input id="currentRF" type="number" step="0.1" value={formData.currentRF}
+                  onChange={(e) => handleInputChange('currentRF', e.target.value)} required className="field" />
+              </Field>
+              <Field label="Anti-CCP (U/mL)" htmlFor="currentAntiCCP" required>
+                <input id="currentAntiCCP" type="number" step="0.1" value={formData.currentAntiCCP}
+                  onChange={(e) => handleInputChange('currentAntiCCP', e.target.value)} required className="field" />
+              </Field>
             </div>
-
           </div>
+        </div>
 
-          <div className="flex justify-end border-t border-slate-100 pt-4">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm rounded-xl shadow-sm transition-all duration-150 flex items-center space-x-2 disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Calculating Progression Matrix...</span>
-                </>
-              ) : (
-                <>
-                  <Activity className="w-4 h-4" />
-                  <span>Run Comparative ML Progression Analysis</span>
-                </>
-              )}
-            </button>
-          </div>
+        <div className="flex justify-end border-t border-slate-200 pt-5">
+          <button type="submit" disabled={isSubmitting} className="btn-primary">
+            {isSubmitting ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                Calculating progression matrix…
+              </>
+            ) : (
+              <>
+                <Activity className="h-4 w-4" />
+                Run comparative ML progression analysis
+              </>
+            )}
+          </button>
+        </div>
+      </form>
 
-        </form>
-      </div>
-
-      {/* Comparison Results Card */}
+      {/* Results */}
       {comparisonResult && (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-6">
-          
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 bg-teal-700 rounded-xl flex items-center justify-center text-white shadow-sm">
-                <Stethoscope className="w-5 h-5" />
+        <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
+          <div className="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+                <Activity className="h-4 w-4" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-900">Progression Trajectory Report</h3>
-                <p className="text-xs text-slate-500">ML Model Output for Serial Biomarker Change</p>
+                <h2 className="text-sm font-semibold text-slate-900">Progression trajectory report</h2>
+                <p className="mt-0.5 text-xs text-slate-500">ML model output for serial biomarker change.</p>
               </div>
             </div>
-
-            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
-              comparisonResult.riskTrend === 'Improved' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
-              comparisonResult.riskTrend === 'Worsened' ? 'bg-rose-50 text-rose-800 border-rose-200' :
-              'bg-amber-50 text-amber-800 border-amber-200'
-            }`}>
-              Trend Classification: {comparisonResult.riskTrend}
-            </span>
+            <Badge tone={trendTone}>Trend classification: {comparisonResult.riskTrend}</Badge>
           </div>
 
-          {/* Probability Comparison Metrics */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center space-y-1">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Baseline Risk Probability</div>
-              <div className="text-3xl font-extrabold text-slate-800">{comparisonResult.previousProbability}%</div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 text-center">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Baseline risk probability</p>
+              <p className="mt-1 text-3xl font-semibold text-slate-900">{comparisonResult.previousProbability}%</p>
             </div>
-            <div className="p-4 bg-teal-50/60 border border-teal-200 rounded-xl text-center space-y-1">
-              <div className="text-xs font-bold text-teal-800 uppercase tracking-wider">Current Follow-Up Probability</div>
-              <div className="text-3xl font-extrabold text-teal-900">{comparisonResult.currentProbability}%</div>
+            <div className="rounded-lg border border-teal-200 bg-teal-50/60 px-4 py-4 text-center">
+              <p className="text-xs font-medium uppercase tracking-wide text-teal-800">Current follow-up probability</p>
+              <p className="mt-1 text-3xl font-semibold text-teal-900">{comparisonResult.currentProbability}%</p>
             </div>
           </div>
 
-          {/* Percentage Change Indicator */}
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-medium">Net Calculated Probability Delta over {comparisonResult.monthsBetweenTests} months:</span>
-            <span className={`font-bold font-mono ${comparisonResult.probabilityChange > 0 ? 'text-rose-700' : 'text-emerald-700'}`}>
+          <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+            <span className="text-slate-600">Net probability delta over {comparisonResult.monthsBetweenTests} months:</span>
+            <span className={`font-semibold ${comparisonResult.probabilityChange > 0 ? 'text-rose-700' : 'text-emerald-700'}`}>
               {comparisonResult.probabilityChange > 0 ? '▲ +' : '▼ '}{comparisonResult.probabilityChange}%
             </span>
           </div>
 
-          {/* Individual Biomarker Changes Grid */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Biomarker Delta Matrix</h4>
-            <div className="grid sm:grid-cols-2 gap-3 text-xs">
-              {comparisonResult.biomarkerChanges.map((change, idx) => (
-                <div key={idx} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="font-semibold text-slate-700">{change.name}</span>
-                  <div className="text-right">
-                    <span className="font-mono font-bold text-slate-900">{change.change}</span>
-                    <span className={`block text-[10px] font-bold ${change.percentChange > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                      {change.percentChange > 0 ? '+' : ''}{change.percentChange}%
-                    </span>
+          {comparisonResult.biomarkerChanges && comparisonResult.biomarkerChanges.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-900">Biomarker delta matrix</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {comparisonResult.biomarkerChanges.map((change, idx) => (
+                  <div key={idx} className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                    <span className="font-medium text-slate-700">{change.name}</span>
+                    <div className="text-right">
+                      <span className="font-semibold text-slate-900">{change.change}</span>
+                      <span className={`block text-xs font-semibold ${change.percentChange > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                        {change.percentChange > 0 ? '+' : ''}{change.percentChange}%
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Clinical Interpretation & Summary */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Clinical Interpretation</h4>
-            <p className="text-xs text-slate-700 leading-relaxed font-medium">{comparisonResult.interpretation}</p>
-          </div>
+          {comparisonResult.interpretation && (
+            <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-900">Clinical interpretation</h3>
+              <p className="text-sm leading-relaxed text-slate-700">{comparisonResult.interpretation}</p>
+            </div>
+          )}
 
-          <div className="p-4 bg-teal-50/70 border border-teal-200/80 rounded-xl space-y-2">
-            <h4 className="text-xs font-bold text-teal-900 uppercase tracking-wider">Summary Protocol Report</h4>
-            <div className="text-xs text-slate-800 whitespace-pre-line leading-relaxed font-medium">{comparisonResult.summary}</div>
-          </div>
-
+          {comparisonResult.summary && (
+            <div className="space-y-2 rounded-lg border border-teal-200 bg-teal-50/70 px-4 py-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-teal-900">Summary protocol report</h3>
+              <p className="whitespace-pre-line text-sm leading-relaxed text-slate-800">{comparisonResult.summary}</p>
+            </div>
+          )}
         </div>
       )}
-
-    </CardTransition>
+    </div>
   );
 };
 

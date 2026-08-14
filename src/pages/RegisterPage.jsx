@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Mail, Lock, User, Eye, EyeOff, ShieldCheck, Activity, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, AlertCircle, ShieldCheck, CheckCircle2, ArrowRight } from "lucide-react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase/config";
 import { doc, setDoc } from "firebase/firestore";
+import Logo from "../components/ui/Logo";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -29,7 +29,7 @@ const RegisterPage = () => {
       setError("Please enter your full name.");
       return false;
     }
-    
+
     if (!email.trim()) {
       setError("Please enter your email address.");
       return false;
@@ -58,7 +58,7 @@ const RegisterPage = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    
+
     if (!validateForm()) {
       return;
     }
@@ -66,18 +66,12 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      console.log("🔄 Starting registration process...");
-
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
-      console.log("✅ User created successfully:", user.uid);
 
       await updateProfile(user, {
         displayName: name.trim()
       });
-
-      console.log("✅ User profile updated");
 
       const docName = name.trim().replace(/[^a-zA-Z0-9]/g, '_');
 
@@ -93,36 +87,29 @@ const RegisterPage = () => {
         docName: docName
       };
 
-      console.log("📝 Saving to Firestore...");
-
       try {
-        console.log("🔄 Saving to users collection...");
         await setDoc(doc(db, "users", user.uid), userData);
-        console.log("✅ User data saved to users collection");
       } catch (usersError) {
-        console.error("❌ Users collection save failed:", usersError);
+        console.error("Users collection save failed:", usersError);
       }
 
       try {
-        console.log("🔄 Saving to signup collection...");
         await setDoc(doc(db, "signup", docName), userData);
-        console.log("✅ User data saved to signup collection");
       } catch (signupError) {
-        console.error("❌ Signup collection save failed:", signupError);
+        console.error("Signup collection save failed:", signupError);
       }
 
-      setSuccess("🎉 Registration successful! Redirecting to login...");
-      
+      setSuccess("Registration successful. Redirecting to sign in...");
+
       await auth.signOut();
-      console.log("✅ User signed out after registration");
-      
+
       setTimeout(() => {
         navigate("/login");
       }, 1800);
 
     } catch (error) {
-      console.error("❌ Registration error:", error);
-      
+      console.error("Registration error:", error);
+
       switch (error.code) {
         case 'auth/email-already-in-use':
           setError("An account with this email already exists. Please try logging in instead.");
@@ -154,214 +141,188 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
-      
-      {/* Header */}
-      <header className="w-full bg-white border-b border-slate-200 py-3.5 px-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="w-9 h-9 bg-teal-700 rounded-xl flex items-center justify-center text-white shadow-sm">
-              <Activity className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-lg font-bold text-slate-900">ArthroCare <span className="text-teal-700">AI</span></span>
-              <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Patient Registration</span>
-            </div>
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      {/* Top bar */}
+      <header className="border-b border-slate-200 bg-white">
+        <div className="container-page flex h-16 items-center justify-between">
+          <Link to="/" aria-label="Back to home">
+            <Logo subtitle="Patient registration" />
           </Link>
-          <Link to="/login" className="text-xs font-semibold text-teal-700 hover:text-teal-800 transition-colors">
-            Already registered? Sign In
-          </Link>
+          <Link to="/login" className="btn-ghost">Already registered? Sign in</Link>
         </div>
       </header>
 
-      {/* Main Container */}
-      <div className="flex-1 flex items-center justify-center p-6 my-6">
-        <div className="w-full max-w-5xl grid lg:grid-cols-12 gap-8 items-center bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
-          
-          {/* Left Panel */}
-          <div className="lg:col-span-5 bg-slate-900 text-white p-8 lg:p-10 flex flex-col justify-between min-h-[500px]">
+      {/* Main */}
+      <main className="flex flex-1 items-center justify-center px-4 py-10">
+        <div className="w-full max-w-4xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm md:grid md:grid-cols-5">
+          {/* Info panel */}
+          <div className="hidden flex-col justify-between bg-slate-900 p-10 text-white md:col-span-2 md:flex">
             <div>
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-900/60 border border-teal-700/80 text-teal-300 text-xs font-medium mb-6">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Patient Account Setup</span>
+              <div className="mb-6 inline-flex items-center gap-2 rounded-md border border-teal-700/60 bg-teal-900/40 px-2.5 py-1 text-xs font-medium text-teal-300">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Patient account setup
               </div>
-
-              <h1 className="text-2xl font-extrabold text-white tracking-tight mb-4">
-                Join ArthroCare Clinical Platform
-              </h1>
-
-              <p className="text-slate-300 text-xs leading-relaxed mb-6">
-                Create your patient account to submit lab biomarker data, receive age/gender-adjusted RA predictions, and track your joint wellness over time.
+              <h1 className="text-2xl font-semibold tracking-tight">Join the ArthroCare clinical platform</h1>
+              <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                Create a patient account to submit lab biomarker data, receive age- and sex-adjusted RA risk
+                assessments, and track your wellness over time.
               </p>
 
-              <div className="space-y-3.5">
-                <div className="flex items-start space-x-3 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-                  <span>Secure patient data protection</span>
-                </div>
-                <div className="flex items-start space-x-3 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-                  <span>Instant ML risk prediction reports</span>
-                </div>
-                <div className="flex items-start space-x-3 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-                  <span>Personalized diet & exercise plans</span>
-                </div>
-              </div>
+              <ul className="mt-8 space-y-3 text-sm text-slate-300">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
+                  Secure patient data protection
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
+                  Instant ML risk prediction reports
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
+                  Personalized diet and exercise plans
+                </li>
+              </ul>
             </div>
 
-            <div className="pt-6 border-t border-slate-800 text-[11px] text-slate-500">
-              HIPAA & Clinical Standards Compliant Platform
-            </div>
+            <p className="mt-10 border-t border-slate-800 pt-4 text-xs text-slate-500">
+              HIPAA-aligned clinical standards. Encrypted infrastructure.
+            </p>
           </div>
 
-          {/* Right Form */}
-          <div className="lg:col-span-7 p-8 lg:p-10">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Create Patient Account</h2>
-              <p className="text-slate-500 text-xs mt-1">Fill out your information to get started.</p>
-            </div>
+          {/* Form */}
+          <div className="p-8 sm:p-10 md:col-span-3">
+            <h2 className="text-xl font-semibold tracking-tight text-slate-900">Create patient account</h2>
+            <p className="mt-1.5 text-sm text-slate-500">Fill out your information to get started.</p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              
-              {/* Name */}
+            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Full Name *
-                </label>
+                <label htmlFor="name" className="field-label">Full name <span className="text-rose-500">*</span></label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
+                    id="name"
                     type="text"
+                    autoComplete="name"
                     placeholder="Jane Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-600 transition-all"
+                    className="field pl-10"
                   />
                 </div>
               </div>
 
-              {/* Email */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Email Address *
-                </label>
+                <label htmlFor="email" className="field-label">Email address <span className="text-rose-500">*</span></label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
+                    id="email"
                     type="email"
+                    autoComplete="email"
                     placeholder="jane.doe@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-600 transition-all"
+                    className="field pl-10"
                   />
                 </div>
               </div>
 
-              {/* Password & Confirm */}
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Password *
-                  </label>
+                  <label htmlFor="password" className="field-label">Password <span className="text-rose-500">*</span></label>
                   <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
+                      id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="At least 6 chars"
+                      autoComplete="new-password"
+                      placeholder="At least 6 characters"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="w-full pl-10 pr-10 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-600 transition-all"
+                      className="field pl-10 pr-10"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Confirm Password *
-                  </label>
+                  <label htmlFor="confirm" className="field-label">Confirm password <span className="text-rose-500">*</span></label>
                   <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
+                      id="confirm"
                       type={showConfirmPassword ? "text" : "password"}
+                      autoComplete="new-password"
                       placeholder="Repeat password"
                       value={confirm}
                       onChange={(e) => setConfirm(e.target.value)}
                       required
-                      className="w-full pl-10 pr-10 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-600 transition-all"
+                      className="field pl-10 pr-10"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                     >
-                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Feedback messages */}
               {error && (
-                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-start space-x-2">
-                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3.5 py-3 text-sm text-rose-700">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{error}</span>
                 </div>
               )}
 
               {success && (
-                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-xs flex items-start space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-sm text-emerald-800">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{success}</span>
                 </div>
               )}
 
-              {/* Submit button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3 px-4 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm rounded-xl shadow-sm transition-all duration-150 flex items-center justify-center space-x-2 disabled:opacity-50"
-              >
+              <button type="submit" disabled={loading} className="btn-primary w-full">
                 {loading ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Creating Account...</span>
-                  </div>
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Creating account…
+                  </>
                 ) : (
                   <>
-                    <span>Complete Registration</span>
-                    <ArrowRight className="w-4 h-4 ml-1" />
+                    Complete registration
+                    <ArrowRight className="h-4 w-4" />
                   </>
                 )}
               </button>
-
             </form>
 
-            <div className="mt-6 pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
+            <p className="mt-6 border-t border-slate-200 pt-5 text-center text-sm text-slate-500">
               Already have an account?{" "}
-              <Link to="/login" className="font-bold text-teal-700 hover:text-teal-800 transition-colors">
-                Sign In
+              <Link to="/login" className="font-medium text-teal-700 hover:text-teal-800">
+                Sign in
               </Link>
-            </div>
+            </p>
           </div>
-
         </div>
-      </div>
+      </main>
 
-      <footer className="py-4 text-center text-xs text-slate-400 border-t border-slate-200">
-        © {new Date().getFullYear()} ArthroCare AI System. Privacy protected & encrypted.
+      <footer className="border-t border-slate-200 py-4 text-center text-xs text-slate-400">
+        © {new Date().getFullYear()} ArthroCare AI System. Privacy protected and encrypted.
       </footer>
-
     </div>
   );
 };

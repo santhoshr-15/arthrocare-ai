@@ -1,480 +1,409 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
-import {
-  Activity,
-  Brain,
-  BarChart3,
-  ShieldCheck,
-  FlaskConical,
-  Stethoscope,
-  Sparkles,
-  Mail,
-  Phone,
-  MapPin,
-  ArrowRight,
-  CheckCircle2,
-  Lock,
-  ChevronRight,
-  TrendingUp,
-  FileSpreadsheet
-} from "lucide-react";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, ShieldCheck, FileCheck, Scale, TrendingUp, FlaskConical, BrainCircuit, FileText } from 'lucide-react';
+import Logo from '../components/ui/Logo';
 
-const features = [
+const biomarkerTable = [
   {
-    title: "Age & Gender-Adjusted ML Scoring",
-    description: "Evaluates ESR, CRP, RF, and Anti-CCP levels against age- and sex-adjusted physiological baselines.",
-    icon: Brain,
-    badge: "ML Analytics"
+    name: 'Rheumatoid Factor (RF)',
+    reference: '< 14 IU/mL',
+    role: 'Autoantibody against immunoglobulin G; one of the classic RA serology markers.',
+    elevation: 'Elevated levels are seen in RA but also occur in other autoimmune and infectious conditions.'
   },
   {
-    title: "Multi-Biomarker Progression Engine",
-    description: "Tracks serial lab measurements over time to evaluate inflammatory trends and longitudinal risk trajectories.",
-    icon: Activity,
-    badge: "Biomarker Tracking"
+    name: 'Anti-CCP Antibodies',
+    reference: '< 20 U/mL',
+    role: 'High-specificity autoantibody associated with early and established rheumatoid arthritis.',
+    elevation: 'Elevated levels are the strongest single serology signal for RA.'
   },
   {
-    title: "Clinical Guidance & Lifestyle Protocol",
-    description: "Generates evidence-backed recommendations for exercise, nutrition, and lifestyle optimization.",
-    icon: Stethoscope,
-    badge: "Personalized Protocol"
+    name: 'C-Reactive Protein (CRP)',
+    reference: '< 3.0 mg/L',
+    role: 'Acute-phase protein that rises quickly in response to systemic inflammation.',
+    elevation: 'Elevated levels indicate active inflammation and can guide disease-activity monitoring.'
+  },
+  {
+    name: 'Erythrocyte Sedimentation Rate (ESR)',
+    reference: '0–20 mm/hr',
+    role: 'Measures how quickly red blood cells settle; a non-specific marker of inflammation.',
+    elevation: 'Elevated rates signal systemic inflammation and are tracked over time for trends.'
   }
 ];
 
-const clinicalTech = [
+const steps = [
   {
-    title: "Rheumatoid Factor (RF) Analysis",
-    unit: "0 - 14 IU/mL Normal",
-    description: "Quantitative serological evaluation for autoantibodies targeting immunoglobulin G heavy chains.",
-    icon: FlaskConical
+    number: '01',
+    title: 'Create your account',
+    description: 'Register with your basic demographics — age and sex are used to adjust every calculation.'
   },
   {
-    title: "Anti-CCP Antibody Sensitivity",
-    unit: "< 20 U/mL Normal",
-    description: "High-specificity biomarker detection for early-stage rheumatoid arthritis identification.",
-    icon: ShieldCheck
+    number: '02',
+    title: 'Enter your lab panel',
+    description: 'Add RF, Anti-CCP, CRP, and ESR values from a recent blood test in under two minutes.'
   },
   {
-    title: "Acute Phase Inflammatory Markers",
-    unit: "CRP < 3.0 mg/L | ESR 0-20 mm/hr",
-    description: "Continuous tracking of systemic inflammation using C-Reactive Protein and Erythrocyte Sedimentation Rate.",
-    icon: BarChart3
+    number: '03',
+    title: 'Review your risk profile',
+    description: 'Get an age- and sex-adjusted risk score, a breakdown of contributing factors, and clear next steps.'
   }
 ];
 
 const HomePage = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const { scrollY } = useScroll();
-  
-  const headerBg = useTransform(
-    scrollY,
-    [0, 60],
-    ["rgba(255, 255, 255, 0.8)", "rgba(255, 255, 255, 0.98)"]
-  );
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-teal-500/20 selection:text-teal-900">
-      
-      {/* HEADER */}
-      <motion.header
-        style={{ background: headerBg }}
-        className={`fixed top-0 w-full z-50 transition-all duration-300 border-b ${
-          isScrolled ? "border-slate-200 shadow-sm backdrop-blur-md" : "border-transparent"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 bg-teal-700 rounded-xl flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
-              <Activity className="w-5 h-5 text-teal-100" />
-            </div>
-            <div>
-              <span className="text-xl font-bold tracking-tight text-slate-900">
-                ArthroCare <span className="text-teal-700">AI</span>
-              </span>
-              <span className="block text-[10px] uppercase font-semibold text-slate-600 tracking-wider">
-                Clinical Intelligence
-              </span>
-            </div>
+    <div className="min-h-screen bg-white text-slate-900">
+      {/* Top navigation */}
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+        <div className="container-page flex h-16 items-center justify-between">
+          <Link to="/" aria-label="ArthroCare AI home">
+            <Logo subtitle="Clinical intelligence" />
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-sm font-medium text-slate-600 hover:text-teal-700 transition-colors">
-              Platform Features
+          <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
+            <a href="#how-it-works" className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900">
+              How it works
             </a>
-            <a href="#biomarkers" className="text-sm font-medium text-slate-600 hover:text-teal-700 transition-colors">
-              Biomarker Suite
+            <a href="#biomarkers" className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900">
+              Biomarkers
             </a>
-            <a href="#research" className="text-sm font-medium text-slate-600 hover:text-teal-700 transition-colors">
-              Clinical Science
-            </a>
-            <a href="#contact" className="text-sm font-medium text-slate-600 hover:text-teal-700 transition-colors">
-              Contact
+            <a href="#clinical-approach" className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900">
+              Clinical approach
             </a>
           </nav>
 
-          <div className="flex items-center space-x-4">
-            <Link to="/login">
-              <button className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-teal-700 transition-colors">
-                Sign In
-              </button>
+          <div className="flex items-center gap-2">
+            <Link to="/login" className="btn-ghost">
+              Sign in
             </Link>
-            <Link to="/login">
-              <button className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-teal-700 hover:bg-teal-800 rounded-xl shadow-sm transition-all duration-150">
-                <span>Begin Assessment</span>
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </button>
+            <Link to="/register" className="btn-primary">
+              Get started
             </Link>
           </div>
         </div>
-      </motion.header>
+      </header>
 
-      {/* HERO SECTION */}
-      <section className="relative pt-32 pb-20 lg:pt-36 lg:pb-28 overflow-hidden bg-gradient-to-b from-white via-slate-50 to-slate-100/60 border-b border-slate-200/60">
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center">
-          
-          {/* Left Column */}
-          <div className="lg:col-span-7 space-y-8">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-800 text-xs font-semibold">
-              <ShieldCheck className="w-4 h-4 text-teal-600" />
-              <span>Clinical Diagnostic & Risk Prediction System</span>
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
-              Precision Biomarker Analytics for{" "}
-              <span className="text-teal-700 underline decoration-teal-300 decoration-wavy decoration-2">
-                Rheumatoid Arthritis
-              </span>
+      {/* Hero */}
+      <section className="border-b border-slate-200 bg-slate-50/60">
+        <div className="container-page grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
+          <div>
+            <p className="eyebrow mb-4">Rheumatoid arthritis risk assessment</p>
+            <h1 className="text-4xl font-semibold leading-tight tracking-tight text-slate-900 lg:text-5xl">
+              Turn four lab values into a clear RA risk profile.
             </h1>
-
-            <p className="text-lg text-slate-600 leading-relaxed max-w-2xl font-normal">
-              ArthroCare AI integrates 4-biomarker serology (RF, Anti-CCP, CRP, ESR) with patient age and sex baselines to provide early risk identification, longitudinal tracking, and evidence-guided clinical protocols.
+            <p className="mt-5 max-w-lg text-lg leading-relaxed text-slate-600">
+              ArthroCare AI interprets your RF, Anti-CCP, CRP, and ESR results against age- and sex-adjusted
+              reference ranges, producing an explainable rheumatoid arthritis risk assessment with actionable guidance.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <Link to="/login">
-                <button className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold text-white bg-teal-700 hover:bg-teal-800 rounded-xl shadow-md transition-all duration-200">
-                  <Activity className="w-5 h-5 mr-2" />
-                  <span>Start Patient Assessment</span>
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </button>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link to="/register" className="btn-primary">
+                Start your assessment
+                <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href="#biomarkers">
-                <button className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 text-base font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl shadow-sm transition-all duration-200">
-                  <FileSpreadsheet className="w-5 h-5 mr-2 text-slate-500" />
-                  <span>Explore Biomarkers</span>
-                </button>
+              <a href="#how-it-works" className="btn-secondary">
+                See how it works
               </a>
             </div>
 
-            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200/80">
+            <dl className="mt-10 grid max-w-lg grid-cols-3 gap-6 border-t border-slate-200 pt-6">
               <div>
-                <div className="text-2xl font-bold text-slate-900">4 Biomarkers</div>
-                <div className="text-xs text-slate-500 mt-0.5">RF, Anti-CCP, CRP, ESR</div>
+                <dt className="text-sm text-slate-500">Biomarkers analyzed</dt>
+                <dd className="mt-1 text-2xl font-semibold text-slate-900">4</dd>
               </div>
               <div>
-                <div className="text-2xl font-bold text-teal-700">Multi-Model</div>
-                <div className="text-xs text-slate-500 mt-0.5">Age & Gender Adjusted</div>
+                <dt className="text-sm text-slate-500">Reference ranges</dt>
+                <dd className="mt-1 text-2xl font-semibold text-slate-900">Age &amp; sex adjusted</dd>
               </div>
               <div>
-                <div className="text-2xl font-bold text-slate-900">Real-Time</div>
-                <div className="text-xs text-slate-500 mt-0.5">Progression Analysis</div>
+                <dt className="text-sm text-slate-500">Output format</dt>
+                <dd className="mt-1 text-2xl font-semibold text-slate-900">Risk + guidance</dd>
               </div>
+            </dl>
+          </div>
+
+          {/* Assessment preview */}
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Sample assessment</p>
+                <p className="text-xs text-slate-500">Illustrative lab panel for a 47-year-old female</p>
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-800">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Low risk
+              </span>
+            </div>
+
+            <div className="space-y-4 px-6 py-6">
+              {[
+                { label: 'Rheumatoid Factor (RF)', value: '11 IU/mL', width: '28%', bar: 'bg-teal-600' },
+                { label: 'Anti-CCP Antibodies', value: '9 U/mL', width: '22%', bar: 'bg-teal-600' },
+                { label: 'C-Reactive Protein (CRP)', value: '1.8 mg/L', width: '30%', bar: 'bg-teal-600' },
+                { label: 'ESR', value: '12 mm/hr', width: '26%', bar: 'bg-teal-600' }
+              ].map((row) => (
+                <div key={row.label}>
+                  <div className="mb-1.5 flex items-center justify-between text-sm">
+                    <span className="font-medium text-slate-700">{row.label}</span>
+                    <span className="font-semibold text-slate-900">{row.value}</span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-slate-100">
+                    <div className={`h-1.5 rounded-full ${row.bar}`} style={{ width: row.width }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                <Scale className="h-4 w-4 text-teal-700" />
+                Modeled risk score
+              </div>
+              <span className="text-lg font-semibold text-teal-700">34%</span>
             </div>
           </div>
-
-          {/* Right Column - Clinical Data Card Showcase */}
-          <div className="lg:col-span-5">
-            <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xl p-6 relative">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-lg bg-teal-50 border border-teal-200 flex items-center justify-center">
-                    <Activity className="w-4 h-4 text-teal-700" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Clinical Preview</div>
-                    <div className="text-sm font-bold text-slate-900">Diagnostic Summary Card</div>
-                  </div>
-                </div>
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  Verified Model
-                </span>
-              </div>
-
-              <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div className="flex justify-between items-center text-xs text-slate-500 mb-1">
-                    <span>Rheumatoid Factor (RF)</span>
-                    <span className="font-semibold text-slate-700">18.5 IU/mL (Slight Elev)</span>
-                  </div>
-                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div className="bg-amber-500 h-full w-[65%]" />
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div className="flex justify-between items-center text-xs text-slate-500 mb-1">
-                    <span>Anti-CCP Antibodies</span>
-                    <span className="font-semibold text-slate-700">42 U/mL (Positive)</span>
-                  </div>
-                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div className="bg-rose-500 h-full w-[80%]" />
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div className="flex justify-between items-center text-xs text-slate-500 mb-1">
-                    <span>C-Reactive Protein (CRP)</span>
-                    <span className="font-semibold text-slate-700">2.4 mg/L (Normal)</span>
-                  </div>
-                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div className="bg-teal-600 h-full w-[35%]" />
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div className="flex justify-between items-center text-xs text-slate-500 mb-1">
-                    <span>Erythrocyte Sed. Rate (ESR)</span>
-                    <span className="font-semibold text-slate-700">16 mm/hr (Normal)</span>
-                  </div>
-                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div className="bg-teal-600 h-full w-[40%]" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <span className="flex items-center">
-                  <Lock className="w-3.5 h-3.5 text-slate-400 mr-1" />
-                  Encrypted & Patient Safe
-                </span>
-                <span className="font-medium text-teal-700">Clinical Dashboard v2.0</span>
-              </div>
-            </div>
-          </div>
-
         </div>
       </section>
 
-      {/* FEATURES SECTION */}
-      <section id="features" className="py-20 bg-white border-b border-slate-200/60">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-teal-700">Core Engine Capabilities</h2>
-            <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
-              Comprehensive Clinical RA Assessment
-            </h3>
-            <p className="text-slate-600 text-base">
-              Combining standardized diagnostic ranges, patient demographics, and machine learning risk classification to support clinical evaluation.
+      {/* How it works */}
+      <section id="how-it-works" className="border-b border-slate-200">
+        <div className="container-page py-14 lg:py-16">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start">
+            <div>
+            <p className="eyebrow mb-3">How it works</p>
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+              From blood panel to risk profile in three steps
+            </h2>
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-slate-600">
+              The platform is built for routine clinic workflows: no special equipment, no data-entry burden.
+              Each assessment follows the same pipeline for every patient.
             </p>
-          </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feat) => {
-              const Icon = feat.icon;
-              return (
-                <div key={feat.title} className="bg-slate-50/70 rounded-2xl p-8 border border-slate-200/80 transition-all duration-200 hover:border-slate-300 hover:shadow-md flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="w-12 h-12 bg-white rounded-xl border border-slate-200 flex items-center justify-center text-teal-700 shadow-sm">
-                        <Icon className="w-6 h-6" />
-                      </div>
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-teal-800 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-200/60">
-                        {feat.badge}
-                      </span>
-                    </div>
-                    <h4 className="text-xl font-bold text-slate-900 mb-3">{feat.title}</h4>
-                    <p className="text-slate-600 text-sm leading-relaxed">{feat.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* BIOMARKER SUITE SECTION */}
-      <section id="biomarkers" className="py-20 bg-slate-50 border-b border-slate-200/60">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-teal-700">Biomarker Suite</h2>
-            <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
-              Targeted Serology & Inflammatory Metrics
-            </h3>
-            <p className="text-slate-600 text-base">
-              Key lab parameters required for evaluation and their standard reference parameters.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-8">
-            {clinicalTech.map((tech) => {
-              const Icon = tech.icon;
-              return (
-                <div key={tech.title} className="bg-white rounded-2xl p-8 border border-slate-200/90 shadow-sm flex flex-col justify-between">
-                  <div>
-                    <div className="w-10 h-10 bg-teal-50 rounded-lg border border-teal-200/80 flex items-center justify-center text-teal-700 mb-6">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <h4 className="text-lg font-bold text-slate-900 mb-1">{tech.title}</h4>
-                    <div className="inline-block text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded mb-4">
-                      {tech.unit}
-                    </div>
-                    <p className="text-slate-600 text-sm leading-relaxed">{tech.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* RESEARCH & CLINICAL SCIENCE */}
-      <section id="research" className="py-20 bg-white border-b border-slate-200/60">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <span className="text-xs font-bold uppercase tracking-widest text-teal-700">Diagnostic Rigor</span>
-              <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-                Designed to Support Early Rheumatoid Arthritis Detection
-              </h3>
-              <p className="text-slate-600 leading-relaxed text-base">
-                Rheumatoid arthritis (RA) can cause joint damage before outward swelling becomes evident. By combining quantitative autoantibody screening with acute-phase protein monitoring and patient age/sex adjustments, ArthroCare AI helps identify risk signals early.
-              </p>
-              
-              <ul className="space-y-3 pt-2">
+              <ol className="mt-8 grid gap-3 sm:grid-cols-3">
                 {[
-                  "Age and gender adjusted reference ranges",
-                  "Automated comparative risk matrix over time",
-                  "Actionable lifestyle, dietary & joint preservation advice"
-                ].map((item) => (
-                  <li key={item} className="flex items-start text-sm text-slate-700 font-medium">
-                    <CheckCircle2 className="w-5 h-5 text-teal-600 mr-3 shrink-0 mt-0.5" />
-                    <span>{item}</span>
+                  { icon: FlaskConical, label: 'Lab panel' },
+                  { icon: BrainCircuit, label: 'Risk model' },
+                  { icon: FileText, label: 'Risk profile + guidance' }
+                ].map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <li key={item.label} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-teal-200 bg-teal-50 text-teal-700">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <span className="block text-sm font-medium text-slate-900">{item.label}</span>
+                        <span className="block text-xs text-slate-500">Step {index + 1}</span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
+              <ol className="space-y-6">
+                {steps.map((step) => (
+                  <li key={step.number} className="relative border-l-2 border-teal-100 pl-7">
+                    <span className="absolute -left-3 top-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-teal-600 bg-white text-[11px] font-semibold text-teal-700">
+                      {parseInt(step.number, 10)}
+                    </span>
+                    <h3 className="text-base font-semibold text-slate-900">{step.title}</h3>
+                    <p className="mt-1.5 max-w-md text-sm leading-relaxed text-slate-600">{step.description}</p>
                   </li>
                 ))}
-              </ul>
-
-              <div className="pt-4">
-                <Link to="/login">
-                  <button className="inline-flex items-center px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm rounded-xl shadow-sm transition-colors">
-                    <span>Access Assessment Portal</span>
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </button>
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 p-8 rounded-2xl border border-slate-200 space-y-6">
-              <h4 className="text-lg font-bold text-slate-900 border-b border-slate-200 pb-4">
-                Biomarker Assessment Matrix
-              </h4>
-              
-              <div className="space-y-4 text-xs">
-                <div className="flex justify-between items-center p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="font-semibold text-slate-800">Rheumatoid Factor (RF)</span>
-                  <span className="text-slate-500">Normal Range: &lt; 14 IU/mL</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="font-semibold text-slate-800">Anti-CCP Antibodies</span>
-                  <span className="text-slate-500">Normal Range: &lt; 20 U/mL</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="font-semibold text-slate-800">C-Reactive Protein (CRP)</span>
-                  <span className="text-slate-500">Normal Range: &lt; 3.0 mg/L</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="font-semibold text-slate-800">Erythrocyte Sed. Rate (ESR)</span>
-                  <span className="text-slate-500">Normal Range: 0 - 20 mm/hr</span>
-                </div>
-              </div>
-
-              <div className="text-[11px] text-slate-600 bg-teal-50/70 p-3.5 rounded-xl border border-teal-200/60 leading-relaxed">
-                Note: Diagnostic findings from ArthroCare AI provide risk assessment guidance and are designed to complement professional rheumatology consultation.
-              </div>
+              </ol>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer id="contact" className="bg-slate-900 text-slate-300">
-        <div className="max-w-7xl mx-auto px-6 pt-16 pb-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-800">
-            
-            {/* Brand */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center text-white">
-                  <Activity className="w-4 h-4" />
-                </div>
-                <span className="text-xl font-bold text-white tracking-tight">ArthroCare AI</span>
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Clinical risk intelligence system for early identification and personalized management of Rheumatoid Arthritis.
+      {/* Biomarkers */}
+      <section id="biomarkers" className="border-b border-slate-200 bg-slate-50/60">
+        <div className="container-page py-14 lg:py-16">
+          <div className="grid gap-10 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] xl:items-end">
+            <div className="max-w-xl">
+              <p className="eyebrow mb-3">Biomarker suite</p>
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+                The four markers behind every assessment
+              </h2>
+              <p className="mt-4 text-base leading-relaxed text-slate-600">
+                All values are interpreted against standard clinical reference ranges and adjusted for age
+                and sex. Together the panel captures two distinct signals.
               </p>
             </div>
 
-            {/* Platform Links */}
-            <div>
-              <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Platform</h5>
-              <ul className="space-y-2.5 text-xs">
-                <li><a href="#features" className="hover:text-teal-400 transition-colors">Features</a></li>
-                <li><a href="#biomarkers" className="hover:text-teal-400 transition-colors">Biomarker Suite</a></li>
-                <li><a href="#research" className="hover:text-teal-400 transition-colors">Clinical Research</a></li>
-                <li><Link to="/login" className="hover:text-teal-400 transition-colors">Patient Assessment</Link></li>
-              </ul>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-sm font-semibold text-slate-900">Autoantibody serology</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-teal-700">RF · Anti-CCP</p>
+                <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
+                  Indicates the presence of RA-specific immune activity.
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-sm font-semibold text-slate-900">Inflammation markers</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-teal-700">CRP · ESR</p>
+                <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
+                  Reflects current systemic inflammatory burden and disease activity.
+                </p>
+              </div>
             </div>
-
-            {/* Legal */}
-            <div>
-              <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Compliance</h5>
-              <ul className="space-y-2.5 text-xs">
-                <li><a href="#" className="hover:text-teal-400 transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-teal-400 transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-teal-400 transition-colors">Data Security</a></li>
-                <li><a href="#" className="hover:text-teal-400 transition-colors">Clinical Disclaimer</a></li>
-              </ul>
-            </div>
-
-            {/* Contact */}
-            <div>
-              <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Contact</h5>
-              <ul className="space-y-3 text-xs">
-                <li className="flex items-center space-x-2.5">
-                  <Mail className="w-4 h-4 text-teal-500 shrink-0" />
-                  <a href="mailto:info@arthrocare.com" className="hover:text-white transition-colors">info@arthrocare.com</a>
-                </li>
-                <li className="flex items-center space-x-2.5">
-                  <Phone className="w-4 h-4 text-teal-500 shrink-0" />
-                  <a href="tel:+1555432584" className="hover:text-white transition-colors">+1 (555) 432-584</a>
-                </li>
-                <li className="flex items-center space-x-2.5">
-                  <MapPin className="w-4 h-4 text-teal-500 shrink-0" />
-                  <span>123 Health Tech Blvd, CA</span>
-                </li>
-              </ul>
-            </div>
-
           </div>
 
-          <div className="pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
-            <p>© {new Date().getFullYear()} ArthroCare AI. All rights reserved.</p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-slate-300 transition-colors">Documentation</a>
-              <a href="#" className="hover:text-slate-300 transition-colors">System Status</a>
-              <a href="#" className="hover:text-slate-300 transition-colors">Support</a>
+          <div className="mt-10 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+            <table className="w-full min-w-[720px] text-left">
+              <thead>
+                <tr className="border-b border-slate-200">
+                  <th scope="col" className="th">Biomarker</th>
+                  <th scope="col" className="th">Reference range</th>
+                  <th scope="col" className="th">Clinical role</th>
+                  <th scope="col" className="th">What elevation indicates</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {biomarkerTable.map((row) => (
+                  <tr key={row.name} className="align-top">
+                    <td className="td py-4 font-semibold text-slate-900">{row.name}</td>
+                    <td className="td py-4 whitespace-nowrap">
+                      <span className="inline-flex rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-700">
+                        {row.reference}
+                      </span>
+                    </td>
+                    <td className="td py-4">{row.role}</td>
+                    <td className="td py-4">{row.elevation}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* Clinical approach */}
+      <section id="clinical-approach" className="border-b border-slate-200">
+        <div className="container-page py-14 lg:py-16">
+          <div className="grid gap-10 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] xl:items-start">
+            <div className="max-w-xl">
+              <p className="eyebrow mb-3">Clinical approach</p>
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+                Designed for earlier detection and clearer follow-up
+              </h2>
+              <p className="mt-4 text-base leading-relaxed text-slate-600">
+                Rheumatoid arthritis is frequently missed in its early stages because symptoms overlap with
+                everyday aches and single lab reports are hard to interpret in isolation. ArthroCare AI combines
+                quantitative autoantibody serology with acute-phase markers and demographic baselines to surface
+                risk signals that might otherwise go unnoticed.
+              </p>
+              <p className="mt-4 text-base leading-relaxed text-slate-600">
+                Each assessment explains which markers are driving the score, and serial panels are tracked over
+                time so changes — not just snapshots — inform the picture.
+              </p>
             </div>
+
+            <div className="grid gap-3">
+              {[
+                {
+                  icon: Scale,
+                  title: 'Adjusted, not absolute',
+                  body: 'Age and sex influence normal biomarker ranges. Every score is calculated against patient-specific baselines rather than one-size-fits-all cut-offs.'
+                },
+                {
+                  icon: FileCheck,
+                  title: 'Explainable output',
+                  body: 'The report lists each contributing marker alongside the modeled probability, so the reasoning behind a risk level is visible and reviewable.'
+                },
+                {
+                  icon: TrendingUp,
+                  title: 'Trend-aware monitoring',
+                  body: 'Serial lab entries are compared against earlier panels, highlighting directional changes in inflammation and autoantibody levels over time.'
+                }
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.title} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-slate-900">{item.title}</h3>
+                        <p className="mt-1 text-sm leading-relaxed text-slate-600">{item.body}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <p className="mt-8 max-w-3xl rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm leading-relaxed text-slate-600">
+            <span className="font-semibold text-slate-900">Scope note:</span> ArthroCare AI is a decision-support
+            tool. Results should complement — not replace — evaluation by a qualified rheumatologist or
+            primary care physician.
+          </p>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="border-b border-slate-200">
+        <div className="container-page flex flex-col items-center gap-6 py-16 text-center">
+          <h2 className="max-w-2xl text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            Ready to review your rheumatoid arthritis risk?
+          </h2>
+          <p className="max-w-xl text-base leading-relaxed text-slate-600">
+            Create a patient account, enter your most recent lab panel, and receive an age- and sex-adjusted risk
+            profile with next steps.
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link to="/register" className="btn-primary">
+              Create your account
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link to="/login" className="btn-secondary">
+              Sign in to portal
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 text-slate-300">
+        <div className="container-page py-12">
+          <div className="grid gap-10 md:grid-cols-4">
+            <div className="space-y-3 md:col-span-2">
+              <Logo subtitle="Clinical intelligence" dark />
+              <p className="max-w-sm text-sm leading-relaxed text-slate-400">
+                A clinical decision-support platform for early rheumatoid arthritis risk identification,
+                longitudinal monitoring, and personalized management guidance.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-white">Platform</h3>
+              <ul className="mt-3 space-y-2 text-sm">
+                <li><a href="#how-it-works" className="text-slate-400 transition-colors hover:text-white">How it works</a></li>
+                <li><a href="#biomarkers" className="text-slate-400 transition-colors hover:text-white">Biomarker suite</a></li>
+                <li><a href="#clinical-approach" className="text-slate-400 transition-colors hover:text-white">Clinical approach</a></li>
+                <li><Link to="/login" className="text-slate-400 transition-colors hover:text-white">Patient portal</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-white">Compliance</h3>
+              <ul className="mt-3 space-y-2 text-sm">
+                <li><a href="#" className="text-slate-400 transition-colors hover:text-white">Privacy policy</a></li>
+                <li><a href="#" className="text-slate-400 transition-colors hover:text-white">Terms of service</a></li>
+                <li><a href="#" className="text-slate-400 transition-colors hover:text-white">Data security</a></li>
+                <li><a href="#" className="text-slate-400 transition-colors hover:text-white">Clinical disclaimer</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-slate-800 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center">
+            <p>© {new Date().getFullYear()} ArthroCare AI. All rights reserved.</p>
+            <p>Decision-support tool for educational and clinical use.</p>
           </div>
         </div>
       </footer>
-
     </div>
   );
 };

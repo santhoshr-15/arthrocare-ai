@@ -1,45 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
-import CardTransition from '../animations/CardTransition';
-import { 
-  Chart as ChartJS, 
-  CategoryScale, 
-  LinearScale, 
-  PointElement, 
-  LineElement, 
-  BarElement,
-  Title, 
-  Tooltip, 
-  Legend,
-  Filler
-} from 'chart.js';
-import { 
-  TrendingUp, 
-  Activity, 
-  Calendar, 
-  FlaskConical, 
-  AlertTriangle,
-  CheckCircle2,
-  RefreshCw,
-  User,
-  Stethoscope,
-  BarChart3
-} from 'lucide-react';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler } from 'chart.js';
+import { TrendingUp, BarChart3, RefreshCw } from 'lucide-react';
 import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { auth, db } from "../../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
+import Stat from '../ui/Stat';
+import Badge from '../ui/Badge';
+import Loader from '../ui/Loader';
+import EmptyState from '../ui/EmptyState';
 
 ChartJS.register(
-  CategoryScale, 
-  LinearScale, 
-  PointElement, 
-  LineElement, 
-  BarElement,
-  Title, 
-  Tooltip, 
-  Legend,
-  Filler
+  CategoryScale, LinearScale, PointElement, LineElement, BarElement,
+  Title, Tooltip, Legend, Filler
 );
+
+const riskTone = (level) => {
+  if (level === 'High') return 'rose';
+  if (level === 'Moderate') return 'orange';
+  if (level === 'Low') return 'amber';
+  return 'emerald';
+};
 
 const Monitoring = () => {
   const [predictionHistory, setPredictionHistory] = useState([]);
@@ -63,14 +44,13 @@ const Monitoring = () => {
   const loadPredictionHistory = async (userId) => {
     try {
       setLoading(true);
-      console.log("📥 Loading ALL lab data for user:", userId);
 
       const labQuery = query(
         collection(db, "LabInformation"),
         where("userId", "==", userId),
         orderBy("createdAt", "desc")
       );
-      
+
       const snapshot = await getDocs(labQuery);
 
       if (snapshot.empty) {
@@ -81,10 +61,10 @@ const Monitoring = () => {
 
       const history = [];
       const backendURL = import.meta.env.VITE_BACKEND_URL;
-      
+
       for (const docSnapshot of snapshot.docs) {
         const labData = docSnapshot.data();
-        
+
         try {
           const payload = {
             age: parseFloat(labData.userAge),
@@ -103,13 +83,11 @@ const Monitoring = () => {
 
           if (response.ok) {
             const prediction = await response.json();
-            
+
             history.push({
               id: docSnapshot.id,
               date: new Date(labData.createdAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
+                year: 'numeric', month: 'short', day: 'numeric'
               }),
               timestamp: new Date(labData.createdAt),
               risk_score: prediction.risk_score,
@@ -144,14 +122,12 @@ const Monitoring = () => {
   const filteredHistory = predictionHistory.filter(entry => {
     const now = new Date();
     const entryDate = new Date(entry.timestamp);
-    
+
     switch (timeRange) {
       case 'week':
-        const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        return entryDate >= oneWeekAgo;
+        return entryDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       case 'month':
-        const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        return entryDate >= oneMonthAgo;
+        return entryDate >= new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       default:
         return true;
     }
@@ -161,18 +137,17 @@ const Monitoring = () => {
     labels: filteredHistory.map(entry => entry.date),
     datasets: [
       {
-        label: 'RA Risk Score (%)',
+        label: 'RA risk score (%)',
         data: filteredHistory.map(entry => entry.risk_score),
         borderColor: '#0f766e',
         backgroundColor: 'rgba(15, 118, 110, 0.08)',
         borderWidth: 2.5,
         fill: true,
         tension: 0.3,
-        pointBackgroundColor: filteredHistory.map(entry => 
+        pointBackgroundColor: filteredHistory.map(entry =>
           entry.risk_level === 'High' ? '#dc2626' :
           entry.risk_level === 'Moderate' ? '#ea580c' :
-          entry.risk_level === 'Low' ? '#d97706' :
-          '#16a34a'
+          entry.risk_level === 'Low' ? '#d97706' : '#16a34a'
         ),
         pointBorderColor: '#ffffff',
         pointBorderWidth: 2,
@@ -193,7 +168,7 @@ const Monitoring = () => {
         tension: 0.3
       },
       {
-        label: 'Anti-CCP Antibodies',
+        label: 'Anti-CCP antibodies',
         data: filteredHistory.map(entry => entry.factors.antiCCP),
         borderColor: '#db2777',
         backgroundColor: 'transparent',
@@ -209,7 +184,7 @@ const Monitoring = () => {
         tension: 0.3
       },
       {
-        label: 'ESR Rate',
+        label: 'ESR rate',
         data: filteredHistory.map(entry => entry.factors.erythrocyteSedimentationRate),
         borderColor: '#d97706',
         backgroundColor: 'transparent',
@@ -236,7 +211,7 @@ const Monitoring = () => {
           'rgba(234, 88, 12, 0.8)',
           'rgba(220, 38, 38, 0.8)'
         ],
-        borderRadius: 8
+        borderRadius: 6
       }
     ]
   };
@@ -245,7 +220,7 @@ const Monitoring = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } }
+      legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } }
     },
     scales: {
       y: { beginAtZero: true, max: 100, ticks: { font: { size: 11 } } },
@@ -258,106 +233,84 @@ const Monitoring = () => {
   };
 
   if (loading) {
+    return <Loader label="Generating serial measurement analytics…" />;
+  }
+
+  if (predictionHistory.length === 0) {
     return (
-      <CardTransition className="bg-white p-8 rounded-2xl border border-slate-200/90 shadow-sm text-center">
-        <div className="w-8 h-8 border-3 border-teal-700 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Generating Serial Measurement Analytics...</p>
-      </CardTransition>
+      <EmptyState
+        icon={TrendingUp}
+        title="No serial measurements yet"
+        description="Submit at least two lab panels over time to view longitudinal trends and biomarker trajectories."
+      />
     );
   }
 
+  const latest = predictionHistory[0];
+
   return (
-    <CardTransition className="space-y-6">
-      
-      {/* Header Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-teal-700 rounded-xl flex items-center justify-center text-white shadow-sm">
-            <Activity className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-slate-900">Longitudinal Risk & Biomarker Analytics</h2>
-            <p className="text-xs text-slate-500">Track changes across serial blood tests over time</p>
+    <div className="space-y-6">
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Stat label="Serial tests recorded" value={predictionHistory.length} />
+        <Stat label="Latest risk score" value={`${latest?.risk_score || 0}%`} valueClass="text-teal-700" />
+        <Stat label="Current risk band" value={latest?.risk_level || 'N/A'} />
+        <Stat label="Last assessed" value={latest?.date || 'N/A'} valueClass="text-sm font-semibold" />
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-slate-600">Time range:</span>
+          <div className="flex rounded-lg border border-slate-200 p-0.5" role="group" aria-label="Time range">
+            {['week', 'month', 'all'].map(r => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setTimeRange(r)}
+                className={`rounded-md px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
+                  timeRange === r ? 'bg-teal-700 text-white' : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {r}
+              </button>
+            ))}
           </div>
         </div>
 
-        <button
-          onClick={refreshData}
-          className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-semibold rounded-xl text-xs transition-colors flex items-center space-x-2 shadow-sm"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>Refresh Data</span>
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-slate-600">Display:</span>
+          <div className="flex rounded-lg border border-slate-200 p-0.5" role="group" aria-label="Display metric">
+            {['risk_score', 'lab_values'].map(m => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setSelectedMetric(m)}
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                  selectedMetric === m ? 'bg-teal-700 text-white' : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {m === 'risk_score' ? 'Risk trajectory' : 'Biomarker levels'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button type="button" onClick={refreshData} className="btn-secondary shrink-0">
+          <RefreshCw className="h-4 w-4" />
+          Refresh data
         </button>
       </div>
 
-      {/* Metric Stat Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm space-y-1">
-          <span className="text-slate-500 font-medium">Serial Tests Recorded</span>
-          <div className="text-2xl font-extrabold text-slate-900">{predictionHistory.length}</div>
-        </div>
-
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm space-y-1">
-          <span className="text-slate-500 font-medium">Latest Risk Score</span>
-          <div className="text-2xl font-extrabold text-teal-700">{predictionHistory[0]?.risk_score || 0}%</div>
-        </div>
-
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm space-y-1">
-          <span className="text-slate-500 font-medium">Current Risk Band</span>
-          <div className="text-sm font-extrabold text-slate-900 mt-1">{predictionHistory[0]?.risk_level || 'N/A'}</div>
-        </div>
-
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm space-y-1">
-          <span className="text-slate-500 font-medium">Last Assessed Date</span>
-          <div className="text-xs font-bold text-slate-800 mt-1">{predictionHistory[0]?.date || 'N/A'}</div>
-        </div>
-      </div>
-
-      {/* Filter Controls */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 flex flex-wrap items-center justify-between gap-4 text-xs">
-        <div className="flex items-center space-x-2">
-          <span className="font-bold text-slate-700">Time Range:</span>
-          {['week', 'month', 'all'].map(r => (
-            <button
-              key={r}
-              onClick={() => setTimeRange(r)}
-              className={`px-3 py-1.5 rounded-lg font-semibold capitalize transition-all ${
-                timeRange === r ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <span className="font-bold text-slate-700">Display Metric:</span>
-          {['risk_score', 'lab_values'].map(m => (
-            <button
-              key={m}
-              onClick={() => setSelectedMetric(m)}
-              className={`px-3 py-1.5 rounded-lg font-semibold capitalize transition-all ${
-                selectedMetric === m ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              {m === 'risk_score' ? 'Risk Trajectory' : 'Biomarker Levels'}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Charts Grid */}
-      <div className="grid lg:grid-cols-12 gap-6">
-        
-        {/* Main Line Chart */}
-        <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
-          <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
-            <TrendingUp className="w-4 h-4 text-teal-700" />
-            <h3 className="text-sm font-bold text-slate-900">
-              {selectedMetric === 'risk_score' ? 'Longitudinal Risk Score Trajectory' : 'Serial Lab Biomarker Concentrations'}
+      {/* Charts */}
+      <div className="grid gap-6 lg:grid-cols-12">
+        <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:col-span-8">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+            <TrendingUp className="h-4 w-4 text-teal-700" />
+            <h3 className="text-sm font-semibold text-slate-900">
+              {selectedMetric === 'risk_score' ? 'Longitudinal risk score trajectory' : 'Serial lab biomarker concentrations'}
             </h3>
           </div>
-
           <div className="h-72">
             {selectedMetric === 'risk_score' ? (
               <Line data={riskScoreChartData} options={chartOptions} />
@@ -367,72 +320,56 @@ const Monitoring = () => {
           </div>
         </div>
 
-        {/* Risk Distribution Bar Chart */}
-        <div className="lg:col-span-4 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
-          <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
-            <BarChart3 className="w-4 h-4 text-teal-700" />
-            <h3 className="text-sm font-bold text-slate-900">Risk Band Frequency</h3>
+        <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:col-span-4">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+            <BarChart3 className="h-4 w-4 text-teal-700" />
+            <h3 className="text-sm font-semibold text-slate-900">Risk band frequency</h3>
           </div>
-
           <div className="h-72">
             <Bar data={riskLevelDistribution} options={chartOptions} />
           </div>
         </div>
-
       </div>
 
-      {/* Historical Data Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-          <h3 className="text-sm font-bold text-slate-900">Historical Serology & Risk Records</h3>
-          <span className="text-xs text-slate-500">{filteredHistory.length} total entries</span>
+      {/* History table */}
+      <div className="rounded-xl border border-slate-200 bg-white">
+        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+          <h3 className="text-sm font-semibold text-slate-900">Historical serology & risk records</h3>
+          <span className="text-xs text-slate-500">{filteredHistory.length} entries</span>
         </div>
 
-        {filteredHistory.length === 0 ? (
-          <div className="text-center py-8 text-xs text-slate-500">
-            No lab test records found for the selected time filter.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
-                  <th className="py-2.5 px-3">Date</th>
-                  <th className="py-2.5 px-3">Risk Score</th>
-                  <th className="py-2.5 px-3">Risk Band</th>
-                  <th className="py-2.5 px-3">RF (IU/mL)</th>
-                  <th className="py-2.5 px-3">Anti-CCP (U/mL)</th>
-                  <th className="py-2.5 px-3">CRP (mg/L)</th>
-                  <th className="py-2.5 px-3">ESR (mm/hr)</th>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-slate-200">
+                <th scope="col" className="th">Date</th>
+                <th scope="col" className="th">Risk score</th>
+                <th scope="col" className="th">Risk band</th>
+                <th scope="col" className="th">RF (IU/mL)</th>
+                <th scope="col" className="th">Anti-CCP (U/mL)</th>
+                <th scope="col" className="th">CRP (mg/L)</th>
+                <th scope="col" className="th">ESR (mm/hr)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredHistory.map((entry) => (
+                <tr key={entry.id} className="hover:bg-slate-50">
+                  <td className="td font-semibold text-slate-900">{entry.date}</td>
+                  <td className="td font-semibold text-teal-700">{entry.risk_score}%</td>
+                  <td className="td">
+                    <Badge tone={riskTone(entry.risk_level)}>{entry.risk_level}</Badge>
+                  </td>
+                  <td className="td font-mono">{entry.factors.rheumatoidFactor}</td>
+                  <td className="td font-mono">{entry.factors.antiCCP}</td>
+                  <td className="td font-mono">{entry.factors.cReactiveProtein}</td>
+                  <td className="td font-mono">{entry.factors.erythrocyteSedimentationRate}</td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredHistory.map((entry) => (
-                  <tr key={entry.id} className="hover:bg-slate-50/80">
-                    <td className="py-2.5 px-3 font-semibold text-slate-900">{entry.date}</td>
-                    <td className="py-2.5 px-3 font-bold text-teal-700">{entry.risk_score}%</td>
-                    <td className="py-2.5 px-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${
-                        entry.risk_level === 'High' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
-                        entry.risk_level === 'Moderate' ? 'bg-amber-50 text-amber-800 border border-amber-200' :
-                        'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                      }`}>
-                        {entry.risk_level}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 font-mono text-slate-700">{entry.factors.rheumatoidFactor}</td>
-                    <td className="py-2.5 px-3 font-mono text-slate-700">{entry.factors.antiCCP}</td>
-                    <td className="py-2.5 px-3 font-mono text-slate-700">{entry.factors.cReactiveProtein}</td>
-                    <td className="py-2.5 px-3 font-mono text-slate-700">{entry.factors.erythrocyteSedimentationRate}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-
-    </CardTransition>
+    </div>
   );
 };
 

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, ShieldCheck, Activity, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, AlertCircle, ShieldCheck, ArrowRight } from "lucide-react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase/config";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+import Logo from "../components/ui/Logo";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -21,24 +21,18 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      console.log("🔄 Starting login process...");
-
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      console.log("✅ User signed in successfully:", user.uid);
-
       let userData = {};
       let docName = "";
-      
+
       try {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           userData = userDoc.data();
           docName = userData.docName || user.displayName?.replace(/[^a-zA-Z0-9]/g, '_') || "user";
-          console.log("✅ User data retrieved from Firestore");
         } else {
-          console.log("⚠️ No user data found in Firestore, using basic info");
           userData = {
             name: user.displayName || "User",
             email: user.email,
@@ -47,7 +41,7 @@ const LoginPage = () => {
           docName = user.displayName?.replace(/[^a-zA-Z0-9]/g, '_') || "user";
         }
       } catch (firestoreError) {
-        console.error("❌ Firestore error:", firestoreError);
+        console.error("Firestore error:", firestoreError);
         userData = {
           name: user.displayName || "User",
           email: user.email,
@@ -68,9 +62,8 @@ const LoginPage = () => {
 
       try {
         await setDoc(doc(db, "login", docName), loginData);
-        console.log("✅ Login details saved to login collection");
       } catch (firestoreError) {
-        console.error("❌ Login details save failed:", firestoreError);
+        console.error("Login details save failed:", firestoreError);
       }
 
       try {
@@ -78,9 +71,8 @@ const LoginPage = () => {
           lastLogin: new Date().toISOString(),
           loginCount: (userData.loginCount || 0) + 1
         });
-        console.log("✅ User login details updated");
       } catch (firestoreError) {
-        console.error("❌ User login update failed:", firestoreError);
+        console.error("User login update failed:", firestoreError);
       }
 
       const userWithRole = {
@@ -93,23 +85,19 @@ const LoginPage = () => {
 
       if (remember) {
         localStorage.setItem("currentUser", JSON.stringify(userWithRole));
-        console.log("✅ User stored in localStorage");
       } else {
         sessionStorage.setItem("currentUser", JSON.stringify(userWithRole));
-        console.log("✅ User stored in sessionStorage");
       }
 
       if (userWithRole.role === "admin") {
-        console.log("🔄 Redirecting to admin dashboard");
         navigate("/admin/dashboard");
       } else {
-        console.log("🔄 Redirecting to patient dashboard");
         navigate("/patient/dashboard");
       }
 
     } catch (error) {
-      console.error("❌ Login error:", error);
-      
+      console.error("Login error:", error);
+
       switch (error.code) {
         case 'auth/invalid-email':
           setError("Invalid email address format.");
@@ -141,178 +129,147 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
-      
-      {/* Top Navbar */}
-      <header className="w-full bg-white border-b border-slate-200 py-3.5 px-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="w-9 h-9 bg-teal-700 rounded-xl flex items-center justify-center text-white shadow-sm">
-              <Activity className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-lg font-bold text-slate-900">ArthroCare <span className="text-teal-700">AI</span></span>
-              <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Clinical Portal</span>
-            </div>
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      {/* Top bar */}
+      <header className="border-b border-slate-200 bg-white">
+        <div className="container-page flex h-16 items-center justify-between">
+          <Link to="/" aria-label="Back to home">
+            <Logo subtitle="Clinical portal" />
           </Link>
-          <Link to="/" className="text-xs font-semibold text-slate-500 hover:text-teal-700 transition-colors">
-            Return to Homepage
-          </Link>
+          <Link to="/" className="btn-ghost">Back to home</Link>
         </div>
       </header>
 
-      {/* Main Container */}
-      <div className="flex-1 flex items-center justify-center p-6 my-8">
-        <div className="w-full max-w-5xl grid lg:grid-cols-12 gap-8 items-center bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
-          
-          {/* Left Column: Clinical Info Panel */}
-          <div className="lg:col-span-6 bg-slate-900 text-white p-8 lg:p-12 flex flex-col justify-between min-h-[460px]">
+      {/* Main */}
+      <main className="flex flex-1 items-center justify-center px-4 py-10">
+        <div className="w-full max-w-4xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm md:grid md:grid-cols-2">
+          {/* Info panel */}
+          <div className="hidden flex-col justify-between bg-slate-900 p-10 text-white md:flex">
             <div>
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-900/60 border border-teal-700/80 text-teal-300 text-xs font-medium mb-6">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Encrypted Health Portal</span>
+              <div className="mb-6 inline-flex items-center gap-2 rounded-md border border-teal-700/60 bg-teal-900/40 px-2.5 py-1 text-xs font-medium text-teal-300">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Encrypted health portal
               </div>
-
-              <h1 className="text-3xl font-extrabold text-white tracking-tight mb-4">
-                Clinical Decision Support System
-              </h1>
-
-              <p className="text-slate-300 text-sm leading-relaxed mb-8">
-                Access your personalized rheumatoid arthritis risk assessments, biomarker tracking metrics, and clinical recommendations.
+              <h1 className="text-2xl font-semibold tracking-tight">Sign in to your clinical workspace</h1>
+              <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                Access your personalized rheumatoid arthritis risk assessments, biomarker trends, and clinical
+                recommendations.
               </p>
 
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-                  <span>4-Biomarker Analysis (RF, Anti-CCP, CRP, ESR)</span>
-                </div>
-                <div className="flex items-start space-x-3 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-                  <span>Age & Gender Adjusted ML Risk Scoring</span>
-                </div>
-                <div className="flex items-start space-x-3 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-                  <span>Longitudinal Trend & Progression Matrix</span>
-                </div>
-              </div>
+              <ul className="mt-8 space-y-3 text-sm text-slate-300">
+                <li className="flex items-start gap-3">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
+                  Four-biomarker analysis (RF, Anti-CCP, CRP, ESR)
+                </li>
+                <li className="flex items-start gap-3">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
+                  Age- and sex-adjusted ML risk scoring
+                </li>
+                <li className="flex items-start gap-3">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
+                  Longitudinal trend and progression tracking
+                </li>
+              </ul>
             </div>
 
-            <div className="pt-8 border-t border-slate-800 text-[11px] text-slate-500 flex items-center justify-between">
-              <span>ArthroCare AI Healthcare Suite</span>
-              <span>Secure Authorization</span>
-            </div>
+            <p className="mt-10 border-t border-slate-800 pt-4 text-xs text-slate-500">
+              Secure authorization. ArthroCare AI Healthcare Suite.
+            </p>
           </div>
 
-          {/* Right Column: Login Form */}
-          <div className="lg:col-span-6 p-8 lg:p-10">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Sign In to Account</h2>
-              <p className="text-slate-500 text-xs mt-1">Enter your clinical credentials to continue.</p>
-            </div>
+          {/* Form */}
+          <div className="p-8 sm:p-10">
+            <h2 className="text-xl font-semibold tracking-tight text-slate-900">Sign in to your account</h2>
+            <p className="mt-1.5 text-sm text-slate-500">Enter your credentials to continue.</p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              
-              {/* Email Input */}
+            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Email Address
-                </label>
+                <label htmlFor="email" className="field-label">Email address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
+                    id="email"
                     type="email"
+                    autoComplete="email"
                     placeholder="patient@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-600 transition-all"
+                    className="field pl-10"
                   />
                 </div>
               </div>
 
-              {/* Password Input */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Password
-                </label>
+                <label htmlFor="password" className="field-label">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
+                    id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full pl-10 pr-10 py-2.5 bg-slate-50/60 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-600 transition-all"
+                    className="field pl-10 pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
-              {/* Remember + Forgot */}
-              <div className="flex items-center justify-between text-xs pt-1">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={() => setRemember(!remember)}
-                    className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4"
-                  />
-                  <span className="text-slate-600 font-medium">Keep me signed in</span>
-                </label>
-              </div>
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={() => setRemember(!remember)}
+                  className="h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                />
+                Keep me signed in
+              </label>
 
-              {/* Error Alert */}
               {error && (
-                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-start space-x-2">
-                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3.5 py-3 text-sm text-rose-700">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{error}</span>
                 </div>
               )}
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3 px-4 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm rounded-xl shadow-sm transition-all duration-150 flex items-center justify-center space-x-2 disabled:opacity-50"
-              >
+              <button type="submit" disabled={loading} className="btn-primary w-full">
                 {loading ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Authenticating...</span>
-                  </div>
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Signing in…
+                  </>
                 ) : (
                   <>
-                    <span>Sign In to Portal</span>
-                    <ArrowRight className="w-4 h-4 ml-1" />
+                    Sign in
+                    <ArrowRight className="h-4 w-4" />
                   </>
                 )}
               </button>
-
             </form>
 
-            <div className="mt-6 pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
+            <p className="mt-6 border-t border-slate-200 pt-5 text-center text-sm text-slate-500">
               New patient or clinician?{" "}
-              <Link to="/register" className="font-bold text-teal-700 hover:text-teal-800 transition-colors">
+              <Link to="/register" className="font-medium text-teal-700 hover:text-teal-800">
                 Create an account
               </Link>
-            </div>
+            </p>
           </div>
-
         </div>
-      </div>
+      </main>
 
-      {/* Footer */}
-      <footer className="py-4 text-center text-xs text-slate-400 border-t border-slate-200">
-        © {new Date().getFullYear()} ArthroCare AI System. Confidential & HIPAA Compliant Data Infrastructure.
+      <footer className="border-t border-slate-200 py-4 text-center text-xs text-slate-400">
+        © {new Date().getFullYear()} ArthroCare AI System. Confidential clinical data infrastructure.
       </footer>
-
     </div>
   );
 };
