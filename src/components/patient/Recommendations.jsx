@@ -67,7 +67,7 @@ const Recommendations = () => {
 
   const generateRecommendations = async () => {
     if (!currentUser) {
-      setError('Please log in to generate recommendations.');
+      setError('Please sign in to generate clinical recommendations.');
       return;
     }
 
@@ -110,6 +110,13 @@ const Recommendations = () => {
 
       setRecommendations(result);
 
+      // Auto-expand all sections on generate
+      if (result.recommendations) {
+        const initialOpen = {};
+        Object.keys(result.recommendations).forEach(k => { initialOpen[k] = true; });
+        setExpandedSections(initialOpen);
+      }
+
     } catch (err) {
       console.error("Error generating recommendations:", err);
       setError(err.message || 'Failed to generate recommendations. Ensure the Flask API is running.');
@@ -140,116 +147,114 @@ const Recommendations = () => {
   };
 
   if (loading) {
-    return <Loader label="Synthesizing evidence-based recommendations…" />;
+    return <Loader label="Synthesizing evidence-based clinical guidance protocol…" />;
   }
 
   return (
     <div className="space-y-6">
-      {/* Trigger */}
-      <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+      {/* Trigger Card Banner */}
+      <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-5 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-teal-50 text-teal-800 border border-teal-200">
             <Stethoscope className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Personalized health guidance protocol</h2>
-            <p className="mt-0.5 text-xs text-slate-500">
-              Generate dietary, physical activity, and joint preservation recommendations from your latest serology data.
-            </p>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">Evidence-Based Clinical Guidance Protocol</h2>
+            <p className="text-[11px] text-slate-500">Synthesizes targeted dietary, physical therapy, and joint preservation recommendations.</p>
           </div>
         </div>
-        <button type="button" onClick={generateRecommendations} disabled={loading} className="btn-primary shrink-0">
-          <Sparkles className="h-4 w-4" />
-          {recommendations ? 'Regenerate protocol' : 'Generate protocol'}
+        <button type="button" onClick={generateRecommendations} disabled={loading} className="btn-primary shrink-0 text-xs">
+          <Sparkles className="h-3.5 w-3.5" />
+          {recommendations ? 'Regenerate Protocol' : 'Synthesize Protocol'}
         </button>
       </div>
 
       {error && (
-        <div className="flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3.5 py-3 text-sm text-rose-700">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+        <div className="flex items-start gap-2.5 rounded-md border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
           <span>{error}</span>
         </div>
       )}
 
-      {/* Protocol display */}
+      {/* Protocol Display */}
       {recommendations && (
-        <div className="space-y-6">
-          {/* Patient summary */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-            <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-4">
-              <h3 className="text-sm font-semibold text-slate-900">Clinical baseline summary</h3>
-              <Badge tone={getSeverityTone(recommendations.patientSummary.severity)}>
-                Severity index: {recommendations.patientSummary.severity}
+        <div className="space-y-5">
+          {/* Clinical Summary Bar */}
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs">
+            <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Clinical Baseline Summary</h3>
+              <Badge tone={getSeverityTone(recommendations.patientSummary.severity)} showDot>
+                Severity Classification: {recommendations.patientSummary.severity}
               </Badge>
             </div>
 
-            <dl className="grid grid-cols-2 gap-4 text-sm lg:grid-cols-4">
-              <div>
-                <dt className="text-xs text-slate-500">Age / sex</dt>
-                <dd className="mt-0.5 font-semibold text-slate-900">
+            <dl className="grid grid-cols-2 gap-3 text-xs lg:grid-cols-4">
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-2.5">
+                <dt className="text-slate-500 font-medium">Demographics Context</dt>
+                <dd className="mt-0.5 font-bold text-slate-900">
                   {recommendations.patientSummary.age} yrs ({recommendations.patientSummary.gender})
                 </dd>
               </div>
-              <div>
-                <dt className="text-xs text-slate-500">Risk index</dt>
-                <dd className="mt-0.5 font-semibold text-slate-900">{recommendations.patientSummary.riskScore}%</dd>
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-2.5">
+                <dt className="text-slate-500 font-medium">Model Risk Index</dt>
+                <dd className="mt-0.5 font-bold text-slate-900">{recommendations.patientSummary.riskScore}%</dd>
               </div>
-              <div>
-                <dt className="text-xs text-slate-500">ML probability</dt>
-                <dd className="mt-0.5 font-semibold text-slate-900">
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-2.5">
+                <dt className="text-slate-500 font-medium">ML Probability</dt>
+                <dd className="mt-0.5 font-bold text-slate-900">
                   {recommendations.patientSummary.modelProbability
                     ? `${(recommendations.patientSummary.modelProbability * 100).toFixed(1)}%`
                     : 'Evaluated'}
                 </dd>
               </div>
-              <div>
-                <dt className="text-xs text-slate-500">Protocol modules</dt>
-                <dd className="mt-0.5 font-semibold text-teal-700">
-                  {Object.keys(recommendations.recommendations).length}
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-2.5">
+                <dt className="text-slate-500 font-medium">Protocol Categories</dt>
+                <dd className="mt-0.5 font-bold text-teal-800">
+                  {Object.keys(recommendations.recommendations).length} Modules
                 </dd>
               </div>
             </dl>
           </div>
 
-          {/* Collapsible guidance modules */}
-          <div className="space-y-4">
+          {/* Structured Accordion Cards */}
+          <div className="space-y-3">
             {Object.entries(recommendations.recommendations).map(([sectionKey, sectionData]) => {
               const Icon = getSectionIcon(sectionKey);
               const isOpen = !!expandedSections[sectionKey];
               return (
-                <div key={sectionKey} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+                <div key={sectionKey} className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xs">
                   <button
                     type="button"
                     onClick={() => toggleSection(sectionKey)}
                     aria-expanded={isOpen}
-                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-slate-50"
+                    className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-slate-50"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-teal-50 text-teal-800 border border-teal-200">
                         <Icon className="h-4 w-4" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-semibold text-slate-900">{sectionData.title}</h4>
-                        <p className="text-xs text-slate-500">{sectionData.sections.length} tailored guidance categories</p>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">{sectionData.title}</h4>
+                        <p className="text-[11px] text-slate-500">{sectionData.sections.length} evidence categories</p>
                       </div>
                     </div>
                     {isOpen ? (
-                      <ChevronUp className="h-5 w-5 shrink-0 text-slate-400" />
+                      <ChevronUp className="h-4 w-4 shrink-0 text-slate-400" />
                     ) : (
-                      <ChevronDown className="h-5 w-5 shrink-0 text-slate-400" />
+                      <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
                     )}
                   </button>
 
                   {isOpen && (
-                    <div className="space-y-4 border-t border-slate-200 bg-slate-50/60 p-5">
+                    <div className="space-y-3 border-t border-slate-200 bg-slate-50/50 p-4">
                       {sectionData.sections.map((subsection, index) => (
-                        <div key={index} className="space-y-2 rounded-lg border border-slate-200 bg-white p-4">
-                          <h5 className="text-xs font-semibold uppercase tracking-wide text-slate-900">{subsection.title}</h5>
-                          <ul className="space-y-1.5 text-sm text-slate-700">
+                        <div key={index} className="space-y-2 rounded-md border border-slate-200 bg-white p-3.5">
+                          <h5 className="text-xs font-bold text-slate-900">{subsection.title}</h5>
+                          <ul className="space-y-1.5 text-xs text-slate-700">
                             {subsection.items.map((item, itemIndex) => (
                               <li key={itemIndex} className="flex items-start gap-2">
-                                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-600" />
-                                <span>{item}</span>
+                                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-700" />
+                                <span className="leading-normal">{item}</span>
                               </li>
                             ))}
                           </ul>
@@ -262,16 +267,16 @@ const Recommendations = () => {
             })}
           </div>
 
-          {/* Key messages */}
+          {/* Essential Clinical Notes & Reminders */}
           {recommendations.keyMessages && (
-            <div className="space-y-2 rounded-xl border border-teal-200 bg-teal-50/70 px-5 py-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-teal-900">
-                <ShieldCheck className="h-4 w-4 text-teal-700" />
-                Essential clinical notes & reminders
+            <div className="space-y-2 rounded-lg border border-teal-200 bg-teal-50/80 p-4">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-teal-950">
+                <ShieldCheck className="h-4 w-4 text-teal-800" />
+                Essential Clinical Notes &amp; Monitoring Directives
               </div>
-              <ul className="list-disc space-y-1 pl-6 text-sm text-slate-800">
+              <ul className="list-disc space-y-1 pl-5 text-xs font-medium text-slate-800">
                 {recommendations.keyMessages.map((msg, idx) => (
-                  <li key={idx}>{msg}</li>
+                  <li key={idx} className="leading-relaxed">{msg}</li>
                 ))}
               </ul>
             </div>
@@ -279,16 +284,16 @@ const Recommendations = () => {
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty State */}
       {!recommendations && !loading && !error && (
         <EmptyState
           icon={Stethoscope}
-          title="Evidence-based clinical protocol"
-          description="Generate tailored nutrition, physical therapy, lifestyle, and mental wellness recommendations based on your serology data."
+          title="Evidence-Based Clinical Protocol"
+          description="Synthesize tailored nutrition, physical therapy, joint preservation, lifestyle, and follow-up scheduling protocols from latest serology data."
           action={
             <button type="button" onClick={generateRecommendations} className="btn-primary">
-              <Sparkles className="h-4 w-4" />
-              Generate protocol
+              <Sparkles className="h-3.5 w-3.5" />
+              Synthesize Protocol
             </button>
           }
         />

@@ -2,16 +2,18 @@ import React, { useState, useEffect } from "react";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
-import { Save, RotateCcw, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Save, RotateCcw, AlertCircle, CheckCircle2, User, Activity, FileText } from "lucide-react";
 import Field from "../ui/Field";
 import Loader from "../ui/Loader";
 import EmptyState from "../ui/EmptyState";
 
-const SectionHeading = ({ number, title }) => (
-  <div className="flex items-center gap-3">
-    <span className="text-xs font-semibold text-teal-700">{number}</span>
-    <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
-    <div className="h-px flex-1 bg-slate-200" />
+const SectionHeading = ({ icon: Icon, number, title }) => (
+  <div className="flex items-center gap-2.5 border-b border-slate-200 pb-3">
+    <span className="flex h-6 w-6 items-center justify-center rounded-md bg-teal-50 text-[11px] font-bold text-teal-800 border border-teal-200">
+      {number}
+    </span>
+    <h2 className="text-sm font-bold tracking-tight text-slate-900">{title}</h2>
+    {Icon && <Icon className="ml-auto h-4 w-4 text-slate-400" />}
   </div>
 );
 
@@ -155,7 +157,7 @@ const ProfileForm = () => {
         throw lastError || new Error('Failed to save profile.');
       }
 
-      setNotice({ type: "success", text: "Profile saved successfully." });
+      setNotice({ type: "success", text: "Patient medical profile saved successfully." });
 
       if (window.dashboardSetTab) {
         window.dashboardSetTab("Lab Test Entry");
@@ -189,14 +191,14 @@ const ProfileForm = () => {
     return (
       <EmptyState
         icon={AlertCircle}
-        title="Sign in required"
-        description="Please sign in to access your personal medical profile."
+        title="Authentication Required"
+        description="Please sign in to view and update your personal medical profile."
       />
     );
   }
 
   if (loading) {
-    return <Loader label="Loading your medical profile…" />;
+    return <Loader label="Retrieving patient demographic profile…" />;
   }
 
   return (
@@ -204,119 +206,123 @@ const ProfileForm = () => {
       {notice && (
         <div
           role="status"
-          className={`flex items-start gap-2 rounded-lg border px-3.5 py-3 text-sm ${
+          className={`flex items-start gap-2.5 rounded-md border p-3.5 text-xs font-medium ${
             notice.type === "success"
               ? "border-emerald-200 bg-emerald-50 text-emerald-800"
               : "border-rose-200 bg-rose-50 text-rose-700"
           }`}
         >
           {notice.type === "success" ? (
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
           ) : (
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
           )}
           <span>{notice.text}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <section className="space-y-5">
-          <SectionHeading number="01" title="Patient demographics" />
-          <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Field label="Full name" htmlFor="name" required>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Panel 1: Patient Demographics */}
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs space-y-4">
+          <SectionHeading number="01" title="Demographic Identity" icon={User} />
+          <div className="grid gap-x-5 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Field label="Full Patient Name" htmlFor="name" required>
               <input id="name" name="name" type="text" autoComplete="name" placeholder="Jane Doe"
                 value={formData.name} onChange={handleChange} required className="field" />
             </Field>
 
-            <Field label="Date of birth" htmlFor="dob">
+            <Field label="Date of Birth" htmlFor="dob">
               <input id="dob" name="dob" type="date" value={formData.dob} onChange={handleChange} className="field" />
             </Field>
 
-            <Field label="Age" htmlFor="age" hint="Auto-calculated from date of birth">
+            <Field label="Calculated Age" htmlFor="age" hint="Auto-derived from date of birth">
               <input id="age" name="age" type="text" readOnly
                 value={formData.age ? `${formData.age} years` : ''}
-                placeholder="Auto-calculated"
-                className="field bg-slate-100 text-slate-500" />
+                placeholder="Auto-derived"
+                className="field bg-slate-50 text-slate-600 font-semibold" />
             </Field>
 
-            <Field label="Email address" htmlFor="email" required>
-              <input id="email" name="email" type="email" autoComplete="email" placeholder="jane@example.com"
+            <Field label="Email Address" htmlFor="email" required>
+              <input id="email" name="email" type="email" autoComplete="email" placeholder="patient@clinical.org"
                 value={formData.email} onChange={handleChange} required className="field" />
             </Field>
 
-            <Field label="Phone number" htmlFor="phone">
+            <Field label="Contact Phone" htmlFor="phone">
               <input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="+1 (555) 000-0000"
                 value={formData.phone} onChange={handleChange} className="field" />
             </Field>
 
-            <Field label="Sex" htmlFor="gender" required>
+            <Field label="Biological Sex" htmlFor="gender" required hint="Used for ESR reference model adjustment">
               <select id="gender" name="gender" value={formData.gender} onChange={handleChange} required className="field">
-                <option value="">Select sex</option>
+                <option value="">Select Biological Sex</option>
                 <option>Female</option>
                 <option>Male</option>
                 <option>Other</option>
               </select>
             </Field>
           </div>
-        </section>
+        </div>
 
-        <section className="space-y-5">
-          <SectionHeading number="02" title="Health & lifestyle baselines" />
-          <div className="grid gap-x-6 gap-y-4 sm:grid-cols-3">
-            <Field label="Body Mass Index (BMI)" htmlFor="bmi" hint="e.g. 23.4">
+        {/* Panel 2: Vital & Lifestyle Baselines */}
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs space-y-4">
+          <SectionHeading number="02" title="Health & Lifestyle Baselines" icon={Activity} />
+          <div className="grid gap-x-5 gap-y-4 sm:grid-cols-3">
+            <Field label="Body Mass Index (BMI)" htmlFor="bmi" hint="Metric formula: weight(kg) / height(m)²">
               <input id="bmi" name="bmi" type="text" inputMode="decimal" placeholder="e.g. 23.4"
                 value={formData.bmi} onChange={handleChange} className="field" />
             </Field>
 
-            <Field label="Smoking history" htmlFor="smoking">
+            <Field label="Tobacco Smoking Status" htmlFor="smoking">
               <select id="smoking" name="smoking" value={formData.smoking} onChange={handleChange} className="field">
                 <option>No</option>
                 <option>Yes</option>
               </select>
             </Field>
 
-            <Field label="Alcohol intake" htmlFor="alcohol">
+            <Field label="Alcohol Consumption" htmlFor="alcohol">
               <select id="alcohol" name="alcohol" value={formData.alcohol} onChange={handleChange} className="field">
                 <option>No</option>
                 <option>Yes</option>
               </select>
             </Field>
           </div>
-        </section>
+        </div>
 
-        <section className="space-y-5">
-          <SectionHeading number="03" title="Medical & family history" />
-          <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
-            <Field label="Family medical history" htmlFor="familyHistory"
-              hint="Any family history of rheumatoid arthritis or autoimmune conditions.">
-              <textarea id="familyHistory" name="familyHistory" rows={4}
-                placeholder="Mention any family history of rheumatoid arthritis, autoimmune conditions..."
+        {/* Panel 3: Medical & Family History */}
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs space-y-4">
+          <SectionHeading number="03" title="Clinical History & Genetic Susceptibility" icon={FileText} />
+          <div className="grid gap-x-5 gap-y-4 sm:grid-cols-2">
+            <Field label="Family History of Autoimmune Conditions" htmlFor="familyHistory"
+              hint="Document first-degree relatives with RA, Lupus, Psoriatic Arthritis, etc.">
+              <textarea id="familyHistory" name="familyHistory" rows={3}
+                placeholder="Details of family members diagnosed with rheumatoid arthritis or autoimmune disorders..."
                 value={formData.familyHistory} onChange={handleChange} className="field resize-none" />
             </Field>
 
-            <Field label="Personal medical history" htmlFor="medicalHistory"
-              hint="Prior surgeries, chronic conditions, current joint pain, or medications.">
-              <textarea id="medicalHistory" name="medicalHistory" rows={4}
-                placeholder="Mention prior surgeries, chronic conditions, current joint pain, or medications..."
+            <Field label="Personal Clinical & Joint History" htmlFor="medicalHistory"
+              hint="Document current morning stiffness, joint swelling, prior surgeries, or medications.">
+              <textarea id="medicalHistory" name="medicalHistory" rows={3}
+                placeholder="Details of joint pain, morning stiffness duration, active medications..."
                 value={formData.medicalHistory} onChange={handleChange} className="field resize-none" />
             </Field>
           </div>
-        </section>
+        </div>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+        {/* Form Actions */}
+        <div className="flex items-center justify-end gap-3 border-t border-slate-200 pt-4">
           <button type="button" onClick={handleClearForm} className="btn-secondary">
-            <RotateCcw className="h-4 w-4" />
-            Reset fields
+            <RotateCcw className="h-3.5 w-3.5" />
+            Reset profile
           </button>
           <button type="submit" disabled={isSubmitting || !formData.name.trim()} className="btn-primary">
             {isSubmitting ? (
               <>
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 Saving profile…
               </>
             ) : (
               <>
-                <Save className="h-4 w-4" />
+                <Save className="h-3.5 w-3.5" />
                 Save medical profile
               </>
             )}

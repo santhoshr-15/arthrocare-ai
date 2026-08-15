@@ -3,6 +3,7 @@ import { User, FlaskConical, BarChart3, TrendingUp, ListChecks, Activity } from 
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import AppShell from "../common/AppShell";
+import PageHeader from "../ui/PageHeader";
 
 import ProfileForm from './ProfileForm';
 import LabUploadForm from './LabUploadForm';
@@ -14,38 +15,38 @@ import Monitoring from './Monitoring';
 const tabs = [
   {
     id: "Profile & Medical Info",
-    label: "Profile & Medical Info",
-    description: "Demographics, clinical history, and lifestyle baselines",
+    label: "Demographic Profile & Medical Info",
+    description: "Patient age, biological sex, clinical history, and baseline lifestyle parameters",
     icon: User
   },
   {
     id: "Lab Test Entry",
-    label: "Lab Test Entry",
-    description: "Enter quantitative RF, Anti-CCP, CRP, and ESR serology values",
+    label: "Biomarker Serology Requisition",
+    description: "Enter quantitative laboratory values for RF, Anti-CCP, CRP, and ESR serology",
     icon: FlaskConical
   },
   {
     id: "Risk Prediction",
-    label: "Risk Prediction",
-    description: "Age- and sex-adjusted machine-learning RA risk scoring",
+    label: "Multivariable Risk Report",
+    description: "Age- and sex-adjusted machine-learning RA probability and biomarker factor weights",
     icon: BarChart3
   },
   {
     id: "Progress Tracking",
-    label: "Progress Tracking",
-    description: "Compare current and baseline laboratory measurements",
+    label: "Serial Lab Comparison",
+    description: "Compare baseline and follow-up laboratory panels to compute risk score delta",
     icon: TrendingUp
   },
   {
     id: "Recommendations",
-    label: "Recommendations",
-    description: "Targeted lifestyle, joint preservation, and dietary guidance",
+    label: "Evidence-Based Guidance",
+    description: "Targeted lifestyle, joint preservation, dietary protocols, and follow-up scheduling",
     icon: ListChecks
   },
   {
     id: "Monitoring",
-    label: "Monitoring",
-    description: "Longitudinal health metrics and serial biomarker visualization",
+    label: "Longitudinal Biomarker Metrics",
+    description: "Longitudinal trend visualizations and serial laboratory submission audit log",
     icon: Activity
   }
 ];
@@ -139,8 +140,8 @@ const PatientDashboard = () => {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-teal-600" />
-          <p className="mt-3 text-sm font-medium text-slate-500">Loading patient workspace…</p>
+          <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-slate-300 border-t-teal-700" />
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Loading Patient Workspace…</p>
         </div>
       </div>
     );
@@ -152,15 +153,15 @@ const PatientDashboard = () => {
       activeId={activeTab.id}
       onSelect={setSelectedTab}
       user={user}
-      roleLabel="Patient workspace"
+      roleLabel="Patient Workspace"
       onSignOut={handleSignOut}
     >
       <div>
-        <header className="mb-6">
-          <p className="eyebrow mb-2">Patient workspace</p>
-          <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">{activeTab.label}</h1>
-          <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-500">{activeTab.description}</p>
-        </header>
+        <PageHeader
+          eyebrow="Patient Workspace"
+          title={activeTab.label}
+          description={activeTab.description}
+        />
         {renderContent()}
       </div>
     </AppShell>

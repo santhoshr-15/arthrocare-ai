@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler } from 'chart.js';
-import { TrendingUp, BarChart3, RefreshCw } from 'lucide-react';
+import { TrendingUp, BarChart3, RefreshCw, Calendar, Activity } from 'lucide-react';
 import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { auth, db } from "../../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
@@ -137,21 +137,21 @@ const Monitoring = () => {
     labels: filteredHistory.map(entry => entry.date),
     datasets: [
       {
-        label: 'RA risk score (%)',
+        label: 'RA Risk Score (%)',
         data: filteredHistory.map(entry => entry.risk_score),
         borderColor: '#0f766e',
         backgroundColor: 'rgba(15, 118, 110, 0.08)',
-        borderWidth: 2.5,
+        borderWidth: 2,
         fill: true,
-        tension: 0.3,
+        tension: 0.2,
         pointBackgroundColor: filteredHistory.map(entry =>
-          entry.risk_level === 'High' ? '#dc2626' :
-          entry.risk_level === 'Moderate' ? '#ea580c' :
-          entry.risk_level === 'Low' ? '#d97706' : '#16a34a'
+          entry.risk_level === 'High' ? '#be123c' :
+          entry.risk_level === 'Moderate' ? '#c2410c' :
+          entry.risk_level === 'Low' ? '#b45309' : '#047857'
         ),
         pointBorderColor: '#ffffff',
         pointBorderWidth: 2,
-        pointRadius: 5
+        pointRadius: 4
       }
     ]
   };
@@ -162,34 +162,34 @@ const Monitoring = () => {
       {
         label: 'Rheumatoid Factor (RF)',
         data: filteredHistory.map(entry => entry.factors.rheumatoidFactor),
-        borderColor: '#7c3aed',
+        borderColor: '#0f766e',
         backgroundColor: 'transparent',
         borderWidth: 2,
-        tension: 0.3
+        tension: 0.2
       },
       {
-        label: 'Anti-CCP antibodies',
+        label: 'Anti-CCP Antibodies',
         data: filteredHistory.map(entry => entry.factors.antiCCP),
-        borderColor: '#db2777',
+        borderColor: '#2563eb',
         backgroundColor: 'transparent',
         borderWidth: 2,
-        tension: 0.3
+        tension: 0.2
       },
       {
         label: 'C-Reactive Protein (CRP)',
         data: filteredHistory.map(entry => entry.factors.cReactiveProtein),
-        borderColor: '#0284c7',
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        tension: 0.3
-      },
-      {
-        label: 'ESR rate',
-        data: filteredHistory.map(entry => entry.factors.erythrocyteSedimentationRate),
         borderColor: '#d97706',
         backgroundColor: 'transparent',
         borderWidth: 2,
-        tension: 0.3
+        tension: 0.2
+      },
+      {
+        label: 'ESR Rate',
+        data: filteredHistory.map(entry => entry.factors.erythrocyteSedimentationRate),
+        borderColor: '#dc2626',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.2
       }
     ]
   };
@@ -206,12 +206,12 @@ const Monitoring = () => {
           filteredHistory.filter(e => e.risk_level === 'High').length
         ],
         backgroundColor: [
-          'rgba(22, 163, 74, 0.8)',
-          'rgba(217, 119, 6, 0.8)',
-          'rgba(234, 88, 12, 0.8)',
-          'rgba(220, 38, 38, 0.8)'
+          'rgba(4, 120, 87, 0.8)',
+          'rgba(180, 83, 9, 0.8)',
+          'rgba(194, 65, 12, 0.8)',
+          'rgba(190, 18, 60, 0.8)'
         ],
-        borderRadius: 6
+        borderRadius: 4
       }
     ]
   };
@@ -220,11 +220,11 @@ const Monitoring = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } }
+      legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11, weight: 'bold' } } }
     },
     scales: {
-      y: { beginAtZero: true, max: 100, ticks: { font: { size: 11 } } },
-      x: { ticks: { font: { size: 11 } } }
+      y: { beginAtZero: true, max: 100, ticks: { font: { size: 10 } }, grid: { color: '#f1f5f9' } },
+      x: { ticks: { font: { size: 10 } }, grid: { color: '#f1f5f9' } }
     }
   };
 
@@ -233,15 +233,26 @@ const Monitoring = () => {
   };
 
   if (loading) {
-    return <Loader label="Generating serial measurement analytics…" />;
+    return <Loader label="Generating serial biomarker analytics & trajectory charts…" />;
   }
 
   if (predictionHistory.length === 0) {
     return (
       <EmptyState
         icon={TrendingUp}
-        title="No serial measurements yet"
-        description="Submit at least two lab panels over time to view longitudinal trends and biomarker trajectories."
+        title="No Serial Laboratory Records Recorded"
+        description="Submit at least two laboratory panels over time to compute longitudinal trend graphs and risk trajectory analytics."
+        action={
+          window.dashboardSetTab && (
+            <button
+              type="button"
+              onClick={() => window.dashboardSetTab("Lab Test Entry")}
+              className="btn-primary"
+            >
+              Submit Laboratory Panel
+            </button>
+          )
+        }
       />
     );
   }
@@ -250,66 +261,70 @@ const Monitoring = () => {
 
   return (
     <div className="space-y-6">
-      {/* Stats */}
+      {/* Key Metrics Grid */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Serial tests recorded" value={predictionHistory.length} />
-        <Stat label="Latest risk score" value={`${latest?.risk_score || 0}%`} valueClass="text-teal-700" />
-        <Stat label="Current risk band" value={latest?.risk_level || 'N/A'} />
-        <Stat label="Last assessed" value={latest?.date || 'N/A'} valueClass="text-sm font-semibold" />
+        <Stat label="Total Panels Logged" value={predictionHistory.length} icon={Activity} />
+        <Stat label="Latest RA Risk Score" value={`${latest?.risk_score || 0}%`} valueClass="text-teal-800" icon={TrendingUp} />
+        <Stat label="Current Risk Band" value={latest?.risk_level || 'N/A'} icon={BarChart3} />
+        <Stat label="Last Assessment Date" value={latest?.date || 'N/A'} valueClass="text-sm font-bold" icon={Calendar} />
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-slate-600">Time range:</span>
-          <div className="flex rounded-lg border border-slate-200 p-0.5" role="group" aria-label="Time range">
-            {['week', 'month', 'all'].map(r => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setTimeRange(r)}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
-                  timeRange === r ? 'bg-teal-700 text-white' : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                {r}
-              </button>
-            ))}
+      {/* Control Filter Bar */}
+      <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+            <span>Window:</span>
+            <div className="flex rounded-md border border-slate-200 p-0.5 bg-slate-50" role="group" aria-label="Time range">
+              {['week', 'month', 'all'].map(r => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setTimeRange(r)}
+                  className={`rounded-sm px-2.5 py-1 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                    timeRange === r ? 'bg-teal-800 text-white shadow-2xs' : 'text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {r === 'all' ? 'All Time' : r}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+            <span>Metric:</span>
+            <div className="flex rounded-md border border-slate-200 p-0.5 bg-slate-50" role="group" aria-label="Display metric">
+              {['risk_score', 'lab_values'].map(m => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setSelectedMetric(m)}
+                  className={`rounded-sm px-2.5 py-1 text-xs font-semibold transition-colors ${
+                    selectedMetric === m ? 'bg-teal-800 text-white shadow-2xs' : 'text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {m === 'risk_score' ? 'Risk Trajectory' : 'Biomarker Levels'}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-slate-600">Display:</span>
-          <div className="flex rounded-lg border border-slate-200 p-0.5" role="group" aria-label="Display metric">
-            {['risk_score', 'lab_values'].map(m => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setSelectedMetric(m)}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                  selectedMetric === m ? 'bg-teal-700 text-white' : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                {m === 'risk_score' ? 'Risk trajectory' : 'Biomarker levels'}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <button type="button" onClick={refreshData} className="btn-secondary shrink-0">
-          <RefreshCw className="h-4 w-4" />
-          Refresh data
+        <button type="button" onClick={refreshData} className="btn-secondary shrink-0 text-xs">
+          <RefreshCw className="h-3.5 w-3.5" />
+          Refresh Analytics
         </button>
       </div>
 
-      {/* Charts */}
+      {/* Chart Visualizations */}
       <div className="grid gap-6 lg:grid-cols-12">
-        <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:col-span-8">
-          <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
-            <TrendingUp className="h-4 w-4 text-teal-700" />
-            <h3 className="text-sm font-semibold text-slate-900">
-              {selectedMetric === 'risk_score' ? 'Longitudinal risk score trajectory' : 'Serial lab biomarker concentrations'}
-            </h3>
+        <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-5 shadow-2xs lg:col-span-8">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-teal-800" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                {selectedMetric === 'risk_score' ? 'Longitudinal RA Risk Score Trajectory (%)' : 'Serial Biomarker Concentrations'}
+              </h3>
+            </div>
           </div>
           <div className="h-72">
             {selectedMetric === 'risk_score' ? (
@@ -320,10 +335,12 @@ const Monitoring = () => {
           </div>
         </div>
 
-        <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:col-span-4">
-          <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
-            <BarChart3 className="h-4 w-4 text-teal-700" />
-            <h3 className="text-sm font-semibold text-slate-900">Risk band frequency</h3>
+        <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-5 shadow-2xs lg:col-span-4">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-teal-800" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Risk Band Distribution</h3>
+            </div>
           </div>
           <div className="h-72">
             <Bar data={riskLevelDistribution} options={chartOptions} />
@@ -331,38 +348,38 @@ const Monitoring = () => {
         </div>
       </div>
 
-      {/* History table */}
-      <div className="rounded-xl border border-slate-200 bg-white">
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-          <h3 className="text-sm font-semibold text-slate-900">Historical serology & risk records</h3>
-          <span className="text-xs text-slate-500">{filteredHistory.length} entries</span>
+      {/* Serial Laboratory Audit Log Table */}
+      <div className="rounded-lg border border-slate-200 bg-white shadow-2xs overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-3.5">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Serial Laboratory Audit Log &amp; Historical Submissions</h3>
+          <span className="text-xs font-semibold text-slate-500">{filteredHistory.length} Entries</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-200">
-                <th scope="col" className="th">Date</th>
-                <th scope="col" className="th">Risk score</th>
-                <th scope="col" className="th">Risk band</th>
+              <tr>
+                <th scope="col" className="th">Assessment Date</th>
+                <th scope="col" className="th">Risk Score</th>
+                <th scope="col" className="th">Risk Band</th>
                 <th scope="col" className="th">RF (IU/mL)</th>
                 <th scope="col" className="th">Anti-CCP (U/mL)</th>
                 <th scope="col" className="th">CRP (mg/L)</th>
                 <th scope="col" className="th">ESR (mm/hr)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 text-xs">
               {filteredHistory.map((entry) => (
-                <tr key={entry.id} className="hover:bg-slate-50">
-                  <td className="td font-semibold text-slate-900">{entry.date}</td>
-                  <td className="td font-semibold text-teal-700">{entry.risk_score}%</td>
+                <tr key={entry.id} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="td font-bold text-slate-900">{entry.date}</td>
+                  <td className="td font-extrabold text-teal-800">{entry.risk_score}%</td>
                   <td className="td">
-                    <Badge tone={riskTone(entry.risk_level)}>{entry.risk_level}</Badge>
+                    <Badge tone={riskTone(entry.risk_level)} showDot>{entry.risk_level}</Badge>
                   </td>
-                  <td className="td font-mono">{entry.factors.rheumatoidFactor}</td>
-                  <td className="td font-mono">{entry.factors.antiCCP}</td>
-                  <td className="td font-mono">{entry.factors.cReactiveProtein}</td>
-                  <td className="td font-mono">{entry.factors.erythrocyteSedimentationRate}</td>
+                  <td className="td font-mono font-medium">{entry.factors.rheumatoidFactor}</td>
+                  <td className="td font-mono font-medium">{entry.factors.antiCCP}</td>
+                  <td className="td font-mono font-medium">{entry.factors.cReactiveProtein}</td>
+                  <td className="td font-mono font-medium">{entry.factors.erythrocyteSedimentationRate}</td>
                 </tr>
               ))}
             </tbody>

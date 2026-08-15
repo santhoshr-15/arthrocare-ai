@@ -142,63 +142,64 @@ const RegisterPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
-      {/* Top bar */}
+      {/* Top Header */}
       <header className="border-b border-slate-200 bg-white">
         <div className="container-page flex h-16 items-center justify-between">
           <Link to="/" aria-label="Back to home">
-            <Logo subtitle="Patient registration" />
+            <Logo subtitle="Account Setup" />
           </Link>
-          <Link to="/login" className="btn-ghost">Already registered? Sign in</Link>
+          <Link to="/login" className="btn-ghost text-xs">
+            Already registered? Sign in
+          </Link>
         </div>
       </header>
 
-      {/* Main */}
+      {/* Main Workspace Area */}
       <main className="flex flex-1 items-center justify-center px-4 py-10">
-        <div className="w-full max-w-4xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm md:grid md:grid-cols-5">
-          {/* Info panel */}
-          <div className="hidden flex-col justify-between bg-slate-900 p-10 text-white md:col-span-2 md:flex">
+        <div className="w-full max-w-4xl overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xs md:grid md:grid-cols-12">
+          {/* Left Clinical Information Panel */}
+          <div className="hidden flex-col justify-between bg-slate-900 p-8 text-white md:col-span-5 md:flex">
             <div>
-              <div className="mb-6 inline-flex items-center gap-2 rounded-md border border-teal-700/60 bg-teal-900/40 px-2.5 py-1 text-xs font-medium text-teal-300">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-teal-700/60 bg-teal-900/40 px-2.5 py-1 text-xs font-semibold text-teal-300">
                 <ShieldCheck className="h-3.5 w-3.5" />
-                Patient account setup
+                Clinical Account Registration
               </div>
-              <h1 className="text-2xl font-semibold tracking-tight">Join the ArthroCare clinical platform</h1>
-              <p className="mt-3 text-sm leading-relaxed text-slate-400">
-                Create a patient account to submit lab biomarker data, receive age- and sex-adjusted RA risk
-                assessments, and track your wellness over time.
+              <h1 className="text-xl font-bold tracking-tight text-white">Join the ArthroCare clinical workspace</h1>
+              <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                Register a patient account to enter laboratory serology values, access age- and sex-adjusted risk predictions, and receive tailored monitoring guidance.
               </p>
 
-              <ul className="mt-8 space-y-3 text-sm text-slate-300">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
-                  Secure patient data protection
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
-                  Instant ML risk prediction reports
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
-                  Personalized diet and exercise plans
-                </li>
-              </ul>
+              <div className="mt-6 space-y-3 border-t border-slate-800 pt-5 text-xs text-slate-300">
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-400" />
+                  <span>Secure, HIPAA-aligned data structure</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-400" />
+                  <span>Real-time ML risk stratification engine</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-400" />
+                  <span>Evidence-based lifestyle &amp; diet recommendations</span>
+                </div>
+              </div>
             </div>
 
-            <p className="mt-10 border-t border-slate-800 pt-4 text-xs text-slate-500">
-              HIPAA-aligned clinical standards. Encrypted infrastructure.
-            </p>
+            <div className="border-t border-slate-800 pt-4 text-[11px] font-medium text-slate-500">
+              System ID: AC-DS24 · Verified Data Protection
+            </div>
           </div>
 
-          {/* Form */}
-          <div className="p-8 sm:p-10 md:col-span-3">
-            <h2 className="text-xl font-semibold tracking-tight text-slate-900">Create patient account</h2>
-            <p className="mt-1.5 text-sm text-slate-500">Fill out your information to get started.</p>
+          {/* Right Registration Form */}
+          <div className="p-7 sm:p-9 md:col-span-7">
+            <h2 className="text-lg font-bold tracking-tight text-slate-900">Create patient account</h2>
+            <p className="mt-1 text-xs text-slate-500">Enter patient details to register your clinical workspace account.</p>
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div>
-                <label htmlFor="name" className="field-label">Full name <span className="text-rose-500">*</span></label>
+                <label htmlFor="name" className="field-label">Full Name <span className="text-rose-500">*</span></label>
                 <div className="relative">
-                  <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     id="name"
                     type="text"
@@ -207,42 +208,42 @@ const RegisterPage = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="field pl-10"
+                    className="field pl-9"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="email" className="field-label">Email address <span className="text-rose-500">*</span></label>
+                <label htmlFor="email" className="field-label">Email Address <span className="text-rose-500">*</span></label>
                 <div className="relative">
-                  <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     id="email"
                     type="email"
                     autoComplete="email"
-                    placeholder="jane.doe@example.com"
+                    placeholder="jane.doe@clinical.org"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="field pl-10"
+                    className="field pl-9"
                   />
                 </div>
               </div>
 
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label htmlFor="password" className="field-label">Password <span className="text-rose-500">*</span></label>
                   <div className="relative">
-                    <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       autoComplete="new-password"
-                      placeholder="At least 6 characters"
+                      placeholder="Min 6 chars + number"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="field pl-10 pr-10"
+                      className="field pl-9 pr-9 text-xs"
                     />
                     <button
                       type="button"
@@ -256,9 +257,9 @@ const RegisterPage = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="confirm" className="field-label">Confirm password <span className="text-rose-500">*</span></label>
+                  <label htmlFor="confirm" className="field-label">Confirm Password <span className="text-rose-500">*</span></label>
                   <div className="relative">
-                    <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
                       id="confirm"
                       type={showConfirmPassword ? "text" : "password"}
@@ -267,7 +268,7 @@ const RegisterPage = () => {
                       value={confirm}
                       onChange={(e) => setConfirm(e.target.value)}
                       required
-                      className="field pl-10 pr-10"
+                      className="field pl-9 pr-9 text-xs"
                     />
                     <button
                       type="button"
@@ -282,20 +283,20 @@ const RegisterPage = () => {
               </div>
 
               {error && (
-                <div className="flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3.5 py-3 text-sm text-rose-700">
-                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                <div className="flex items-start gap-2.5 rounded-md border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
                   <span>{error}</span>
                 </div>
               )}
 
               {success && (
-                <div className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-sm text-emerald-800">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                <div className="flex items-start gap-2.5 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
                   <span>{success}</span>
                 </div>
               )}
 
-              <button type="submit" disabled={loading} className="btn-primary w-full">
+              <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
                 {loading ? (
                   <>
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -303,25 +304,25 @@ const RegisterPage = () => {
                   </>
                 ) : (
                   <>
-                    Complete registration
+                    Complete account registration
                     <ArrowRight className="h-4 w-4" />
                   </>
                 )}
               </button>
             </form>
 
-            <p className="mt-6 border-t border-slate-200 pt-5 text-center text-sm text-slate-500">
+            <div className="mt-6 border-t border-slate-200 pt-4 text-center text-xs text-slate-500">
               Already have an account?{" "}
-              <Link to="/login" className="font-medium text-teal-700 hover:text-teal-800">
+              <Link to="/login" className="font-semibold text-teal-800 hover:underline">
                 Sign in
               </Link>
-            </p>
+            </div>
           </div>
         </div>
       </main>
 
-      <footer className="border-t border-slate-200 py-4 text-center text-xs text-slate-400">
-        © {new Date().getFullYear()} ArthroCare AI System. Privacy protected and encrypted.
+      <footer className="border-t border-slate-200 bg-white py-3 text-center text-[11px] font-medium text-slate-400">
+        © {new Date().getFullYear()} ArthroCare AI Healthcare Suite · Protected Clinical Data System
       </footer>
     </div>
   );

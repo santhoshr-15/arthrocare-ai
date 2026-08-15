@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Activity, TestTube, BarChart3, UserPlus, Search, Eye, Trash2, FlaskConical, X } from 'lucide-react';
+import { Users, Activity, TestTube, BarChart3, UserPlus, Search, Eye, Trash2, FlaskConical, X, ShieldAlert } from 'lucide-react';
 import { collection, query, getDocs, doc, deleteDoc, orderBy, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/config";
 import AppShell from "../common/AppShell";
@@ -26,7 +26,7 @@ const formatDateTime = (value) => {
 const shortId = (id) => (id ? id.substring(0, 8).toUpperCase() : '—');
 
 const getRiskBand = (lab) => {
-  if (!lab) return { label: 'No data', tone: 'slate' };
+  if (!lab) return { label: 'No Data', tone: 'slate' };
   const checks = [
     parseFloat(lab.rheumatoidFactor),
     parseFloat(lab.antiCCP),
@@ -36,24 +36,24 @@ const getRiskBand = (lab) => {
   const thresholds = [14, 20, 3.0, 20];
   const elevated = checks.filter((v, i) => !Number.isNaN(v) && v > thresholds[i]).length;
 
-  if (elevated >= 3) return { label: 'Elevated (3-4 markers)', tone: 'rose' };
-  if (elevated === 2) return { label: 'Moderate (2 markers)', tone: 'orange' };
-  if (elevated === 1) return { label: 'Mild (1 marker)', tone: 'amber' };
-  return { label: 'Within reference range', tone: 'emerald' };
+  if (elevated >= 3) return { label: 'Elevated Serology (3-4 Markers)', tone: 'rose' };
+  if (elevated === 2) return { label: 'Moderate Serology (2 Markers)', tone: 'orange' };
+  if (elevated === 1) return { label: 'Mild Elevation (1 Marker)', tone: 'amber' };
+  return { label: 'Within Reference Range', tone: 'emerald' };
 };
 
 const adminNav = [
-  { id: 'overview', label: 'System overview', icon: BarChart3 },
-  { id: 'patients', label: 'Patient directory', icon: Users },
-  { id: 'labdata', label: 'Biomarker submissions', icon: TestTube },
-  { id: 'activity', label: 'Access audit', icon: Activity }
+  { id: 'overview', label: 'System Overview', icon: BarChart3 },
+  { id: 'patients', label: 'Patient Directory', icon: Users },
+  { id: 'labdata', label: 'Biomarker Submissions', icon: TestTube },
+  { id: 'activity', label: 'Access Audit Log', icon: Activity }
 ];
 
 const pageMeta = {
-  overview: { title: 'System overview', description: 'High-level activity across patients, serology panels, and portal access.' },
-  patients: { title: 'Patient directory', description: 'Registered patient accounts with submission history and actions.' },
-  labdata: { title: 'Biomarker submissions', description: 'All recorded serology panels with clinical status classification.' },
-  activity: { title: 'Access audit', description: 'Portal sign-in events and recent registrations.' }
+  overview: { title: 'System Administrative Overview', description: 'System-wide telemetry across registered patient cohorts, serology panels, and access logs.' },
+  patients: { title: 'Patient Directory', description: 'Master registry of verified patient accounts, diagnostic histories, and access status.' },
+  labdata: { title: 'Biomarker Submissions Log', description: 'Central audit of serological panels with automated threshold elevation flags.' },
+  activity: { title: 'Security & Access Audit Log', description: 'Timestamped trail of system authentication sessions and patient registrations.' }
 };
 
 const Admin = () => {
@@ -200,7 +200,7 @@ const Admin = () => {
   }, [navigate, loadAllData]);
 
   const deleteUser = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this patient record?')) {
+    if (window.confirm('Are you sure you want to delete this patient record? This action cannot be undone.')) {
       try {
         await deleteDoc(doc(db, "users", userId));
         await loadAllData();
@@ -257,9 +257,11 @@ const Admin = () => {
   if (!isVerifiedAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-teal-600" />
-          <p className="mt-3 text-sm font-medium text-slate-500">Verifying admin access…</p>
+        <div className="text-center space-y-3">
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-teal-50 text-teal-800 border border-teal-200">
+            <ShieldAlert className="h-5 w-5" />
+          </div>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-700">Verifying Administrative Privileges…</p>
         </div>
       </div>
     );
@@ -268,7 +270,7 @@ const Admin = () => {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <Loader label="Loading system data…" />
+        <Loader label="Synchronizing administrative datastores…" />
       </div>
     );
   }
@@ -282,68 +284,68 @@ const Admin = () => {
       activeId={activeTab}
       onSelect={setActiveTab}
       user={currentUser}
-      roleLabel="Admin console"
+      roleLabel="System Administration"
       onSignOut={handleSignOut}
     >
       <div className="space-y-6">
         <header className="mb-6">
-          <p className="eyebrow mb-2">Admin console</p>
-          <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">{meta.title}</h1>
-          <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-500">{meta.description}</p>
+          <p className="eyebrow mb-1">Administrative Console</p>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">{meta.title}</h1>
+          <p className="mt-1 text-xs text-slate-500">{meta.description}</p>
         </header>
 
         {showSearch && (
           <div className="relative max-w-md">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search by name, email, UID, or biomarker panel…"
+              placeholder="Filter by patient name, email, UID, or biomarker…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="field pl-10"
+              className="field pl-9 text-xs"
             />
           </div>
         )}
 
-        {/* Overview */}
+        {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Stat label="Registered patients" value={stats.totalUsers || 0} sub={`+${stats.recentUsers || 0} this week`} subClass="text-teal-700" />
-              <Stat label="Biomarker panels" value={stats.totalLabEntries || 0} sub="Recorded serology panels" />
-              <Stat label="Total login events" value={stats.totalLogins || 0} sub={`${stats.activeToday || 0} active today`} subClass="text-emerald-700" />
-              <Stat label="Signups recorded" value={stats.totalSignups || 0} sub="Completed registrations" />
+              <Stat label="Registered Patients" value={stats.totalUsers || 0} sub={`+${stats.recentUsers || 0} this week`} subClass="text-teal-800" icon={Users} />
+              <Stat label="Biomarker Panels" value={stats.totalLabEntries || 0} sub="Recorded serology panels" icon={TestTube} />
+              <Stat label="Total Sign-In Events" value={stats.totalLogins || 0} sub={`${stats.activeToday || 0} active today`} subClass="text-emerald-800" icon={Activity} />
+              <Stat label="Account Registrations" value={stats.totalSignups || 0} sub="Completed signups" icon={UserPlus} />
             </div>
 
             <div className="grid gap-6 lg:grid-cols-2">
-              {/* Recent biomarker submissions */}
-              <div className="rounded-xl border border-slate-200 bg-white">
-                <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-                  <h3 className="text-sm font-semibold text-slate-900">Recent biomarker submissions</h3>
-                  <span className="text-xs text-slate-500">{labData.length} total</span>
+              {/* Recent Biomarker Submissions */}
+              <div className="rounded-lg border border-slate-200 bg-white shadow-2xs overflow-hidden">
+                <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-4 py-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Recent Biomarker Submissions</h3>
+                  <span className="text-xs font-semibold text-slate-500">{labData.length} Total</span>
                 </div>
                 {labData.length === 0 ? (
                   <EmptyState
                     icon={FlaskConical}
-                    title="No biomarker panels yet"
-                    description="Submitted serology panels from the patient portal will appear here."
+                    title="No Biomarker Panels Logged"
+                    description="Submitted patient serology panels will appear here."
                   />
                 ) : (
-                  <ul className="divide-y divide-slate-100">
+                  <ul className="divide-y divide-slate-100 text-xs">
                     {labData.slice(0, 5).map(lab => {
                       const band = getRiskBand(lab);
                       return (
-                        <li key={lab.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                        <li key={lab.id} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50/80 transition-colors">
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-mono text-sm font-semibold text-slate-900">{shortId(lab.userId)}</span>
-                              <Badge tone={band.tone}>{band.label}</Badge>
+                              <span className="font-mono font-bold text-slate-900">{shortId(lab.userId)}</span>
+                              <Badge tone={band.tone} showDot>{band.label}</Badge>
                             </div>
-                            <p className="mt-0.5 truncate text-xs text-slate-500">
+                            <p className="mt-1 truncate text-[11px] text-slate-500 font-mono">
                               Age {lab.userAge || '—'} · RF {lab.rheumatoidFactor || '—'} · Anti-CCP {lab.antiCCP || '—'} · CRP {lab.cReactiveProtein || '—'} · ESR {lab.erythrocyteSedimentationRate || '—'}
                             </p>
                           </div>
-                          <span className="shrink-0 text-xs text-slate-400">{formatDate(lab.createdAt)}</span>
+                          <span className="shrink-0 text-[11px] font-medium text-slate-400">{formatDate(lab.createdAt)}</span>
                         </li>
                       );
                     })}
@@ -351,27 +353,27 @@ const Admin = () => {
                 )}
               </div>
 
-              {/* Recent access events */}
-              <div className="rounded-xl border border-slate-200 bg-white">
-                <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-                  <h3 className="text-sm font-semibold text-slate-900">Recent portal access events</h3>
-                  <span className="text-xs text-slate-500">{loginData.length} total</span>
+              {/* Recent Access Events */}
+              <div className="rounded-lg border border-slate-200 bg-white shadow-2xs overflow-hidden">
+                <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-4 py-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Recent Portal Authentication Events</h3>
+                  <span className="text-xs font-semibold text-slate-500">{loginData.length} Total</span>
                 </div>
                 {loginData.length === 0 ? (
                   <EmptyState
                     icon={Activity}
-                    title="No access events yet"
-                    description="Sign-in activity across the patient portal will appear here."
+                    title="No Authentication Logs"
+                    description="Sign-in events will appear here in real-time."
                   />
                 ) : (
-                  <ul className="divide-y divide-slate-100">
+                  <ul className="divide-y divide-slate-100 text-xs">
                     {loginData.slice(0, 5).map(login => (
-                      <li key={login.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                      <li key={login.id} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50/80 transition-colors">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-slate-900">{login.email}</p>
-                          <p className="font-mono text-xs text-slate-400">{shortId(login.userId)}</p>
+                          <p className="truncate font-bold text-slate-900">{login.email}</p>
+                          <p className="font-mono text-[11px] text-slate-400">UID: {shortId(login.userId)}</p>
                         </div>
-                        <span className="shrink-0 text-xs text-slate-400">{formatDateTime(login.timestamp)}</span>
+                        <span className="shrink-0 text-[11px] font-medium text-slate-400">{formatDateTime(login.timestamp)}</span>
                       </li>
                     ))}
                   </ul>
@@ -381,65 +383,65 @@ const Admin = () => {
           </div>
         )}
 
-        {/* Patient directory */}
+        {/* Patient Directory Tab */}
         {activeTab === 'patients' && (
-          <div className="rounded-xl border border-slate-200 bg-white">
-            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-              <h3 className="text-sm font-semibold text-slate-900">Registered patient directory</h3>
-              <span className="text-xs text-slate-500">{filteredUsers.length} records</span>
+          <div className="rounded-lg border border-slate-200 bg-white shadow-2xs overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-3.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Registered Patient Accounts</h3>
+              <span className="text-xs font-semibold text-slate-500">{filteredUsers.length} Records</span>
             </div>
 
             {filteredUsers.length === 0 ? (
               <EmptyState
                 icon={Users}
-                title="No patients found"
-                description={searchTerm ? 'Try a different search term.' : 'Registered patient accounts will appear here.'}
+                title="No Patient Records Found"
+                description={searchTerm ? 'No results matched your search criteria.' : 'Registered patient accounts will appear here.'}
               />
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left">
+                <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-200">
-                      <th scope="col" className="th">Patient</th>
-                      <th scope="col" className="th">Email</th>
-                      <th scope="col" className="th">Joined</th>
-                      <th scope="col" className="th">Panels</th>
-                      <th scope="col" className="th">Last submission</th>
+                    <tr>
+                      <th scope="col" className="th">Patient Identity</th>
+                      <th scope="col" className="th">Email Address</th>
+                      <th scope="col" className="th">Registration Date</th>
+                      <th scope="col" className="th">Panels Logged</th>
+                      <th scope="col" className="th">Last Submission</th>
                       <th scope="col" className="th">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 text-xs">
                     {filteredUsers.map(userRecord => {
                       const userLabs = getUserLabEntries(userRecord.id);
                       const latestLab = userLabs[0];
                       return (
-                        <tr key={userRecord.id} className="hover:bg-slate-50">
-                          <td className="td font-semibold text-slate-900">{userRecord.name || userRecord.displayName || 'Patient'}</td>
-                          <td className="td">{userRecord.email}</td>
+                        <tr key={userRecord.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="td font-bold text-slate-900">{userRecord.name || userRecord.displayName || 'Patient'}</td>
+                          <td className="td font-medium text-slate-700">{userRecord.email}</td>
                           <td className="td text-slate-500">{formatDate(userRecord.joinedDate)}</td>
                           <td className="td">
-                            <span className="inline-flex rounded-md border border-teal-200 bg-teal-50 px-2 py-0.5 text-xs font-semibold text-teal-800">
-                              {userLabs.length}
+                            <span className="inline-flex rounded-md border border-teal-200 bg-teal-50 px-2 py-0.5 text-xs font-bold text-teal-800">
+                              {userLabs.length} Panels
                             </span>
                           </td>
                           <td className="td text-slate-500">{latestLab ? formatDate(latestLab.createdAt) : '—'}</td>
                           <td className="td">
-                            <div className="flex gap-1">
+                            <div className="flex items-center gap-1">
                               <button
                                 type="button"
                                 onClick={() => setSelectedUser(userRecord)}
-                                aria-label={`View details for ${userRecord.email}`}
-                                className="rounded-md p-1.5 text-teal-700 hover:bg-teal-50"
+                                aria-label={`View record for ${userRecord.email}`}
+                                className="rounded-md p-1.5 text-teal-800 hover:bg-teal-50 border border-transparent hover:border-teal-200 transition-colors"
                               >
-                                <Eye className="h-4 w-4" />
+                                <Eye className="h-3.5 w-3.5" />
                               </button>
                               <button
                                 type="button"
                                 onClick={() => deleteUser(userRecord.id)}
                                 aria-label={`Delete record for ${userRecord.email}`}
-                                className="rounded-md p-1.5 text-rose-600 hover:bg-rose-50"
+                                className="rounded-md p-1.5 text-rose-700 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-colors"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-3.5 w-3.5" />
                               </button>
                             </div>
                           </td>
@@ -453,48 +455,48 @@ const Admin = () => {
           </div>
         )}
 
-        {/* Biomarker submissions */}
+        {/* Biomarker Submissions Log Tab */}
         {activeTab === 'labdata' && (
-          <div className="rounded-xl border border-slate-200 bg-white">
-            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-              <h3 className="text-sm font-semibold text-slate-900">Biomarker submission log</h3>
-              <span className="text-xs text-slate-500">{filteredLabs.length} panels</span>
+          <div className="rounded-lg border border-slate-200 bg-white shadow-2xs overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-3.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Biomarker Submission Audit Log</h3>
+              <span className="text-xs font-semibold text-slate-500">{filteredLabs.length} Panels Logged</span>
             </div>
 
             {filteredLabs.length === 0 ? (
               <EmptyState
                 icon={FlaskConical}
-                title="No biomarker submissions"
-                description={searchTerm ? 'Try a different search term.' : 'Submitted serology panels will appear here.'}
+                title="No Submissions Found"
+                description={searchTerm ? 'No lab entries matched your query.' : 'Submitted serology panels will appear here.'}
               />
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left">
+                <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-200">
-                      <th scope="col" className="th">Patient ID</th>
-                      <th scope="col" className="th">Age / sex</th>
+                    <tr>
+                      <th scope="col" className="th">Patient UID</th>
+                      <th scope="col" className="th">Demographics</th>
                       <th scope="col" className="th">RF (IU/mL)</th>
                       <th scope="col" className="th">Anti-CCP (U/mL)</th>
                       <th scope="col" className="th">CRP (mg/L)</th>
                       <th scope="col" className="th">ESR (mm/hr)</th>
-                      <th scope="col" className="th">Clinical status</th>
-                      <th scope="col" className="th">Date</th>
+                      <th scope="col" className="th">Serological Band</th>
+                      <th scope="col" className="th">Submission Date</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 text-xs">
                     {filteredLabs.map(lab => {
                       const band = getRiskBand(lab);
                       return (
-                        <tr key={lab.id} className="hover:bg-slate-50">
-                          <td className="td font-mono font-semibold text-slate-900">{shortId(lab.userId)}</td>
-                          <td className="td">{lab.userAge || '—'} / {lab.userGender || '—'}</td>
-                          <td className="td font-mono">{lab.rheumatoidFactor || '—'}</td>
-                          <td className="td font-mono">{lab.antiCCP || '—'}</td>
-                          <td className="td font-mono">{lab.cReactiveProtein || '—'}</td>
-                          <td className="td font-mono">{lab.erythrocyteSedimentationRate || '—'}</td>
+                        <tr key={lab.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="td font-mono font-bold text-slate-900">{shortId(lab.userId)}</td>
+                          <td className="td text-slate-700">{lab.userAge || '—'} yrs ({lab.userGender || '—'})</td>
+                          <td className="td font-mono font-medium">{lab.rheumatoidFactor || '—'}</td>
+                          <td className="td font-mono font-medium">{lab.antiCCP || '—'}</td>
+                          <td className="td font-mono font-medium">{lab.cReactiveProtein || '—'}</td>
+                          <td className="td font-mono font-medium">{lab.erythrocyteSedimentationRate || '—'}</td>
                           <td className="td">
-                            <Badge tone={band.tone}>{band.label}</Badge>
+                            <Badge tone={band.tone} showDot>{band.label}</Badge>
                           </td>
                           <td className="td text-slate-500">{formatDate(lab.createdAt)}</td>
                         </tr>
@@ -507,36 +509,36 @@ const Admin = () => {
           </div>
         )}
 
-        {/* Access audit */}
+        {/* Security & Access Audit Log Tab */}
         {activeTab === 'activity' && (
           <div className="space-y-6">
-            <div className="rounded-xl border border-slate-200 bg-white">
-              <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-                <h3 className="text-sm font-semibold text-slate-900">Portal access audit trail</h3>
-                <span className="text-xs text-slate-500">{filteredLogins.length} sessions</span>
+            <div className="rounded-lg border border-slate-200 bg-white shadow-2xs overflow-hidden">
+              <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-3.5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Portal Access Audit Trail</h3>
+                <span className="text-xs font-semibold text-slate-500">{filteredLogins.length} Sign-In Events</span>
               </div>
 
               {filteredLogins.length === 0 ? (
                 <EmptyState
                   icon={Activity}
-                  title="No access events"
-                  description={searchTerm ? 'Try a different search term.' : 'Sign-in activity will appear here.'}
+                  title="No Authentication Events"
+                  description={searchTerm ? 'No records matched your search.' : 'Sign-in activity will appear here.'}
                 />
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left">
+                  <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-200">
-                        <th scope="col" className="th">Email</th>
-                        <th scope="col" className="th">User ID</th>
-                        <th scope="col" className="th">Sign-in time</th>
+                      <tr>
+                        <th scope="col" className="th">Account Email</th>
+                        <th scope="col" className="th">Patient UID</th>
+                        <th scope="col" className="th">Authentication Timestamp</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 text-xs">
                       {filteredLogins.map(login => (
-                        <tr key={login.id} className="hover:bg-slate-50">
-                          <td className="td font-semibold text-slate-900">{login.email}</td>
-                          <td className="td font-mono">{shortId(login.userId)}</td>
+                        <tr key={login.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="td font-bold text-slate-900">{login.email}</td>
+                          <td className="td font-mono text-slate-600">{shortId(login.userId)}</td>
                           <td className="td text-slate-500">{formatDateTime(login.timestamp)}</td>
                         </tr>
                       ))}
@@ -546,27 +548,27 @@ const Admin = () => {
               )}
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white">
-              <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-                <h3 className="text-sm font-semibold text-slate-900">Recent registrations</h3>
-                <span className="text-xs text-slate-500">{signupData.length} signups</span>
+            <div className="rounded-lg border border-slate-200 bg-white shadow-2xs overflow-hidden">
+              <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-3.5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Recent Registrations Audit</h3>
+                <span className="text-xs font-semibold text-slate-500">{signupData.length} Signups</span>
               </div>
 
               {signupData.length === 0 ? (
                 <EmptyState
                   icon={UserPlus}
-                  title="No registrations yet"
-                  description="New patient registrations will appear here."
+                  title="No Registrations Recorded"
+                  description="New patient signups will appear here."
                 />
               ) : (
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-slate-100 text-xs">
                   {signupData.slice(0, 6).map(signup => (
-                    <li key={signup.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                    <li key={signup.id} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50/80 transition-colors">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-slate-900">{signup.email || 'Registered patient'}</p>
-                        <p className="font-mono text-xs text-slate-400">{shortId(signup.userId || signup.id)}</p>
+                        <p className="truncate font-bold text-slate-900">{signup.email || 'Registered Patient'}</p>
+                        <p className="font-mono text-[11px] text-slate-400">UID: {shortId(signup.userId || signup.id)}</p>
                       </div>
-                      <span className="shrink-0 text-xs text-slate-400">{formatDate(signup.createdAt)}</span>
+                      <span className="shrink-0 text-[11px] text-slate-400">{formatDate(signup.createdAt)}</span>
                     </li>
                   ))}
                 </ul>
@@ -576,81 +578,81 @@ const Admin = () => {
         )}
       </div>
 
-      {/* Patient detail modal */}
+      {/* Patient Detail Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4" role="dialog" aria-modal="true">
-          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-              <h3 className="text-sm font-semibold text-slate-900">Patient record details</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-xs" role="dialog" aria-modal="true">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-3.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Patient Record Inspection</h3>
               <button
                 type="button"
                 onClick={() => setSelectedUser(null)}
-                aria-label="Close details"
-                className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                aria-label="Close modal"
+                className="rounded-md p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="space-y-4 p-5">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Patient UID</p>
-                <p className="mt-0.5 font-mono text-sm font-semibold text-slate-900">{selectedUser.id}</p>
+            <div className="space-y-4 p-5 text-xs">
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-3">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Patient UID</p>
+                <p className="mt-0.5 font-mono text-xs font-bold text-slate-900">{selectedUser.id}</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Name</p>
-                  <p className="mt-0.5 text-sm font-semibold text-slate-900">{selectedUser.name || selectedUser.displayName || 'N/A'}</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-md border border-slate-200 p-2.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Patient Name</p>
+                  <p className="mt-0.5 text-xs font-bold text-slate-900">{selectedUser.name || selectedUser.displayName || 'N/A'}</p>
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Email</p>
-                  <p className="mt-0.5 break-all text-sm font-semibold text-slate-900">{selectedUser.email}</p>
+                <div className="rounded-md border border-slate-200 p-2.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Email Address</p>
+                  <p className="mt-0.5 break-all text-xs font-bold text-slate-900">{selectedUser.email}</p>
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Joined date</p>
-                  <p className="mt-0.5 text-sm font-semibold text-slate-900">{formatDate(selectedUser.joinedDate)}</p>
+                <div className="rounded-md border border-slate-200 p-2.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Joined Date</p>
+                  <p className="mt-0.5 text-xs font-bold text-slate-900">{formatDate(selectedUser.joinedDate)}</p>
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Total logins</p>
-                  <p className="mt-0.5 text-sm font-semibold text-slate-900">{getUserLoginHistory(selectedUser.id).length}</p>
+                <div className="rounded-md border border-slate-200 p-2.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Sign-In Count</p>
+                  <p className="mt-0.5 text-xs font-bold text-slate-900">{getUserLoginHistory(selectedUser.id).length} Sessions</p>
                 </div>
               </div>
 
-              <div className="border-t border-slate-200 pt-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-slate-900">Biomarker submission history</h4>
-                  <span className="text-xs text-slate-500">{getUserLabEntries(selectedUser.id).length} panel(s)</span>
+              <div className="border-t border-slate-200 pt-3">
+                <div className="mb-2.5 flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">Biomarker Panels Recorded</h4>
+                  <span className="text-xs font-semibold text-slate-500">{getUserLabEntries(selectedUser.id).length} Panels</span>
                 </div>
 
                 {getUserLabEntries(selectedUser.id).length === 0 ? (
-                  <p className="py-4 text-center text-sm text-slate-500">No lab submissions recorded for this patient.</p>
+                  <p className="py-4 text-center text-xs text-slate-500">No laboratory submissions recorded for this patient.</p>
                 ) : (
                   <div className="max-h-56 space-y-2 overflow-y-auto pr-1">
                     {getUserLabEntries(selectedUser.id).map(entry => {
                       const band = getRiskBand(entry);
                       return (
-                        <div key={entry.id} className="rounded-lg border border-slate-200 p-3">
-                          <div className="mb-2 flex items-center justify-between">
-                            <span className="text-xs font-semibold text-slate-900">{formatDate(entry.createdAt)}</span>
-                            <Badge tone={band.tone}>{band.label}</Badge>
+                        <div key={entry.id} className="rounded-md border border-slate-200 p-3 bg-slate-50/30 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900">{formatDate(entry.createdAt)}</span>
+                            <Badge tone={band.tone} showDot>{band.label}</Badge>
                           </div>
-                          <dl className="grid grid-cols-4 gap-2 text-xs">
+                          <dl className="grid grid-cols-4 gap-2 text-[11px]">
                             <div>
-                              <dt className="text-slate-400">RF</dt>
-                              <dd className="font-mono font-semibold text-slate-800">{entry.rheumatoidFactor || '—'}</dd>
+                              <dt className="text-slate-500 font-medium">RF</dt>
+                              <dd className="font-mono font-bold text-slate-900">{entry.rheumatoidFactor || '—'}</dd>
                             </div>
                             <div>
-                              <dt className="text-slate-400">Anti-CCP</dt>
-                              <dd className="font-mono font-semibold text-slate-800">{entry.antiCCP || '—'}</dd>
+                              <dt className="text-slate-500 font-medium">Anti-CCP</dt>
+                              <dd className="font-mono font-bold text-slate-900">{entry.antiCCP || '—'}</dd>
                             </div>
                             <div>
-                              <dt className="text-slate-400">CRP</dt>
-                              <dd className="font-mono font-semibold text-slate-800">{entry.cReactiveProtein || '—'}</dd>
+                              <dt className="text-slate-500 font-medium">CRP</dt>
+                              <dd className="font-mono font-bold text-slate-900">{entry.cReactiveProtein || '—'}</dd>
                             </div>
                             <div>
-                              <dt className="text-slate-400">ESR</dt>
-                              <dd className="font-mono font-semibold text-slate-800">{entry.erythrocyteSedimentationRate || '—'}</dd>
+                              <dt className="text-slate-500 font-medium">ESR</dt>
+                              <dd className="font-mono font-bold text-slate-900">{entry.erythrocyteSedimentationRate || '—'}</dd>
                             </div>
                           </dl>
                         </div>

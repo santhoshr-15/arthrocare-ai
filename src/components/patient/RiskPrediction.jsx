@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { AlertTriangle, AlertCircle, RefreshCw, ShieldCheck, Stethoscope, FlaskConical } from 'lucide-react';
+import { AlertTriangle, AlertCircle, RefreshCw, ShieldCheck, Stethoscope, FlaskConical, CheckCircle2 } from 'lucide-react';
 import { collection, query, where, getDocs, orderBy, limit } from "firebase/firestore";
 import { auth, db } from "../../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
@@ -21,7 +21,7 @@ const RiskPrediction = () => {
       if (user) {
         setCurrentUser(user);
       } else {
-        setError('Please log in to view predictions.');
+        setError('Please sign in to access risk prediction reports.');
         setCurrentUser(null);
         setLoading(false);
       }
@@ -35,7 +35,7 @@ const RiskPrediction = () => {
       setError('');
 
       if (!currentUser) {
-        setError('Please log in first.');
+        setError('Please sign in first.');
         setLoading(false);
         return;
       }
@@ -49,7 +49,7 @@ const RiskPrediction = () => {
       const snapshot = await getDocs(labQuery);
 
       if (snapshot.empty) {
-        setError('No lab measurement records found. Please enter lab test results first.');
+        setError('No laboratory measurement records found. Please enter lab test results first.');
         setHasLabData(false);
         setLoading(false);
         return;
@@ -93,35 +93,30 @@ const RiskPrediction = () => {
     if (currentUser) loadLatestLabDataAndPredict();
   }, [currentUser, loadLatestLabDataAndPredict]);
 
-  const getRiskBadge = (risk) => {
+  const getRiskTone = (risk) => {
     switch (risk) {
-      case 'Very Low':
-        return { tone: 'emerald', bar: 'bg-emerald-600', icon: <ShieldCheck className="h-5 w-5 text-emerald-600" /> };
-      case 'Low':
-        return { tone: 'amber', bar: 'bg-amber-500', icon: <ShieldCheck className="h-5 w-5 text-amber-600" /> };
-      case 'Moderate':
-        return { tone: 'orange', bar: 'bg-orange-500', icon: <AlertCircle className="h-5 w-5 text-orange-600" /> };
-      case 'High':
-        return { tone: 'rose', bar: 'bg-rose-600', icon: <AlertTriangle className="h-5 w-5 text-rose-600" /> };
-      default:
-        return { tone: 'slate', bar: 'bg-slate-500', icon: <ShieldCheck className="h-5 w-5 text-slate-600" /> };
+      case 'Very Low': return 'emerald';
+      case 'Low': return 'amber';
+      case 'Moderate': return 'orange';
+      case 'High': return 'rose';
+      default: return 'slate';
     }
   };
 
   if (loading) {
-    return <Loader label="Running the machine-learning risk model…" />;
+    return <Loader label="Executing multivariable machine-learning risk scoring model…" />;
   }
 
   if (error && !predictionData) {
     return (
       <EmptyState
         icon={AlertCircle}
-        title="Unable to generate risk report"
+        title="Unable to Generate Risk Stratification Report"
         description={error}
         action={
           <button type="button" onClick={loadLatestLabDataAndPredict} className="btn-primary">
-            <RefreshCw className="h-4 w-4" />
-            Retry analysis
+            <RefreshCw className="h-3.5 w-3.5" />
+            Retry Analysis Model
           </button>
         }
       />
@@ -132,132 +127,146 @@ const RiskPrediction = () => {
     return (
       <EmptyState
         icon={Stethoscope}
-        title="No lab biomarkers recorded"
-        description="Enter your serological laboratory measurements first to calculate your RA risk probability."
+        title="No Laboratory Biomarkers Recorded"
+        description="Please submit quantitative serology measurements (RF, Anti-CCP, CRP, ESR) to compute RA risk probability."
+        action={
+          window.dashboardSetTab && (
+            <button
+              type="button"
+              onClick={() => window.dashboardSetTab("Lab Test Entry")}
+              className="btn-primary"
+            >
+              Enter Laboratory Panel
+            </button>
+          )
+        }
       />
     );
   }
 
-  const riskBadge = getRiskBadge(predictionData.risk_level);
+  const tone = getRiskTone(predictionData.risk_level);
 
   return (
     <div className="space-y-6">
-      {/* Risk summary */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-        <div className="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+      {/* Executive Risk Score Banner */}
+      <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs">
+        <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-teal-50 text-teal-800 border border-teal-200">
               <ShieldCheck className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-slate-900">Diagnostic risk probability report</h2>
-              <p className="mt-0.5 text-xs text-slate-500">Multi-factor machine-learning output with physiological baselines.</p>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">Multivariable Decision Support Summary</h2>
+              <p className="text-[11px] text-slate-500">Machine learning model trained on age- &amp; sex-adjusted serology.</p>
             </div>
           </div>
-          <Badge tone={riskBadge.tone}>
-            {riskBadge.icon}
-            Risk classification: {predictionData.risk_level}
+          <Badge tone={tone} showDot>
+            Risk Stratification: {predictionData.risk_level}
           </Badge>
         </div>
 
-        <div className="mt-6 grid gap-6 md:grid-cols-2 md:items-center">
-          <div className="space-y-2">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Calculated risk index</p>
-            <p className="text-5xl font-semibold tracking-tight text-slate-900">
-              {predictionData.risk_score}<span className="text-2xl text-slate-400">%</span>
+        <div className="mt-5 grid gap-6 md:grid-cols-12 md:items-center">
+          <div className="md:col-span-5 space-y-1.5 border-r border-slate-100 pr-4">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Calculated RA Risk Score</p>
+            <p className="text-4xl font-extrabold tracking-tight text-slate-900">
+              {predictionData.risk_score}<span className="text-xl font-bold text-slate-400">%</span>
             </p>
-            <p className="text-sm text-slate-600">
-              Probability ratio: <span className="font-semibold text-slate-900">{predictionData.risk_probability}</span>
-            </p>
-            <p className="text-sm text-slate-600">
-              Binary model output:{" "}
-              <span className="font-semibold text-slate-900">
-                {predictionData.binary_prediction === 1 ? 'Positive sign' : 'Negative sign'}
-              </span>
-            </p>
+            <div className="flex flex-col gap-1 text-xs text-slate-600 font-medium pt-1">
+              <span>Probability Ratio: <strong className="text-slate-900">{predictionData.risk_probability}</strong></span>
+              <span>Binary Classification: <strong className="text-slate-900">{predictionData.binary_prediction === 1 ? 'Positive Serology Signal' : 'Negative Serology Signal'}</strong></span>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex justify-between text-xs font-medium text-slate-600">
-              <span>Very low (0–40%)</span>
+          <div className="md:col-span-7 space-y-2.5">
+            <div className="flex justify-between text-[11px] font-bold uppercase text-slate-500">
+              <span>Very Low (&lt;40%)</span>
               <span>Low (40–65%)</span>
               <span>Moderate (65–85%)</span>
-              <span>High (85–100%)</span>
+              <span>High (&gt;85%)</span>
             </div>
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+            <div className="h-2.5 w-full overflow-hidden rounded-md bg-slate-100 border border-slate-200">
               <div
-                className={`h-2.5 rounded-full transition-all duration-500 ${riskBadge.bar}`}
+                className={`h-full transition-all duration-500 ${
+                  tone === 'emerald' ? 'bg-emerald-600' :
+                  tone === 'amber' ? 'bg-amber-500' :
+                  tone === 'orange' ? 'bg-orange-500' : 'bg-rose-600'
+                }`}
                 style={{ width: `${Math.max(predictionData.risk_score, 4)}%` }}
               />
             </div>
-            <p className="text-xs text-slate-500">Assessed on a 4-biomarker quantitative serology panel.</p>
+            <p className="text-[11px] text-slate-500 leading-tight">
+              Assessed via 4-biomarker quantitative panel normalized against baseline demographic controls.
+            </p>
           </div>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
-        {/* Clinical observations */}
-        <div className="space-y-4 lg:col-span-7">
-          <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-            <div className="mb-4 flex items-center gap-2 border-b border-slate-200 pb-4">
-              <Stethoscope className="h-4 w-4 text-teal-700" />
-              <h3 className="text-sm font-semibold text-slate-900">Clinical observations & guidance</h3>
+        {/* Clinical Guidance Observations */}
+        <div className="lg:col-span-7">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
+              <div className="flex items-center gap-2">
+                <Stethoscope className="h-4 w-4 text-teal-800" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Model Interpretations &amp; Clinical Guidance</h3>
+              </div>
             </div>
 
             {predictionData.recommendations && predictionData.recommendations.length > 0 ? (
-              <ul className="space-y-3">
+              <div className="space-y-2.5">
                 {predictionData.recommendations.map((rec, idx) => (
-                  <li key={idx} className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-700">
-                    {rec}
-                  </li>
+                  <div key={idx} className="flex items-start gap-2.5 rounded-md border border-slate-200 bg-slate-50 p-3 text-xs leading-relaxed text-slate-700">
+                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 text-teal-700 shrink-0" />
+                    <span>{rec}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
-              <p className="text-sm text-slate-500">No additional observations were generated.</p>
+              <p className="text-xs text-slate-500">No additional diagnostic observations recorded.</p>
             )}
           </div>
         </div>
 
-        {/* Analyzed parameters */}
+        {/* Analyzed Biomarker Parameters Table */}
         <div className="lg:col-span-5">
-          <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-            <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-4">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
               <div className="flex items-center gap-2">
-                <FlaskConical className="h-4 w-4 text-teal-700" />
-                <h3 className="text-sm font-semibold text-slate-900">Analyzed parameters</h3>
+                <FlaskConical className="h-4 w-4 text-teal-800" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Analyzed Biomarker Panel</h3>
               </div>
               <button
                 type="button"
                 onClick={loadLatestLabDataAndPredict}
-                className="btn-ghost"
+                className="btn-ghost text-xs py-1 px-2"
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-3.5 w-3.5" />
                 Refresh
               </button>
             </div>
 
-            <dl className="space-y-2 text-sm">
-              <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5">
-                <dt className="text-slate-500">Age / sex</dt>
-                <dd className="font-semibold text-slate-900">
+            <dl className="space-y-2 text-xs">
+              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-2.5">
+                <dt className="text-slate-500 font-medium">Demographics Context</dt>
+                <dd className="font-bold text-slate-900">
                   {predictionData.factors_analyzed.age} yrs ({predictionData.factors_analyzed.gender})
                 </dd>
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5">
-                <dt className="text-slate-500">Rheumatoid factor</dt>
-                <dd className="font-semibold text-slate-900">{predictionData.factors_analyzed.rheumatoid_factor} IU/mL</dd>
+              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-2.5">
+                <dt className="text-slate-500 font-medium">Rheumatoid Factor (RF)</dt>
+                <dd className="font-bold text-slate-900">{predictionData.factors_analyzed.rheumatoid_factor} IU/mL</dd>
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5">
-                <dt className="text-slate-500">Anti-CCP antibodies</dt>
-                <dd className="font-semibold text-slate-900">{predictionData.factors_analyzed.anti_ccp} U/mL</dd>
+              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-2.5">
+                <dt className="text-slate-500 font-medium">Anti-CCP Antibodies</dt>
+                <dd className="font-bold text-slate-900">{predictionData.factors_analyzed.anti_ccp} U/mL</dd>
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5">
-                <dt className="text-slate-500">C-reactive protein</dt>
-                <dd className="font-semibold text-slate-900">{predictionData.factors_analyzed.c_reactive_protein} mg/L</dd>
+              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-2.5">
+                <dt className="text-slate-500 font-medium">C-Reactive Protein (CRP)</dt>
+                <dd className="font-bold text-slate-900">{predictionData.factors_analyzed.c_reactive_protein} mg/L</dd>
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5">
-                <dt className="text-slate-500">ESR rate</dt>
-                <dd className="font-semibold text-slate-900">{predictionData.factors_analyzed.esr} mm/hr</dd>
+              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-2.5">
+                <dt className="text-slate-500 font-medium">ESR Rate</dt>
+                <dd className="font-bold text-slate-900">{predictionData.factors_analyzed.esr} mm/hr</dd>
               </div>
             </dl>
           </div>
