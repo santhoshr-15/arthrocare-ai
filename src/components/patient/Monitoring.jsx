@@ -264,24 +264,24 @@ const Monitoring = () => {
       {/* Key Metrics Grid */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat label="Total Panels Logged" value={predictionHistory.length} icon={Activity} />
-        <Stat label="Latest RA Risk Score" value={`${latest?.risk_score || 0}%`} valueClass="text-teal-800" icon={TrendingUp} />
+        <Stat label="Latest RA Risk Score" value={`${latest?.risk_score || 0}%`} valueClass="text-blue-800" icon={TrendingUp} />
         <Stat label="Current Risk Band" value={latest?.risk_level || 'N/A'} icon={BarChart3} />
         <Stat label="Last Assessment Date" value={latest?.date || 'N/A'} valueClass="text-sm font-bold" icon={Calendar} />
       </div>
 
       {/* Control Filter Bar */}
-      <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+      <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
             <span>Window:</span>
-            <div className="flex rounded-md border border-slate-200 p-0.5 bg-slate-50" role="group" aria-label="Time range">
+            <div className="flex rounded-lg border border-slate-200 p-0.5 bg-slate-50" role="group" aria-label="Time range">
               {['week', 'month', 'all'].map(r => (
                 <button
                   key={r}
                   type="button"
                   onClick={() => setTimeRange(r)}
-                  className={`rounded-sm px-2.5 py-1 text-xs font-semibold uppercase tracking-wider transition-colors ${
-                    timeRange === r ? 'bg-teal-800 text-white shadow-2xs' : 'text-slate-600 hover:bg-slate-200'
+                  className={`rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                    timeRange === r ? 'bg-blue-800 text-white' : 'text-slate-600 hover:bg-slate-200'
                   }`}
                 >
                   {r === 'all' ? 'All Time' : r}
@@ -290,16 +290,16 @@ const Monitoring = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
             <span>Metric:</span>
-            <div className="flex rounded-md border border-slate-200 p-0.5 bg-slate-50" role="group" aria-label="Display metric">
+            <div className="flex rounded-lg border border-slate-200 p-0.5 bg-slate-50" role="group" aria-label="Display metric">
               {['risk_score', 'lab_values'].map(m => (
                 <button
                   key={m}
                   type="button"
                   onClick={() => setSelectedMetric(m)}
-                  className={`rounded-sm px-2.5 py-1 text-xs font-semibold transition-colors ${
-                    selectedMetric === m ? 'bg-teal-800 text-white shadow-2xs' : 'text-slate-600 hover:bg-slate-200'
+                  className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    selectedMetric === m ? 'bg-blue-800 text-white' : 'text-slate-600 hover:bg-slate-200'
                   }`}
                 >
                   {m === 'risk_score' ? 'Risk Trajectory' : 'Biomarker Levels'}
@@ -309,24 +309,24 @@ const Monitoring = () => {
           </div>
         </div>
 
-        <button type="button" onClick={refreshData} className="btn-secondary shrink-0 text-xs">
-          <RefreshCw className="h-3.5 w-3.5" />
+        <button type="button" onClick={refreshData} className="btn-secondary shrink-0 text-sm">
+          <RefreshCw className="h-4 w-4" />
           Refresh Analytics
         </button>
       </div>
 
       {/* Chart Visualizations */}
       <div className="grid gap-6 lg:grid-cols-12">
-        <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-5 shadow-2xs lg:col-span-8">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 lg:col-span-8">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-teal-800" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+              <TrendingUp className="h-5 w-5 text-blue-800" />
+              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">
                 {selectedMetric === 'risk_score' ? 'Longitudinal RA Risk Score Trajectory (%)' : 'Serial Biomarker Concentrations'}
               </h3>
             </div>
           </div>
-          <div className="h-72">
+          <div className="h-80">
             {selectedMetric === 'risk_score' ? (
               <Line data={riskScoreChartData} options={chartOptions} />
             ) : (
@@ -335,24 +335,24 @@ const Monitoring = () => {
           </div>
         </div>
 
-        <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-5 shadow-2xs lg:col-span-4">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 lg:col-span-4">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-teal-800" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Risk Band Distribution</h3>
+              <BarChart3 className="h-5 w-5 text-blue-800" />
+              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Risk Band Distribution</h3>
             </div>
           </div>
-          <div className="h-72">
+          <div className="h-80">
             <Bar data={riskLevelDistribution} options={chartOptions} />
           </div>
         </div>
       </div>
 
       {/* Serial Laboratory Audit Log Table */}
-      <div className="rounded-lg border border-slate-200 bg-white shadow-2xs overflow-hidden">
-        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-3.5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Serial Laboratory Audit Log &amp; Historical Submissions</h3>
-          <span className="text-xs font-semibold text-slate-500">{filteredHistory.length} Entries</span>
+      <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-4">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Serial Laboratory Audit Log &amp; Historical Submissions</h3>
+          <span className="text-sm font-semibold text-slate-500">{filteredHistory.length} Entries</span>
         </div>
 
         <div className="overflow-x-auto">

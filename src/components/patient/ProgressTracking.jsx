@@ -218,25 +218,25 @@ const ProgressTracking = () => {
   return (
     <div className="space-y-6">
       {/* Requisition & Comparison Input Form */}
-      <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs space-y-5">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-teal-50 text-teal-800 border border-teal-200">
+      <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-6 space-y-6">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-800 border border-blue-200">
               <TrendingUp className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">Serial Disease Progression Analysis</h2>
-              <p className="text-[11px] text-slate-500">Compare current laboratory panel against historical baseline panel.</p>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-900">Serial Disease Progression Analysis</h2>
+              <p className="text-xs text-slate-500">Compare current laboratory panel against historical baseline panel.</p>
             </div>
           </div>
-          <button type="button" onClick={clearForm} className="btn-ghost text-xs">
-            <RotateCcw className="h-3.5 w-3.5" />
+          <button type="button" onClick={clearForm} className="btn-ghost text-sm">
+            <RotateCcw className="h-4 w-4" />
             Clear values
           </button>
         </div>
 
         {/* Interval Context Bar */}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-2">
           <Field
             label="Elapsed Time (Months)"
             htmlFor="months"
@@ -267,30 +267,30 @@ const ProgressTracking = () => {
         </div>
 
         {/* Side-by-side Baseline vs Follow-up Grid */}
-        <div className="grid gap-5 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2">
           {/* Baseline Record Panel */}
-          <div className="rounded-md border border-slate-200 bg-slate-50/50 p-4 space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Historical Baseline Record</h3>
+          <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Historical Baseline Record</h3>
               <Badge tone="slate">Baseline</Badge>
             </div>
-            <dl className="grid grid-cols-2 gap-3 text-xs">
+            <dl className="grid grid-cols-2 gap-4 text-sm">
               {baselineFields.map((field) => (
-                <div key={field.label} className="rounded-md border border-slate-200 bg-white p-2.5">
+                <div key={field.label} className="rounded-lg border border-slate-200 bg-white p-3">
                   <dt className="text-slate-500 font-medium">{field.label}</dt>
-                  <dd className="mt-0.5 font-bold text-slate-900">{field.value}</dd>
+                  <dd className="mt-1 font-bold text-slate-900">{field.value}</dd>
                 </div>
               ))}
             </dl>
           </div>
 
           {/* Follow-up Measurement Inputs */}
-          <div className="rounded-md border border-teal-200 bg-teal-50/30 p-4 space-y-3">
-            <div className="flex items-center justify-between border-b border-teal-200 pb-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-teal-950">Follow-Up Measurements</h3>
-              <Badge tone="teal">Current Entry</Badge>
+          <div className="rounded-lg border border-blue-200 bg-blue-50/30 p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-blue-200 pb-3">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-blue-950">Follow-Up Measurements</h3>
+              <Badge tone="blue">Current Entry</Badge>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <Field label="Current Age" htmlFor="currentAge" required>
                 <input id="currentAge" type="number" step="0.1" value={formData.currentAge}
                   onChange={(e) => handleInputChange('currentAge', e.target.value)} required className="field" />
@@ -323,11 +323,11 @@ const ProgressTracking = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-end border-t border-slate-200 pt-4">
+        <div className="flex items-center justify-end border-t border-slate-200 pt-5">
           <button type="submit" disabled={isSubmitting} className="btn-primary">
             {isSubmitting ? (
               <>
-                <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 Computing Progression Matrix…
               </>
             ) : (
@@ -342,34 +342,34 @@ const ProgressTracking = () => {
 
       {/* Progression Report Results */}
       {comparisonResult && (
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs space-y-5">
-          <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-teal-50 text-teal-800 border border-teal-200">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 space-y-6">
+          <div className="flex flex-col gap-4 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-800 border border-blue-200">
                 <Activity className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">Progression Trajectory Report</h2>
-                <p className="text-[11px] text-slate-500">Comparative ML output for serial biomarker change.</p>
+                <h2 className="text-sm font-bold uppercase tracking-widest text-slate-900">Progression Trajectory Report</h2>
+                <p className="text-xs text-slate-500">Comparative ML output for serial biomarker change.</p>
               </div>
             </div>
             <Badge tone={trendTone} showDot>Trend Classification: {comparisonResult.riskTrend}</Badge>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-center">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Baseline Risk Probability</p>
-              <p className="mt-1 text-3xl font-bold text-slate-900">{comparisonResult.previousProbability}%</p>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 text-center">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Baseline Risk Probability</p>
+              <p className="mt-2 text-3xl font-bold text-slate-900">{comparisonResult.previousProbability}%</p>
             </div>
-            <div className="rounded-md border border-teal-200 bg-teal-50/60 p-4 text-center">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-teal-900">Follow-Up Risk Probability</p>
-              <p className="mt-1 text-3xl font-bold text-teal-950">{comparisonResult.currentProbability}%</p>
+            <div className="rounded-lg border border-blue-200 bg-blue-50/60 p-5 text-center">
+              <p className="text-xs font-bold uppercase tracking-widest text-blue-900">Follow-Up Risk Probability</p>
+              <p className="mt-2 text-3xl font-bold text-blue-950">{comparisonResult.currentProbability}%</p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-3 text-xs font-semibold">
+          <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm font-semibold">
             <span className="text-slate-600">Net Risk Score Delta over {comparisonResult.monthsBetweenTests} Months:</span>
-            <span className={`flex items-center gap-1 font-bold ${comparisonResult.probabilityChange > 0 ? 'text-rose-700' : 'text-emerald-700'}`}>
+            <span className={`flex items-center gap-1.5 font-bold ${comparisonResult.probabilityChange > 0 ? 'text-rose-700' : 'text-emerald-700'}`}>
               {comparisonResult.probabilityChange > 0 ? (
                 <>
                   <ArrowUpRight className="h-4 w-4 text-rose-600" />

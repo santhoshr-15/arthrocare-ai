@@ -174,24 +174,24 @@ const LabUploadForm = ({ setSelectedTab }) => {
   return (
     <div className="space-y-6">
       {/* Patient Demographic Context Bar */}
-      <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-2xs">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-teal-50 text-teal-800 border border-teal-200">
+      <div className="rounded-lg border border-slate-200 bg-white p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-800 border border-blue-200">
               <UserCheck className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">Demographic Context Baseline</h2>
-              <p className="text-[11px] text-slate-500">Demographics normalize inflammatory reference models.</p>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-900">Demographic Context Baseline</h2>
+              <p className="text-xs text-slate-500">Demographics normalize inflammatory reference models.</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm">
               <span className="text-slate-500 font-medium">Age:</span>
               <span className="font-bold text-slate-900">{userData.age ? `${userData.age} yrs` : 'Not set'}</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs">
+            <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm">
               <span className="text-slate-500 font-medium">Sex:</span>
               <span className="font-bold text-slate-900">{userData.gender || 'Not set'}</span>
             </span>
@@ -199,16 +199,16 @@ const LabUploadForm = ({ setSelectedTab }) => {
         </div>
 
         {profileIncomplete && (
-          <div className="mt-3 flex flex-col items-start justify-between gap-2.5 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 sm:flex-row sm:items-center">
+          <div className="mt-4 flex flex-col items-start justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 sm:flex-row sm:items-center">
             <span className="flex items-center gap-2 font-medium">
-              <AlertCircle className="h-4 w-4 shrink-0 text-amber-700" />
+              <AlertCircle className="h-5 w-5 shrink-0 text-amber-700" />
               Complete demographic profile first to enable risk calculation models.
             </span>
             {window.dashboardSetTab && (
               <button
                 type="button"
                 onClick={() => window.dashboardSetTab("Profile & Medical Info")}
-                className="btn-secondary shrink-0 text-xs py-1 px-2.5 text-amber-900 hover:bg-amber-100"
+                className="btn-secondary shrink-0 text-sm py-1.5 px-3 text-amber-900 hover:bg-amber-100"
               >
                 Go to Profile
               </button>
@@ -218,42 +218,42 @@ const LabUploadForm = ({ setSelectedTab }) => {
       </div>
 
       {/* Laboratory Requisition Form */}
-      <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs space-y-5">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+      <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-6 space-y-6">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
           <div>
-            <h2 className="text-sm font-bold tracking-tight text-slate-900">Serology &amp; Inflammatory Markers Panel</h2>
-            <p className="text-xs text-slate-500">Enter quantitative serum measurements from recent blood panel report.</p>
+            <h2 className="text-base font-bold tracking-tight text-slate-900">Serology &amp; Inflammatory Markers Panel</h2>
+            <p className="text-sm text-slate-500">Enter quantitative serum measurements from recent blood panel report.</p>
           </div>
           <button
             type="button"
             onClick={handleClearForm}
-            className="btn-ghost text-xs"
+            className="btn-ghost text-sm"
           >
-            <RotateCcw className="h-3.5 w-3.5" />
+            <RotateCcw className="h-4 w-4" />
             Reset values
           </button>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-2">
           {labTests.map((test) => {
             const numVal = parseFloat(labValues[test.key]);
             const isExceeded = !isNaN(numVal) && numVal > test.refVal;
 
             return (
-              <div key={test.key} className={`rounded-md border p-4 transition-colors ${
+              <div key={test.key} className={`rounded-lg border p-5 transition-colors ${
                 isExceeded ? 'border-amber-300 bg-amber-50/30' : 'border-slate-200 bg-slate-50/40'
               }`}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-900">{test.label}</label>
-                    <p className="mt-0.5 text-[11px] text-slate-500 leading-tight">{test.desc}</p>
+                    <label className="text-sm font-bold uppercase tracking-widest text-slate-900">{test.label}</label>
+                    <p className="mt-1 text-xs text-slate-500 leading-tight">{test.desc}</p>
                   </div>
-                  <Badge tone={isExceeded ? 'amber' : 'teal'}>
+                  <Badge tone={isExceeded ? 'amber' : 'blue'}>
                     Ref: {test.normalRange}
                   </Badge>
                 </div>
 
-                <div className="relative mt-3">
+                <div className="relative mt-4">
                   <input
                     type="number"
                     step="any"
@@ -262,9 +262,9 @@ const LabUploadForm = ({ setSelectedTab }) => {
                     onChange={(e) => handleInputChange(test.key, e.target.value)}
                     required
                     aria-label={test.label}
-                    className={`field pr-14 text-sm font-semibold ${isExceeded ? 'border-amber-400 focus:border-amber-600 focus:ring-amber-600' : ''}`}
+                    className={`field pr-16 text-base font-semibold ${isExceeded ? 'border-amber-400 focus:border-amber-600 focus:ring-amber-600' : ''}`}
                   />
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
                     {test.unit}
                   </span>
                 </div>
@@ -274,16 +274,16 @@ const LabUploadForm = ({ setSelectedTab }) => {
         </div>
 
         {error && (
-          <div className="flex items-start gap-2.5 rounded-md border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+          <div className="flex items-start gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-600" />
             <span>{error}</span>
           </div>
         )}
 
         {submissionSuccess && (
-          <div className="flex flex-col items-start justify-between gap-3 rounded-md border border-emerald-200 bg-emerald-50 p-3.5 text-xs text-emerald-900 sm:flex-row sm:items-center">
+          <div className="flex flex-col items-start justify-between gap-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 sm:flex-row sm:items-center">
             <span className="flex items-center gap-2 font-semibold">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-700" />
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-700" />
               Laboratory panel recorded successfully.
             </span>
             {(setSelectedTab || window.dashboardSetTab) && (
@@ -293,20 +293,20 @@ const LabUploadForm = ({ setSelectedTab }) => {
                   if (setSelectedTab) setSelectedTab("Risk Prediction");
                   else if (window.dashboardSetTab) window.dashboardSetTab("Risk Prediction");
                 }}
-                className="btn-primary shrink-0 text-xs py-1.5 px-3"
+                className="btn-primary shrink-0 text-sm py-1.5 px-4"
               >
                 View Risk Report
-                <ArrowRight className="h-3.5 w-3.5" />
+                <ArrowRight className="h-4 w-4" />
               </button>
             )}
           </div>
         )}
 
-        <div className="flex items-center justify-end border-t border-slate-200 pt-4">
+        <div className="flex items-center justify-end border-t border-slate-200 pt-5">
           <button type="submit" disabled={loading || profileIncomplete} className="btn-primary">
             {loading ? (
               <>
-                <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 Processing panel…
               </>
             ) : (

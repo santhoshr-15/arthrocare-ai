@@ -2,6 +2,7 @@ import React from 'react';
 
 const tones = {
   slate: { bg: 'bg-slate-100 text-slate-700 border-slate-200', dot: 'bg-slate-500' },
+  blue: { bg: 'bg-blue-50 text-blue-800 border-blue-200', dot: 'bg-blue-600' },
   teal: { bg: 'bg-teal-50 text-teal-800 border-teal-200', dot: 'bg-teal-600' },
   emerald: { bg: 'bg-emerald-50 text-emerald-800 border-emerald-200', dot: 'bg-emerald-600' },
   amber: { bg: 'bg-amber-50 text-amber-800 border-amber-200', dot: 'bg-amber-600' },

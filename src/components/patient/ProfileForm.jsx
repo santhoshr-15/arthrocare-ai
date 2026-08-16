@@ -8,12 +8,12 @@ import Loader from "../ui/Loader";
 import EmptyState from "../ui/EmptyState";
 
 const SectionHeading = ({ icon: Icon, number, title }) => (
-  <div className="flex items-center gap-2.5 border-b border-slate-200 pb-3">
-    <span className="flex h-6 w-6 items-center justify-center rounded-md bg-teal-50 text-[11px] font-bold text-teal-800 border border-teal-200">
+  <div className="flex items-center gap-3 border-b border-slate-200 pb-4">
+    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-blue-800 border border-blue-200">
       {number}
     </span>
-    <h2 className="text-sm font-bold tracking-tight text-slate-900">{title}</h2>
-    {Icon && <Icon className="ml-auto h-4 w-4 text-slate-400" />}
+    <h2 className="text-base font-bold tracking-tight text-slate-900">{title}</h2>
+    {Icon && <Icon className="ml-auto h-5 w-5 text-slate-400" />}
   </div>
 );
 
@@ -206,16 +206,16 @@ const ProfileForm = () => {
       {notice && (
         <div
           role="status"
-          className={`flex items-start gap-2.5 rounded-md border p-3.5 text-xs font-medium ${
+          className={`flex items-start gap-3 rounded-lg border p-4 text-sm font-medium ${
             notice.type === "success"
               ? "border-emerald-200 bg-emerald-50 text-emerald-800"
               : "border-rose-200 bg-rose-50 text-rose-700"
           }`}
         >
           {notice.type === "success" ? (
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
           ) : (
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-600" />
           )}
           <span>{notice.text}</span>
         </div>
@@ -223,9 +223,9 @@ const ProfileForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Panel 1: Patient Demographics */}
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs space-y-4">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 space-y-5">
           <SectionHeading number="01" title="Demographic Identity" icon={User} />
-          <div className="grid gap-x-5 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Full Patient Name" htmlFor="name" required>
               <input id="name" name="name" type="text" autoComplete="name" placeholder="Jane Doe"
                 value={formData.name} onChange={handleChange} required className="field" />
@@ -264,9 +264,9 @@ const ProfileForm = () => {
         </div>
 
         {/* Panel 2: Vital & Lifestyle Baselines */}
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs space-y-4">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 space-y-5">
           <SectionHeading number="02" title="Health & Lifestyle Baselines" icon={Activity} />
-          <div className="grid gap-x-5 gap-y-4 sm:grid-cols-3">
+          <div className="grid gap-x-6 gap-y-5 sm:grid-cols-3">
             <Field label="Body Mass Index (BMI)" htmlFor="bmi" hint="Metric formula: weight(kg) / height(m)²">
               <input id="bmi" name="bmi" type="text" inputMode="decimal" placeholder="e.g. 23.4"
                 value={formData.bmi} onChange={handleChange} className="field" />
@@ -289,9 +289,9 @@ const ProfileForm = () => {
         </div>
 
         {/* Panel 3: Medical & Family History */}
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs space-y-4">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 space-y-5">
           <SectionHeading number="03" title="Clinical History & Genetic Susceptibility" icon={FileText} />
-          <div className="grid gap-x-5 gap-y-4 sm:grid-cols-2">
+          <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
             <Field label="Family History of Autoimmune Conditions" htmlFor="familyHistory"
               hint="Document first-degree relatives with RA, Lupus, Psoriatic Arthritis, etc.">
               <textarea id="familyHistory" name="familyHistory" rows={3}
@@ -309,20 +309,20 @@ const ProfileForm = () => {
         </div>
 
         {/* Form Actions */}
-        <div className="flex items-center justify-end gap-3 border-t border-slate-200 pt-4">
+        <div className="flex items-center justify-end gap-3 border-t border-slate-200 pt-5">
           <button type="button" onClick={handleClearForm} className="btn-secondary">
-            <RotateCcw className="h-3.5 w-3.5" />
+            <RotateCcw className="h-4 w-4" />
             Reset profile
           </button>
           <button type="submit" disabled={isSubmitting || !formData.name.trim()} className="btn-primary">
             {isSubmitting ? (
               <>
-                <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 Saving profile…
               </>
             ) : (
               <>
-                <Save className="h-3.5 w-3.5" />
+                <Save className="h-4 w-4" />
                 Save medical profile
               </>
             )}

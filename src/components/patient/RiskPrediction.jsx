@@ -226,51 +226,6 @@ const RiskPrediction = () => {
             )}
           </div>
         </div>
-
-        {/* Analyzed Biomarker Parameters Table */}
-        <div className="lg:col-span-5">
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs">
-            <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
-              <div className="flex items-center gap-2">
-                <FlaskConical className="h-4 w-4 text-teal-800" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Analyzed Biomarker Panel</h3>
-              </div>
-              <button
-                type="button"
-                onClick={loadLatestLabDataAndPredict}
-                className="btn-ghost text-xs py-1 px-2"
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-                Refresh
-              </button>
-            </div>
-
-            <dl className="space-y-2 text-xs">
-              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-2.5">
-                <dt className="text-slate-500 font-medium">Demographics Context</dt>
-                <dd className="font-bold text-slate-900">
-                  {predictionData.factors_analyzed.age} yrs ({predictionData.factors_analyzed.gender})
-                </dd>
-              </div>
-              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-2.5">
-                <dt className="text-slate-500 font-medium">Rheumatoid Factor (RF)</dt>
-                <dd className="font-bold text-slate-900">{predictionData.factors_analyzed.rheumatoid_factor} IU/mL</dd>
-              </div>
-              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-2.5">
-                <dt className="text-slate-500 font-medium">Anti-CCP Antibodies</dt>
-                <dd className="font-bold text-slate-900">{predictionData.factors_analyzed.anti_ccp} U/mL</dd>
-              </div>
-              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-2.5">
-                <dt className="text-slate-500 font-medium">C-Reactive Protein (CRP)</dt>
-                <dd className="font-bold text-slate-900">{predictionData.factors_analyzed.c_reactive_protein} mg/L</dd>
-              </div>
-              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-2.5">
-                <dt className="text-slate-500 font-medium">ESR Rate</dt>
-                <dd className="font-bold text-slate-900">{predictionData.factors_analyzed.esr} mm/hr</dd>
-              </div>
-            </dl>
-          </div>
-        </div>
       </div>
     </div>
   );
