@@ -11,9 +11,9 @@ const Field = ({ label, htmlFor, hint, error, required, children }) => {
       )}
       {children}
       {error ? (
-        <p className="mt-1.5 text-xs text-rose-600">{error}</p>
+        <p className="mt-1.5 text-xs font-medium text-rose-600">{error}</p>
       ) : hint ? (
-        <p className="mt-1.5 text-xs text-slate-500">{hint}</p>
+        <p className="mt-1.5 text-xs text-slate-400">{hint}</p>
       ) : null}
     </div>
   );

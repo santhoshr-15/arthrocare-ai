@@ -73,10 +73,10 @@ function AdminAuth({ children }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex items-center justify-center min-h-screen bg-[#f4f8fb]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 font-medium">Checking admin privileges...</p>
+          <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-primary-200 border-t-primary-600 mx-auto mb-4"></div>
+          <p className="text-slate-500 font-medium text-sm">Checking admin privileges...</p>
         </div>
       </div>
     );
@@ -92,7 +92,7 @@ function AdminAuth({ children }) {
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-[#f4f8fb]">
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
