@@ -15,38 +15,38 @@ import Monitoring from './Monitoring';
 const tabs = [
   {
     id: "Profile & Medical Info",
-    label: "Demographic Profile & Medical Info",
-    description: "Patient age, biological sex, clinical history, and baseline lifestyle parameters",
+    label: "Profile & Medical History",
+    description: "Patient demographics, biological sex, clinical history, and lifestyle baselines",
     icon: User
   },
   {
     id: "Lab Test Entry",
-    label: "Biomarker Serology Requisition",
+    label: "Serology Panel Entry",
     description: "Enter quantitative laboratory values for RF, Anti-CCP, CRP, and ESR serology",
     icon: FlaskConical
   },
   {
     id: "Risk Prediction",
-    label: "Multivariable Risk Report",
-    description: "Age- and sex-adjusted machine-learning RA probability and biomarker factor weights",
+    label: "Risk Report",
+    description: "Age- and sex-adjusted machine-learning RA probability with factor interpretation",
     icon: BarChart3
   },
   {
     id: "Progress Tracking",
-    label: "Serial Lab Comparison",
+    label: "Serial Comparison",
     description: "Compare baseline and follow-up laboratory panels to compute risk score delta",
     icon: TrendingUp
   },
   {
     id: "Recommendations",
-    label: "Evidence-Based Guidance",
+    label: "Guidance Protocol",
     description: "Targeted lifestyle, joint preservation, dietary protocols, and follow-up scheduling",
     icon: ListChecks
   },
   {
     id: "Monitoring",
-    label: "Longitudinal Biomarker Metrics",
-    description: "Longitudinal trend visualizations and serial laboratory submission audit log",
+    label: "Longitudinal Metrics",
+    description: "Trend visualizations and serial laboratory submission audit log",
     icon: Activity
   }
 ];

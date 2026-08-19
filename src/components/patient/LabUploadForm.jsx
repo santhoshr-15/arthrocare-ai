@@ -172,43 +172,43 @@ const LabUploadForm = ({ setSelectedTab }) => {
   const profileIncomplete = !userData.age || !userData.gender;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Patient Demographic Context Bar */}
-      <div className="rounded-lg border border-slate-200 bg-white p-5">
+      <div className="panel p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-800 border border-blue-200">
-              <UserCheck className="h-4 w-4" />
-            </div>
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary-50 text-primary-700 ring-1 ring-primary-100">
+              <UserCheck className="h-4 w-4" aria-hidden="true" />
+            </span>
             <div>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-900">Demographic Context Baseline</h2>
+              <h2 className="text-sm font-semibold text-slate-900">Demographic Context Baseline</h2>
               <p className="text-xs text-slate-500">Demographics normalize inflammatory reference models.</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm">
-              <span className="text-slate-500 font-medium">Age:</span>
-              <span className="font-bold text-slate-900">{userData.age ? `${userData.age} yrs` : 'Not set'}</span>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 text-xs ring-1 ring-inset ring-slate-200">
+              <span className="font-medium text-slate-500">Age:</span>
+              <span className="tabular-nums font-semibold text-slate-900">{userData.age ? `${userData.age} yrs` : 'Not set'}</span>
             </span>
-            <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm">
-              <span className="text-slate-500 font-medium">Sex:</span>
-              <span className="font-bold text-slate-900">{userData.gender || 'Not set'}</span>
+            <span className="inline-flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 text-xs ring-1 ring-inset ring-slate-200">
+              <span className="font-medium text-slate-500">Sex:</span>
+              <span className="font-semibold text-slate-900">{userData.gender || 'Not set'}</span>
             </span>
           </div>
         </div>
 
         {profileIncomplete && (
-          <div className="mt-4 flex flex-col items-start justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 sm:flex-row sm:items-center">
+          <div className="mt-4 flex flex-col items-start justify-between gap-3 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 sm:flex-row sm:items-center">
             <span className="flex items-center gap-2 font-medium">
-              <AlertCircle className="h-5 w-5 shrink-0 text-amber-700" />
-              Complete demographic profile first to enable risk calculation models.
+              <AlertCircle className="h-4 w-4 shrink-0 text-amber-700" aria-hidden="true" />
+              Complete the demographic profile first to enable risk calculation models.
             </span>
             {window.dashboardSetTab && (
               <button
                 type="button"
                 onClick={() => window.dashboardSetTab("Profile & Medical Info")}
-                className="btn-secondary shrink-0 text-sm py-1.5 px-3 text-amber-900 hover:bg-amber-100"
+                className="btn-secondary btn-sm shrink-0 text-amber-900 hover:bg-amber-100"
               >
                 Go to Profile
               </button>
@@ -218,91 +218,94 @@ const LabUploadForm = ({ setSelectedTab }) => {
       </div>
 
       {/* Laboratory Requisition Form */}
-      <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-6 space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+      <form onSubmit={handleSubmit} className="panel overflow-hidden">
+        <div className="panel-header">
           <div>
-            <h2 className="text-base font-bold tracking-tight text-slate-900">Serology &amp; Inflammatory Markers Panel</h2>
-            <p className="text-sm text-slate-500">Enter quantitative serum measurements from recent blood panel report.</p>
+            <h2 className="panel-title">Serology &amp; Inflammatory Markers Panel</h2>
+            <p className="panel-subtitle">Enter quantitative serum measurements from the recent blood panel report.</p>
           </div>
-          <button
-            type="button"
-            onClick={handleClearForm}
-            className="btn-ghost text-sm"
-          >
-            <RotateCcw className="h-4 w-4" />
+          <button type="button" onClick={handleClearForm} className="btn-ghost text-sm">
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
             Reset values
           </button>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          {labTests.map((test) => {
-            const numVal = parseFloat(labValues[test.key]);
-            const isExceeded = !isNaN(numVal) && numVal > test.refVal;
+        <div className="panel-body">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {labTests.map((test) => {
+              const numVal = parseFloat(labValues[test.key]);
+              const isExceeded = !isNaN(numVal) && numVal > test.refVal;
 
-            return (
-              <div key={test.key} className={`rounded-lg border p-5 transition-colors ${
-                isExceeded ? 'border-amber-300 bg-amber-50/30' : 'border-slate-200 bg-slate-50/40'
-              }`}>
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <label className="text-sm font-bold uppercase tracking-widest text-slate-900">{test.label}</label>
-                    <p className="mt-1 text-xs text-slate-500 leading-tight">{test.desc}</p>
+              return (
+                <div key={test.key} className={`rounded-md border p-4 transition-colors ${
+                  isExceeded ? 'border-amber-300 bg-amber-50/40' : 'border-slate-200 bg-slate-50/40'
+                }`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <label className="text-[13px] font-semibold text-slate-900">{test.label}</label>
+                      <p className="mt-0.5 text-xs leading-tight text-slate-500">{test.desc}</p>
+                    </div>
+                    <Badge tone={isExceeded ? 'amber' : 'primary'}>
+                      Ref: {test.normalRange}
+                    </Badge>
                   </div>
-                  <Badge tone={isExceeded ? 'amber' : 'blue'}>
-                    Ref: {test.normalRange}
-                  </Badge>
-                </div>
 
-                <div className="relative mt-4">
-                  <input
-                    type="number"
-                    step="any"
-                    placeholder={`Enter ${test.key} value`}
-                    value={labValues[test.key]}
-                    onChange={(e) => handleInputChange(test.key, e.target.value)}
-                    required
-                    aria-label={test.label}
-                    className={`field pr-16 text-base font-semibold ${isExceeded ? 'border-amber-400 focus:border-amber-600 focus:ring-amber-600' : ''}`}
-                  />
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
-                    {test.unit}
-                  </span>
+                  <div className="relative mt-3">
+                    <input
+                      type="number"
+                      step="any"
+                      placeholder={`Enter ${test.key} value`}
+                      value={labValues[test.key]}
+                      onChange={(e) => handleInputChange(test.key, e.target.value)}
+                      required
+                      aria-label={test.label}
+                      className={`field pr-16 text-base font-semibold tabular-nums ${isExceeded ? 'border-amber-400 focus:border-amber-600 focus:ring-amber-600' : ''}`}
+                    />
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 tabular-nums">
+                      {test.unit}
+                    </span>
+                  </div>
+                  {isExceeded && (
+                    <p className="mt-1.5 text-[11px] font-medium text-amber-700">
+                      Value exceeds reference threshold.
+                    </p>
+                  )}
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          {error && (
+            <div className="mt-4 flex items-start gap-2.5 rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" aria-hidden="true" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {submissionSuccess && (
+            <div className="mt-4 flex flex-col items-start justify-between gap-3 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 sm:flex-row sm:items-center">
+              <span className="flex items-center gap-2 font-semibold">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-700" aria-hidden="true" />
+                Laboratory panel recorded successfully.
+              </span>
+              {(setSelectedTab || window.dashboardSetTab) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (setSelectedTab) setSelectedTab("Risk Prediction");
+                    else if (window.dashboardSetTab) window.dashboardSetTab("Risk Prediction");
+                  }}
+                  className="btn-primary btn-sm shrink-0"
+                >
+                  View Risk Report
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
-        {error && (
-          <div className="flex items-start gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
-            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-600" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {submissionSuccess && (
-          <div className="flex flex-col items-start justify-between gap-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 sm:flex-row sm:items-center">
-            <span className="flex items-center gap-2 font-semibold">
-              <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-700" />
-              Laboratory panel recorded successfully.
-            </span>
-            {(setSelectedTab || window.dashboardSetTab) && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (setSelectedTab) setSelectedTab("Risk Prediction");
-                  else if (window.dashboardSetTab) window.dashboardSetTab("Risk Prediction");
-                }}
-                className="btn-primary shrink-0 text-sm py-1.5 px-4"
-              >
-                View Risk Report
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-        )}
-
-        <div className="flex items-center justify-end border-t border-slate-200 pt-5">
+        <div className="panel-footer">
           <button type="submit" disabled={loading || profileIncomplete} className="btn-primary">
             {loading ? (
               <>
@@ -311,8 +314,8 @@ const LabUploadForm = ({ setSelectedTab }) => {
               </>
             ) : (
               <>
-                <ShieldCheck className="h-4 w-4" />
-                Submit Laboratory Panel &amp; Run Risk Model
+                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                Submit Panel &amp; Run Risk Model
               </>
             )}
           </button>

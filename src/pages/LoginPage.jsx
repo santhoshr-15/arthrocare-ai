@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, AlertCircle, ShieldCheck, ArrowRight, Activity, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight, ShieldCheck, Activity, ClipboardCheck } from "lucide-react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase/config";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
@@ -128,66 +128,79 @@ const LoginPage = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-slate-100 flex">
-      {/* Left Panel - Clinical System Information */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-slate-900 text-white p-16">
-        <div>
-          <Logo dark subtitle="Clinical decision support" />
-        </div>
-        <div className="space-y-8">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-800 text-white">
-              <ShieldCheck className="h-6 w-6" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold">Secure Clinical Portal</h2>
-              <p className="text-sm text-slate-400">HIPAA-compliant authentication system</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-800 text-white">
-              <Activity className="h-6 w-6" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold">Real-Time Risk Assessment</h2>
-              <p className="text-sm text-slate-400">ML-powered RA risk stratification</p>
-            </div>
-          </div>
-        </div>
-        <div className="text-sm text-slate-500">
-          <p>© {new Date().getFullYear()} ArthroCare AI Healthcare Suite</p>
-          <p className="mt-1">System Version: 2.4.0 · ACR/EULAR Aligned</p>
-        </div>
-      </div>
+  const infoItems = [
+    {
+      icon: ShieldCheck,
+      title: "Secure Clinical Portal",
+      text: "Authenticated, protected patient data access"
+    },
+    {
+      icon: Activity,
+      title: "Real-Time Risk Assessment",
+      text: "ML-powered RA risk stratification"
+    },
+    {
+      icon: ClipboardCheck,
+      title: "Evidence-Based Guidance",
+      text: "ACR/EULAR-aligned monitoring protocols"
+    }
+  ];
 
-      {/* Right Panel - Login Form */}
-      <div className="flex w-full flex-col justify-center px-4 py-16 sm:px-6 lg:w-1/2 lg:px-16">
+  return (
+    <div className="min-h-screen bg-slate-100 lg:flex">
+      {/* Left panel */}
+      <aside className="hidden w-[42%] flex-col justify-between bg-primary-950 p-10 text-white lg:flex">
+        <Logo dark subtitle="Clinical Decision Support" />
+
+        <div className="space-y-6">
+          {infoItems.map((item) => (
+            <div key={item.title} className="flex items-start gap-3.5">
+              <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary-800/60 text-primary-200 ring-1 ring-primary-700/60">
+                <item.icon className="h-4.5 w-4.5" aria-hidden="true" />
+              </span>
+              <div>
+                <h2 className="text-[15px] font-semibold">{item.title}</h2>
+                <p className="mt-0.5 text-sm text-primary-200/70">{item.text}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-xs text-primary-300/60">
+          <p>© {new Date().getFullYear()} ArthroCare AI Healthcare Suite</p>
+          <p className="mt-1">System Version 2.4.0 · ACR/EULAR Aligned</p>
+        </div>
+      </aside>
+
+      {/* Right panel */}
+      <div className="flex w-full flex-col justify-center px-4 py-12 sm:px-8 lg:w-[58%] lg:px-16">
         <div className="mx-auto w-full max-w-md">
-          <div className="text-center lg:text-left">
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Sign in to your account
-            </h1>
-            <p className="mt-3 text-base text-slate-600">
+          <div className="lg:hidden">
+            <Logo subtitle="Clinical Decision Support" />
+          </div>
+
+          <div className="mt-8 lg:mt-0">
+            <h1 className="page-title">Sign in to your account</h1>
+            <p className="mt-1.5 text-sm text-slate-600">
               Access your clinical workspace to manage patient assessments and review risk reports.
             </p>
           </div>
 
-          <div className="mt-10">
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="mt-8">
+            <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
-                <div className="flex items-start gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
-                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-600" />
+                <div className="flex items-start gap-2.5 rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" aria-hidden="true" />
                   <span>{error}</span>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700" htmlFor="email">
+                <label className="field-label" htmlFor="email">
                   Email address
                 </label>
-                <div className="mt-2 relative">
-                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
                   <input
                     id="email"
                     type="email"
@@ -195,18 +208,18 @@ const LoginPage = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="field pl-10"
+                    className="field pl-9"
                     placeholder="you@example.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700" htmlFor="password">
+                <label className="field-label" htmlFor="password">
                   Password
                 </label>
-                <div className="mt-2 relative">
-                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                <div className="relative">
+                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
                   <input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -214,56 +227,49 @@ const LoginPage = () => {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="field pl-10 pr-10"
+                    className="field pl-9 pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:text-slate-600"
                   >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 text-sm text-slate-600">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={(e) => setRemember(e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
-                  />
-                  Remember me
-                </label>
-              </div>
+              <label className="flex items-center gap-2 text-sm text-slate-600">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-primary-700 focus:ring-primary-600"
+                />
+                Remember me
+              </label>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary w-full"
-              >
+              <button type="submit" disabled={loading} className="btn-primary w-full">
                 {loading ? (
                   <>
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     Signing in…
                   </>
                 ) : (
                   <>
                     Sign in
-                    <ArrowRight className="h-5 w-5" />
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </>
                 )}
               </button>
             </form>
 
-            <div className="mt-8 text-center text-sm text-slate-600">
-              <p>
-                Don't have an account?{" "}
-                <Link to="/register" className="font-semibold text-blue-800 hover:text-blue-700">
-                  Register a new workspace
-                </Link>
-              </p>
+            <div className="mt-6 text-center text-sm text-slate-600">
+              Don't have an account?{" "}
+              <Link to="/register" className="font-semibold text-primary-800 hover:text-primary-700">
+                Register a workspace
+              </Link>
             </div>
           </div>
         </div>

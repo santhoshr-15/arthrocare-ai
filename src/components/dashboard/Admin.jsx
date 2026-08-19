@@ -8,6 +8,7 @@ import Stat from "../ui/Stat";
 import Badge from "../ui/Badge";
 import EmptyState from "../ui/EmptyState";
 import Loader from "../ui/Loader";
+import PageHeader from "../ui/PageHeader";
 
 const formatDate = (value) => {
   if (!value) return '—';
@@ -287,22 +288,18 @@ const Admin = () => {
       roleLabel="System Administration"
       onSignOut={handleSignOut}
     >
-      <div className="space-y-6">
-        <header className="mb-8">
-          <p className="eyebrow mb-2">Administrative Console</p>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">{meta.title}</h1>
-          <p className="mt-2 text-sm text-slate-500">{meta.description}</p>
-        </header>
+      <div className="space-y-5">
+        <PageHeader eyebrow="Administrative Console" title={meta.title} description={meta.description} />
 
         {showSearch && (
           <div className="relative max-w-md">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
             <input
               type="text"
               placeholder="Filter by patient name, email, UID, or biomarker…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="field pl-10 text-sm"
+              className="field pl-9"
             />
           </div>
         )}
@@ -311,37 +308,39 @@ const Admin = () => {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Stat label="Registered Patients" value={stats.totalUsers || 0} sub={`+${stats.recentUsers || 0} this week`} subClass="text-blue-800" icon={Users} />
+              <Stat label="Registered Patients" value={stats.totalUsers || 0} sub={`+${stats.recentUsers || 0} this week`} subClass="text-primary-800" icon={Users} />
               <Stat label="Biomarker Panels" value={stats.totalLabEntries || 0} sub="Recorded serology panels" icon={TestTube} />
               <Stat label="Total Sign-In Events" value={stats.totalLogins || 0} sub={`${stats.activeToday || 0} active today`} subClass="text-emerald-800" icon={Activity} />
               <Stat label="Account Registrations" value={stats.totalSignups || 0} sub="Completed signups" icon={UserPlus} />
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-5 lg:grid-cols-2">
               {/* Recent Biomarker Submissions */}
-              <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-                <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-4">
-                  <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Recent Biomarker Submissions</h3>
-                  <span className="text-sm font-semibold text-slate-500">{labData.length} Total</span>
+              <div className="panel overflow-hidden">
+                <div className="panel-header">
+                  <h3 className="panel-title">Recent Biomarker Submissions</h3>
+                  <span className="text-sm font-medium text-slate-500">{labData.length} Total</span>
                 </div>
                 {labData.length === 0 ? (
-                  <EmptyState
-                    icon={FlaskConical}
-                    title="No Biomarker Panels Logged"
-                    description="Submitted patient serology panels will appear here."
-                  />
+                  <div className="p-4">
+                    <EmptyState
+                      icon={FlaskConical}
+                      title="No Biomarker Panels Logged"
+                      description="Submitted patient serology panels will appear here."
+                    />
+                  </div>
                 ) : (
-                  <ul className="divide-y divide-slate-100 text-xs">
+                  <ul className="divide-y divide-slate-100">
                     {labData.slice(0, 5).map(lab => {
                       const band = getRiskBand(lab);
                       return (
-                        <li key={lab.id} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50/80 transition-colors">
+                        <li key={lab.id} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-mono font-bold text-slate-900">{shortId(lab.userId)}</span>
+                              <span className="font-mono text-xs font-bold text-slate-900">{shortId(lab.userId)}</span>
                               <Badge tone={band.tone} showDot>{band.label}</Badge>
                             </div>
-                            <p className="mt-1 truncate text-[11px] text-slate-500 font-mono">
+                            <p className="mt-1 truncate font-mono text-[11px] text-slate-500">
                               Age {lab.userAge || '—'} · RF {lab.rheumatoidFactor || '—'} · Anti-CCP {lab.antiCCP || '—'} · CRP {lab.cReactiveProtein || '—'} · ESR {lab.erythrocyteSedimentationRate || '—'}
                             </p>
                           </div>
@@ -354,23 +353,25 @@ const Admin = () => {
               </div>
 
               {/* Recent Access Events */}
-              <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-                <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-4">
-                  <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Recent Portal Authentication Events</h3>
-                  <span className="text-sm font-semibold text-slate-500">{loginData.length} Total</span>
+              <div className="panel overflow-hidden">
+                <div className="panel-header">
+                  <h3 className="panel-title">Recent Portal Authentication Events</h3>
+                  <span className="text-sm font-medium text-slate-500">{loginData.length} Total</span>
                 </div>
                 {loginData.length === 0 ? (
-                  <EmptyState
-                    icon={Activity}
-                    title="No Authentication Logs"
-                    description="Sign-in events will appear here in real-time."
-                  />
+                  <div className="p-4">
+                    <EmptyState
+                      icon={Activity}
+                      title="No Authentication Logs"
+                      description="Sign-in events will appear here in real-time."
+                    />
+                  </div>
                 ) : (
-                  <ul className="divide-y divide-slate-100 text-xs">
+                  <ul className="divide-y divide-slate-100">
                     {loginData.slice(0, 5).map(login => (
-                      <li key={login.id} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50/80 transition-colors">
+                      <li key={login.id} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
                         <div className="min-w-0">
-                          <p className="truncate font-bold text-slate-900">{login.email}</p>
+                          <p className="truncate text-sm font-semibold text-slate-900">{login.email}</p>
                           <p className="font-mono text-[11px] text-slate-400">UID: {shortId(login.userId)}</p>
                         </div>
                         <span className="shrink-0 text-[11px] font-medium text-slate-400">{formatDateTime(login.timestamp)}</span>
@@ -385,18 +386,20 @@ const Admin = () => {
 
         {/* Patient Directory Tab */}
         {activeTab === 'patients' && (
-          <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-4">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Registered Patient Accounts</h3>
-              <span className="text-sm font-semibold text-slate-500">{filteredUsers.length} Records</span>
+          <div className="panel overflow-hidden">
+            <div className="panel-header">
+              <h3 className="panel-title">Registered Patient Accounts</h3>
+              <span className="text-sm font-medium text-slate-500">{filteredUsers.length} Records</span>
             </div>
 
             {filteredUsers.length === 0 ? (
-              <EmptyState
-                icon={Users}
-                title="No Patient Records Found"
-                description={searchTerm ? 'No results matched your search criteria.' : 'Registered patient accounts will appear here.'}
-              />
+              <div className="p-4">
+                <EmptyState
+                  icon={Users}
+                  title="No Patient Records Found"
+                  description={searchTerm ? 'No results matched your search criteria.' : 'Registered patient accounts will appear here.'}
+                />
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -410,17 +413,17 @@ const Admin = () => {
                       <th scope="col" className="th">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-xs">
+                  <tbody className="divide-y divide-slate-100">
                     {filteredUsers.map(userRecord => {
                       const userLabs = getUserLabEntries(userRecord.id);
                       const latestLab = userLabs[0];
                       return (
-                        <tr key={userRecord.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="td font-bold text-slate-900">{userRecord.name || userRecord.displayName || 'Patient'}</td>
+                        <tr key={userRecord.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="td font-semibold text-slate-900">{userRecord.name || userRecord.displayName || 'Patient'}</td>
                           <td className="td font-medium text-slate-700">{userRecord.email}</td>
                           <td className="td text-slate-500">{formatDate(userRecord.joinedDate)}</td>
                           <td className="td">
-                            <span className="inline-flex rounded-md border border-teal-200 bg-teal-50 px-2 py-0.5 text-xs font-bold text-teal-800">
+                            <span className="inline-flex rounded-full bg-primary-50 px-2 py-0.5 text-xs font-semibold text-primary-800">
                               {userLabs.length} Panels
                             </span>
                           </td>
@@ -431,17 +434,17 @@ const Admin = () => {
                                 type="button"
                                 onClick={() => setSelectedUser(userRecord)}
                                 aria-label={`View record for ${userRecord.email}`}
-                                className="rounded-md p-1.5 text-teal-800 hover:bg-teal-50 border border-transparent hover:border-teal-200 transition-colors"
+                                className="rounded-md p-1.5 text-primary-800 hover:bg-primary-50"
                               >
-                                <Eye className="h-3.5 w-3.5" />
+                                <Eye className="h-4 w-4" aria-hidden="true" />
                               </button>
                               <button
                                 type="button"
                                 onClick={() => deleteUser(userRecord.id)}
                                 aria-label={`Delete record for ${userRecord.email}`}
-                                className="rounded-md p-1.5 text-rose-700 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-colors"
+                                className="rounded-md p-1.5 text-rose-700 hover:bg-rose-50"
                               >
-                                <Trash2 className="h-3.5 w-3.5" />
+                                <Trash2 className="h-4 w-4" aria-hidden="true" />
                               </button>
                             </div>
                           </td>
@@ -457,18 +460,20 @@ const Admin = () => {
 
         {/* Biomarker Submissions Log Tab */}
         {activeTab === 'labdata' && (
-          <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-4">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Biomarker Submission Audit Log</h3>
-              <span className="text-sm font-semibold text-slate-500">{filteredLabs.length} Panels Logged</span>
+          <div className="panel overflow-hidden">
+            <div className="panel-header">
+              <h3 className="panel-title">Biomarker Submission Audit Log</h3>
+              <span className="text-sm font-medium text-slate-500">{filteredLabs.length} Panels Logged</span>
             </div>
 
             {filteredLabs.length === 0 ? (
-              <EmptyState
-                icon={FlaskConical}
-                title="No Submissions Found"
-                description={searchTerm ? 'No lab entries matched your query.' : 'Submitted serology panels will appear here.'}
-              />
+              <div className="p-4">
+                <EmptyState
+                  icon={FlaskConical}
+                  title="No Submissions Found"
+                  description={searchTerm ? 'No lab entries matched your query.' : 'Submitted serology panels will appear here.'}
+                />
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -484,17 +489,17 @@ const Admin = () => {
                       <th scope="col" className="th">Submission Date</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-xs">
+                  <tbody className="divide-y divide-slate-100">
                     {filteredLabs.map(lab => {
                       const band = getRiskBand(lab);
                       return (
-                        <tr key={lab.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="td font-mono font-bold text-slate-900">{shortId(lab.userId)}</td>
+                        <tr key={lab.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="td font-mono text-xs font-bold text-slate-900">{shortId(lab.userId)}</td>
                           <td className="td text-slate-700">{lab.userAge || '—'} yrs ({lab.userGender || '—'})</td>
-                          <td className="td font-mono font-medium">{lab.rheumatoidFactor || '—'}</td>
-                          <td className="td font-mono font-medium">{lab.antiCCP || '—'}</td>
-                          <td className="td font-mono font-medium">{lab.cReactiveProtein || '—'}</td>
-                          <td className="td font-mono font-medium">{lab.erythrocyteSedimentationRate || '—'}</td>
+                          <td className="td font-mono tabular-nums font-medium">{lab.rheumatoidFactor || '—'}</td>
+                          <td className="td font-mono tabular-nums font-medium">{lab.antiCCP || '—'}</td>
+                          <td className="td font-mono tabular-nums font-medium">{lab.cReactiveProtein || '—'}</td>
+                          <td className="td font-mono tabular-nums font-medium">{lab.erythrocyteSedimentationRate || '—'}</td>
                           <td className="td">
                             <Badge tone={band.tone} showDot>{band.label}</Badge>
                           </td>
@@ -511,19 +516,21 @@ const Admin = () => {
 
         {/* Security & Access Audit Log Tab */}
         {activeTab === 'activity' && (
-          <div className="space-y-6">
-            <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-              <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-4">
-                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Portal Access Audit Trail</h3>
-                <span className="text-sm font-semibold text-slate-500">{filteredLogins.length} Sign-In Events</span>
+          <div className="space-y-5">
+            <div className="panel overflow-hidden">
+              <div className="panel-header">
+                <h3 className="panel-title">Portal Access Audit Trail</h3>
+                <span className="text-sm font-medium text-slate-500">{filteredLogins.length} Sign-In Events</span>
               </div>
 
               {filteredLogins.length === 0 ? (
-                <EmptyState
-                  icon={Activity}
-                  title="No Authentication Events"
-                  description={searchTerm ? 'No records matched your search.' : 'Sign-in activity will appear here.'}
-                />
+                <div className="p-4">
+                  <EmptyState
+                    icon={Activity}
+                    title="No Authentication Events"
+                    description={searchTerm ? 'No records matched your search.' : 'Sign-in activity will appear here.'}
+                  />
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
@@ -534,11 +541,11 @@ const Admin = () => {
                         <th scope="col" className="th">Authentication Timestamp</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-xs">
+                    <tbody className="divide-y divide-slate-100">
                       {filteredLogins.map(login => (
-                        <tr key={login.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="td font-bold text-slate-900">{login.email}</td>
-                          <td className="td font-mono text-slate-600">{shortId(login.userId)}</td>
+                        <tr key={login.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="td font-semibold text-slate-900">{login.email}</td>
+                          <td className="td font-mono text-xs text-slate-600">{shortId(login.userId)}</td>
                           <td className="td text-slate-500">{formatDateTime(login.timestamp)}</td>
                         </tr>
                       ))}
@@ -548,24 +555,26 @@ const Admin = () => {
               )}
             </div>
 
-            <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-              <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-4">
-                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Recent Registrations Audit</h3>
-                <span className="text-sm font-semibold text-slate-500">{signupData.length} Signups</span>
+            <div className="panel overflow-hidden">
+              <div className="panel-header">
+                <h3 className="panel-title">Recent Registrations Audit</h3>
+                <span className="text-sm font-medium text-slate-500">{signupData.length} Signups</span>
               </div>
 
               {signupData.length === 0 ? (
-                <EmptyState
-                  icon={UserPlus}
-                  title="No Registrations Recorded"
-                  description="New patient signups will appear here."
-                />
+                <div className="p-4">
+                  <EmptyState
+                    icon={UserPlus}
+                    title="No Registrations Recorded"
+                    description="New patient signups will appear here."
+                  />
+                </div>
               ) : (
-                <ul className="divide-y divide-slate-100 text-xs">
+                <ul className="divide-y divide-slate-100">
                   {signupData.slice(0, 6).map(signup => (
-                    <li key={signup.id} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50/80 transition-colors">
+                    <li key={signup.id} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
                       <div className="min-w-0">
-                        <p className="truncate font-bold text-slate-900">{signup.email || 'Registered Patient'}</p>
+                        <p className="truncate text-sm font-semibold text-slate-900">{signup.email || 'Registered Patient'}</p>
                         <p className="font-mono text-[11px] text-slate-400">UID: {shortId(signup.userId || signup.id)}</p>
                       </div>
                       <span className="shrink-0 text-[11px] text-slate-400">{formatDate(signup.createdAt)}</span>
@@ -580,49 +589,49 @@ const Admin = () => {
 
       {/* Patient Detail Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4" role="dialog" aria-modal="true">
           <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-4">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Patient Record Inspection</h3>
+            <div className="panel-header">
+              <h3 className="panel-title">Patient Record Inspection</h3>
               <button
                 type="button"
                 onClick={() => setSelectedUser(null)}
                 aria-label="Close modal"
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors"
+                className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
               >
-                <X className="h-5 w-5" />
+                <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
 
             <div className="space-y-4 p-5 text-sm">
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Patient UID</p>
-                <p className="mt-1 font-mono text-sm font-bold text-slate-900">{selectedUser.id}</p>
+              <div className="rounded-md bg-slate-50 px-3 py-2.5 ring-1 ring-inset ring-slate-200">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Patient UID</p>
+                <p className="mt-0.5 break-all font-mono text-sm font-semibold text-slate-900">{selectedUser.id}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-lg border border-slate-200 p-3">
-                  <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Patient Name</p>
-                  <p className="mt-1 text-sm font-bold text-slate-900">{selectedUser.name || selectedUser.displayName || 'N/A'}</p>
+                <div className="rounded-md border border-slate-200 px-3 py-2.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Patient Name</p>
+                  <p className="mt-0.5 text-sm font-semibold text-slate-900">{selectedUser.name || selectedUser.displayName || 'N/A'}</p>
                 </div>
-                <div className="rounded-lg border border-slate-200 p-3">
-                  <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Email Address</p>
-                  <p className="mt-1 break-all text-sm font-bold text-slate-900">{selectedUser.email}</p>
+                <div className="rounded-md border border-slate-200 px-3 py-2.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Email Address</p>
+                  <p className="mt-0.5 break-all text-sm font-semibold text-slate-900">{selectedUser.email}</p>
                 </div>
-                <div className="rounded-lg border border-slate-200 p-3">
-                  <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Joined Date</p>
-                  <p className="mt-1 text-sm font-bold text-slate-900">{formatDate(selectedUser.joinedDate)}</p>
+                <div className="rounded-md border border-slate-200 px-3 py-2.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Joined Date</p>
+                  <p className="mt-0.5 text-sm font-semibold text-slate-900">{formatDate(selectedUser.joinedDate)}</p>
                 </div>
-                <div className="rounded-lg border border-slate-200 p-3">
-                  <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Sign-In Count</p>
-                  <p className="mt-1 text-sm font-bold text-slate-900">{getUserLoginHistory(selectedUser.id).length} Sessions</p>
+                <div className="rounded-md border border-slate-200 px-3 py-2.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Sign-In Count</p>
+                  <p className="mt-0.5 tabular-nums text-sm font-semibold text-slate-900">{getUserLoginHistory(selectedUser.id).length} Sessions</p>
                 </div>
               </div>
 
               <div className="border-t border-slate-200 pt-4">
                 <div className="mb-3 flex items-center justify-between">
-                  <h4 className="text-sm font-bold uppercase tracking-widest text-slate-900">Biomarker Panels Recorded</h4>
-                  <span className="text-sm font-semibold text-slate-500">{getUserLabEntries(selectedUser.id).length} Panels</span>
+                  <h4 className="text-[13px] font-semibold text-slate-900">Biomarker Panels Recorded</h4>
+                  <span className="text-sm font-medium text-slate-500">{getUserLabEntries(selectedUser.id).length} Panels</span>
                 </div>
 
                 {getUserLabEntries(selectedUser.id).length === 0 ? (
@@ -632,27 +641,27 @@ const Admin = () => {
                     {getUserLabEntries(selectedUser.id).map(entry => {
                       const band = getRiskBand(entry);
                       return (
-                        <div key={entry.id} className="rounded-lg border border-slate-200 p-3 bg-slate-50/30 space-y-3">
+                        <div key={entry.id} className="space-y-3 rounded-md border border-slate-200 bg-slate-50/30 p-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-bold text-slate-900">{formatDate(entry.createdAt)}</span>
+                            <span className="text-sm font-semibold text-slate-900">{formatDate(entry.createdAt)}</span>
                             <Badge tone={band.tone} showDot>{band.label}</Badge>
                           </div>
                           <dl className="grid grid-cols-4 gap-2 text-xs">
                             <div>
-                              <dt className="text-slate-500 font-medium">RF</dt>
-                              <dd className="font-mono font-bold text-slate-900">{entry.rheumatoidFactor || '—'}</dd>
+                              <dt className="font-medium text-slate-500">RF</dt>
+                              <dd className="tabular-nums font-mono font-semibold text-slate-900">{entry.rheumatoidFactor || '—'}</dd>
                             </div>
                             <div>
-                              <dt className="text-slate-500 font-medium">Anti-CCP</dt>
-                              <dd className="font-mono font-bold text-slate-900">{entry.antiCCP || '—'}</dd>
+                              <dt className="font-medium text-slate-500">Anti-CCP</dt>
+                              <dd className="tabular-nums font-mono font-semibold text-slate-900">{entry.antiCCP || '—'}</dd>
                             </div>
                             <div>
-                              <dt className="text-slate-500 font-medium">CRP</dt>
-                              <dd className="font-mono font-bold text-slate-900">{entry.cReactiveProtein || '—'}</dd>
+                              <dt className="font-medium text-slate-500">CRP</dt>
+                              <dd className="tabular-nums font-mono font-semibold text-slate-900">{entry.cReactiveProtein || '—'}</dd>
                             </div>
                             <div>
-                              <dt className="text-slate-500 font-medium">ESR</dt>
-                              <dd className="font-mono font-bold text-slate-900">{entry.erythrocyteSedimentationRate || '—'}</dd>
+                              <dt className="font-medium text-slate-500">ESR</dt>
+                              <dd className="tabular-nums font-mono font-semibold text-slate-900">{entry.erythrocyteSedimentationRate || '—'}</dd>
                             </div>
                           </dl>
                         </div>

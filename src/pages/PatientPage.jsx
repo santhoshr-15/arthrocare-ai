@@ -11,12 +11,12 @@ import Monitoring from '../components/patient/Monitoring';
 import ProgressTracking from '../components/patient/ProgressTracking';
 
 const navItems = [
-  { id: 'profile', path: '/patient/profile', label: 'Demographic Profile & Medical Info', icon: User },
-  { id: 'lab-tests', path: '/patient/lab-tests', label: 'Biomarker Serology Requisition', icon: FlaskConical },
-  { id: 'risk-prediction', path: '/patient/risk-prediction', label: 'Multivariable Risk Report', icon: BarChart3 },
-  { id: 'progress-tracking', path: '/patient/progress-tracking', label: 'Serial Lab Comparison', icon: TrendingUp },
-  { id: 'recommendations', path: '/patient/recommendations', label: 'Evidence-Based Guidance', icon: ListChecks },
-  { id: 'monitoring', path: '/patient/monitoring', label: 'Longitudinal Biomarker Metrics', icon: Activity }
+  { id: 'profile', path: '/patient/profile', label: 'Profile & Medical History', icon: User },
+  { id: 'lab-tests', path: '/patient/lab-tests', label: 'Serology Panel Entry', icon: FlaskConical },
+  { id: 'risk-prediction', path: '/patient/risk-prediction', label: 'Risk Report', icon: BarChart3 },
+  { id: 'progress-tracking', path: '/patient/progress-tracking', label: 'Serial Comparison', icon: TrendingUp },
+  { id: 'recommendations', path: '/patient/recommendations', label: 'Guidance Protocol', icon: ListChecks },
+  { id: 'monitoring', path: '/patient/monitoring', label: 'Longitudinal Metrics', icon: Activity }
 ];
 
 const getCurrentUser = () => {

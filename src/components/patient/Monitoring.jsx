@@ -139,8 +139,8 @@ const Monitoring = () => {
       {
         label: 'RA Risk Score (%)',
         data: filteredHistory.map(entry => entry.risk_score),
-        borderColor: '#0f766e',
-        backgroundColor: 'rgba(15, 118, 110, 0.08)',
+        borderColor: '#0d9488',
+        backgroundColor: 'rgba(13, 148, 136, 0.08)',
         borderWidth: 2,
         fill: true,
         tension: 0.2,
@@ -162,7 +162,7 @@ const Monitoring = () => {
       {
         label: 'Rheumatoid Factor (RF)',
         data: filteredHistory.map(entry => entry.factors.rheumatoidFactor),
-        borderColor: '#0f766e',
+        borderColor: '#0d9488',
         backgroundColor: 'transparent',
         borderWidth: 2,
         tension: 0.2
@@ -170,7 +170,7 @@ const Monitoring = () => {
       {
         label: 'Anti-CCP Antibodies',
         data: filteredHistory.map(entry => entry.factors.antiCCP),
-        borderColor: '#2563eb',
+        borderColor: '#0f766e',
         backgroundColor: 'transparent',
         borderWidth: 2,
         tension: 0.2
@@ -260,73 +260,73 @@ const Monitoring = () => {
   const latest = predictionHistory[0];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Key Metrics Grid */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat label="Total Panels Logged" value={predictionHistory.length} icon={Activity} />
-        <Stat label="Latest RA Risk Score" value={`${latest?.risk_score || 0}%`} valueClass="text-blue-800" icon={TrendingUp} />
+        <Stat label="Latest RA Risk Score" value={`${latest?.risk_score || 0}%`} valueClass="text-primary-800" icon={TrendingUp} />
         <Stat label="Current Risk Band" value={latest?.risk_level || 'N/A'} icon={BarChart3} />
-        <Stat label="Last Assessment Date" value={latest?.date || 'N/A'} valueClass="text-sm font-bold" icon={Calendar} />
+        <Stat label="Last Assessment Date" value={latest?.date || 'N/A'} valueClass="text-sm font-semibold" icon={Calendar} />
       </div>
 
       {/* Control Filter Bar */}
-      <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
-            <span>Window:</span>
-            <div className="flex rounded-lg border border-slate-200 p-0.5 bg-slate-50" role="group" aria-label="Time range">
-              {['week', 'month', 'all'].map(r => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setTimeRange(r)}
-                  className={`rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors ${
-                    timeRange === r ? 'bg-blue-800 text-white' : 'text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {r === 'all' ? 'All Time' : r}
-                </button>
-              ))}
+      <div className="panel p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium text-slate-600">Window:</span>
+              <div className="flex rounded-md border border-slate-200 bg-slate-50 p-0.5" role="group" aria-label="Time range">
+                {['week', 'month', 'all'].map(r => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setTimeRange(r)}
+                    className={`rounded px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      timeRange === r ? 'bg-primary-700 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {r === 'all' ? 'All Time' : r}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium text-slate-600">Metric:</span>
+              <div className="flex rounded-md border border-slate-200 bg-slate-50 p-0.5" role="group" aria-label="Display metric">
+                {['risk_score', 'lab_values'].map(m => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setSelectedMetric(m)}
+                    className={`rounded px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      selectedMetric === m ? 'bg-primary-700 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {m === 'risk_score' ? 'Risk Trajectory' : 'Biomarker Levels'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
-            <span>Metric:</span>
-            <div className="flex rounded-lg border border-slate-200 p-0.5 bg-slate-50" role="group" aria-label="Display metric">
-              {['risk_score', 'lab_values'].map(m => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setSelectedMetric(m)}
-                  className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    selectedMetric === m ? 'bg-blue-800 text-white' : 'text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {m === 'risk_score' ? 'Risk Trajectory' : 'Biomarker Levels'}
-                </button>
-              ))}
-            </div>
-          </div>
+          <button type="button" onClick={refreshData} className="btn-secondary btn-sm shrink-0">
+            <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+            Refresh Analytics
+          </button>
         </div>
-
-        <button type="button" onClick={refreshData} className="btn-secondary shrink-0 text-sm">
-          <RefreshCw className="h-4 w-4" />
-          Refresh Analytics
-        </button>
       </div>
 
       {/* Chart Visualizations */}
-      <div className="grid gap-6 lg:grid-cols-12">
-        <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 lg:col-span-8">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-800" />
-              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">
-                {selectedMetric === 'risk_score' ? 'Longitudinal RA Risk Score Trajectory (%)' : 'Serial Biomarker Concentrations'}
-              </h3>
-            </div>
+      <div className="grid gap-5 lg:grid-cols-12">
+        <div className="panel p-5 lg:col-span-8">
+          <div className="section-head">
+            <TrendingUp className="h-4 w-4 text-primary-700" aria-hidden="true" />
+            <h3 className="text-[13px] font-semibold text-slate-900">
+              {selectedMetric === 'risk_score' ? 'Longitudinal RA Risk Score Trajectory (%)' : 'Serial Biomarker Concentrations'}
+            </h3>
           </div>
-          <div className="h-80">
+          <div className="h-80 pt-4">
             {selectedMetric === 'risk_score' ? (
               <Line data={riskScoreChartData} options={chartOptions} />
             ) : (
@@ -335,24 +335,22 @@ const Monitoring = () => {
           </div>
         </div>
 
-        <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 lg:col-span-4">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-blue-800" />
-              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Risk Band Distribution</h3>
-            </div>
+        <div className="panel p-5 lg:col-span-4">
+          <div className="section-head">
+            <BarChart3 className="h-4 w-4 text-primary-700" aria-hidden="true" />
+            <h3 className="text-[13px] font-semibold text-slate-900">Risk Band Distribution</h3>
           </div>
-          <div className="h-80">
+          <div className="h-80 pt-4">
             <Bar data={riskLevelDistribution} options={chartOptions} />
           </div>
         </div>
       </div>
 
       {/* Serial Laboratory Audit Log Table */}
-      <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/50 px-5 py-4">
-          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Serial Laboratory Audit Log &amp; Historical Submissions</h3>
-          <span className="text-sm font-semibold text-slate-500">{filteredHistory.length} Entries</span>
+      <div className="panel overflow-hidden">
+        <div className="panel-header">
+          <h3 className="panel-title">Serial Laboratory Audit Log</h3>
+          <span className="text-sm font-medium text-slate-500">{filteredHistory.length} Entries</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -368,18 +366,18 @@ const Monitoring = () => {
                 <th scope="col" className="th">ESR (mm/hr)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-xs">
+            <tbody className="divide-y divide-slate-100">
               {filteredHistory.map((entry) => (
-                <tr key={entry.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="td font-bold text-slate-900">{entry.date}</td>
-                  <td className="td font-extrabold text-teal-800">{entry.risk_score}%</td>
+                <tr key={entry.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="td font-semibold text-slate-900">{entry.date}</td>
+                  <td className="td tabular-nums font-bold text-primary-800">{entry.risk_score}%</td>
                   <td className="td">
                     <Badge tone={riskTone(entry.risk_level)} showDot>{entry.risk_level}</Badge>
                   </td>
-                  <td className="td font-mono font-medium">{entry.factors.rheumatoidFactor}</td>
-                  <td className="td font-mono font-medium">{entry.factors.antiCCP}</td>
-                  <td className="td font-mono font-medium">{entry.factors.cReactiveProtein}</td>
-                  <td className="td font-mono font-medium">{entry.factors.erythrocyteSedimentationRate}</td>
+                  <td className="td font-mono tabular-nums font-medium">{entry.factors.rheumatoidFactor}</td>
+                  <td className="td font-mono tabular-nums font-medium">{entry.factors.antiCCP}</td>
+                  <td className="td font-mono tabular-nums font-medium">{entry.factors.cReactiveProtein}</td>
+                  <td className="td font-mono tabular-nums font-medium">{entry.factors.erythrocyteSedimentationRate}</td>
                 </tr>
               ))}
             </tbody>

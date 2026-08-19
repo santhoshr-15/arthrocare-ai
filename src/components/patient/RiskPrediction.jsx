@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { AlertTriangle, AlertCircle, RefreshCw, ShieldCheck, Stethoscope, FlaskConical, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, RefreshCw, ShieldCheck, Stethoscope, CheckCircle2 } from 'lucide-react';
 import { collection, query, where, getDocs, orderBy, limit } from "firebase/firestore";
 import { auth, db } from "../../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
@@ -147,17 +147,17 @@ const RiskPrediction = () => {
   const tone = getRiskTone(predictionData.risk_level);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Executive Risk Score Banner */}
-      <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs">
-        <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="panel overflow-hidden">
+        <div className="panel-header">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-teal-50 text-teal-800 border border-teal-200">
-              <ShieldCheck className="h-4 w-4" />
-            </div>
+            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary-50 text-primary-700 ring-1 ring-primary-100">
+              <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+            </span>
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">Multivariable Decision Support Summary</h2>
-              <p className="text-[11px] text-slate-500">Machine learning model trained on age- &amp; sex-adjusted serology.</p>
+              <h2 className="panel-title">Multivariable Decision Support Summary</h2>
+              <p className="panel-subtitle">Machine learning model trained on age- and sex-adjusted serology.</p>
             </div>
           </div>
           <Badge tone={tone} showDot>
@@ -165,28 +165,36 @@ const RiskPrediction = () => {
           </Badge>
         </div>
 
-        <div className="mt-5 grid gap-6 md:grid-cols-12 md:items-center">
-          <div className="md:col-span-5 space-y-1.5 border-r border-slate-100 pr-4">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Calculated RA Risk Score</p>
-            <p className="text-4xl font-extrabold tracking-tight text-slate-900">
-              {predictionData.risk_score}<span className="text-xl font-bold text-slate-400">%</span>
+        <div className="grid gap-6 p-5 md:grid-cols-12 md:items-center">
+          <div className="md:col-span-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Calculated RA Risk Score</p>
+            <p className="mt-1 tabular-nums text-4xl font-bold tracking-tight text-slate-900">
+              {predictionData.risk_score}<span className="text-xl font-semibold text-slate-400">%</span>
             </p>
-            <div className="flex flex-col gap-1 text-xs text-slate-600 font-medium pt-1">
-              <span>Probability Ratio: <strong className="text-slate-900">{predictionData.risk_probability}</strong></span>
-              <span>Binary Classification: <strong className="text-slate-900">{predictionData.binary_prediction === 1 ? 'Positive Serology Signal' : 'Negative Serology Signal'}</strong></span>
-            </div>
+            <dl className="mt-3 space-y-1 text-[13px] text-slate-600">
+              <div className="flex justify-between gap-3">
+                <dt className="font-medium text-slate-500">Probability ratio</dt>
+                <dd className="tabular-nums font-semibold text-slate-900">{predictionData.risk_probability}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="font-medium text-slate-500">Binary classification</dt>
+                <dd className="font-semibold text-slate-900">
+                  {predictionData.binary_prediction === 1 ? 'Positive serology signal' : 'Negative serology signal'}
+                </dd>
+              </div>
+            </dl>
           </div>
 
-          <div className="md:col-span-7 space-y-2.5">
-            <div className="flex justify-between text-[11px] font-bold uppercase text-slate-500">
+          <div className="md:col-span-7">
+            <div className="mb-2 flex justify-between text-[11px] font-semibold text-slate-500">
               <span>Very Low (&lt;40%)</span>
               <span>Low (40–65%)</span>
               <span>Moderate (65–85%)</span>
               <span>High (&gt;85%)</span>
             </div>
-            <div className="h-2.5 w-full overflow-hidden rounded-md bg-slate-100 border border-slate-200">
+            <div className="meter-track">
               <div
-                className={`h-full transition-all duration-500 ${
+                className={`meter-fill ${
                   tone === 'emerald' ? 'bg-emerald-600' :
                   tone === 'amber' ? 'bg-amber-500' :
                   tone === 'orange' ? 'bg-orange-500' : 'bg-rose-600'
@@ -194,37 +202,34 @@ const RiskPrediction = () => {
                 style={{ width: `${Math.max(predictionData.risk_score, 4)}%` }}
               />
             </div>
-            <p className="text-[11px] text-slate-500 leading-tight">
-              Assessed via 4-biomarker quantitative panel normalized against baseline demographic controls.
+            <p className="mt-2.5 text-xs leading-relaxed text-slate-500">
+              Assessed via a four-biomarker quantitative panel normalized against baseline demographic controls.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-12">
-        {/* Clinical Guidance Observations */}
-        <div className="lg:col-span-7">
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs">
-            <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
-              <div className="flex items-center gap-2">
-                <Stethoscope className="h-4 w-4 text-teal-800" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Model Interpretations &amp; Clinical Guidance</h3>
-              </div>
-            </div>
-
-            {predictionData.recommendations && predictionData.recommendations.length > 0 ? (
-              <div className="space-y-2.5">
-                {predictionData.recommendations.map((rec, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5 rounded-md border border-slate-200 bg-slate-50 p-3 text-xs leading-relaxed text-slate-700">
-                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 text-teal-700 shrink-0" />
-                    <span>{rec}</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-slate-500">No additional diagnostic observations recorded.</p>
-            )}
+      {/* Clinical Guidance Observations */}
+      <div className="panel overflow-hidden">
+        <div className="panel-header">
+          <div className="flex items-center gap-2">
+            <Stethoscope className="h-4 w-4 text-primary-700" aria-hidden="true" />
+            <h3 className="panel-title">Model Interpretations &amp; Clinical Guidance</h3>
           </div>
+        </div>
+        <div className="panel-body">
+          {predictionData.recommendations && predictionData.recommendations.length > 0 ? (
+            <ul className="space-y-2">
+              {predictionData.recommendations.map((rec, idx) => (
+                <li key={idx} className="flex items-start gap-2.5 rounded-md bg-slate-50 px-3 py-2.5 text-sm leading-relaxed text-slate-700 ring-1 ring-inset ring-slate-200">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary-700" aria-hidden="true" />
+                  <span>{rec}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-slate-500">No additional diagnostic observations recorded.</p>
+          )}
         </div>
       </div>
     </div>

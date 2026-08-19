@@ -8,12 +8,10 @@ import Loader from "../ui/Loader";
 import EmptyState from "../ui/EmptyState";
 
 const SectionHeading = ({ icon: Icon, number, title }) => (
-  <div className="flex items-center gap-3 border-b border-slate-200 pb-4">
-    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-blue-800 border border-blue-200">
-      {number}
-    </span>
-    <h2 className="text-base font-bold tracking-tight text-slate-900">{title}</h2>
-    {Icon && <Icon className="ml-auto h-5 w-5 text-slate-400" />}
+  <div className="section-head">
+    <span className="section-head-index">{number}</span>
+    <h2 className="text-[15px] font-semibold text-slate-900">{title}</h2>
+    {Icon && <Icon className="ml-auto h-4 w-4 text-slate-400" aria-hidden="true" />}
   </div>
 );
 
@@ -202,7 +200,7 @@ const ProfileForm = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {notice && (
         <div
           role="status"
@@ -221,11 +219,11 @@ const ProfileForm = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {/* Panel 1: Patient Demographics */}
-        <div className="rounded-lg border border-slate-200 bg-white p-6 space-y-5">
+        <div className="panel p-5 space-y-5">
           <SectionHeading number="01" title="Demographic Identity" icon={User} />
-          <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-x-5 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Full Patient Name" htmlFor="name" required>
               <input id="name" name="name" type="text" autoComplete="name" placeholder="Jane Doe"
                 value={formData.name} onChange={handleChange} required className="field" />
@@ -239,7 +237,7 @@ const ProfileForm = () => {
               <input id="age" name="age" type="text" readOnly
                 value={formData.age ? `${formData.age} years` : ''}
                 placeholder="Auto-derived"
-                className="field bg-slate-50 text-slate-600 font-semibold" />
+                className="field field-readonly" />
             </Field>
 
             <Field label="Email Address" htmlFor="email" required>
@@ -264,9 +262,9 @@ const ProfileForm = () => {
         </div>
 
         {/* Panel 2: Vital & Lifestyle Baselines */}
-        <div className="rounded-lg border border-slate-200 bg-white p-6 space-y-5">
+        <div className="panel p-5 space-y-5">
           <SectionHeading number="02" title="Health & Lifestyle Baselines" icon={Activity} />
-          <div className="grid gap-x-6 gap-y-5 sm:grid-cols-3">
+          <div className="grid gap-x-5 gap-y-4 sm:grid-cols-3">
             <Field label="Body Mass Index (BMI)" htmlFor="bmi" hint="Metric formula: weight(kg) / height(m)²">
               <input id="bmi" name="bmi" type="text" inputMode="decimal" placeholder="e.g. 23.4"
                 value={formData.bmi} onChange={handleChange} className="field" />
@@ -289,29 +287,29 @@ const ProfileForm = () => {
         </div>
 
         {/* Panel 3: Medical & Family History */}
-        <div className="rounded-lg border border-slate-200 bg-white p-6 space-y-5">
+        <div className="panel p-5 space-y-5">
           <SectionHeading number="03" title="Clinical History & Genetic Susceptibility" icon={FileText} />
-          <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+          <div className="grid gap-x-5 gap-y-4 sm:grid-cols-2">
             <Field label="Family History of Autoimmune Conditions" htmlFor="familyHistory"
               hint="Document first-degree relatives with RA, Lupus, Psoriatic Arthritis, etc.">
               <textarea id="familyHistory" name="familyHistory" rows={3}
                 placeholder="Details of family members diagnosed with rheumatoid arthritis or autoimmune disorders..."
-                value={formData.familyHistory} onChange={handleChange} className="field resize-none" />
+                value={formData.familyHistory} onChange={handleChange} className="field" />
             </Field>
 
             <Field label="Personal Clinical & Joint History" htmlFor="medicalHistory"
               hint="Document current morning stiffness, joint swelling, prior surgeries, or medications.">
               <textarea id="medicalHistory" name="medicalHistory" rows={3}
                 placeholder="Details of joint pain, morning stiffness duration, active medications..."
-                value={formData.medicalHistory} onChange={handleChange} className="field resize-none" />
+                value={formData.medicalHistory} onChange={handleChange} className="field" />
             </Field>
           </div>
         </div>
 
         {/* Form Actions */}
         <div className="flex items-center justify-end gap-3 border-t border-slate-200 pt-5">
-          <button type="button" onClick={handleClearForm} className="btn-secondary">
-            <RotateCcw className="h-4 w-4" />
+          <button type="button" onClick={handleClearForm} className="btn-secondary btn-sm">
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
             Reset profile
           </button>
           <button type="submit" disabled={isSubmitting || !formData.name.trim()} className="btn-primary">
@@ -322,7 +320,7 @@ const ProfileForm = () => {
               </>
             ) : (
               <>
-                <Save className="h-4 w-4" />
+                <Save className="h-4 w-4" aria-hidden="true" />
                 Save medical profile
               </>
             )}

@@ -216,114 +216,116 @@ const ProgressTracking = () => {
     comparisonResult?.riskTrend === 'Worsened' ? 'rose' : 'amber';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Requisition & Comparison Input Form */}
-      <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-6 space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-800 border border-blue-200">
-              <TrendingUp className="h-4 w-4" />
-            </div>
+      <form onSubmit={handleSubmit} className="panel overflow-hidden">
+        <div className="panel-header">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary-50 text-primary-700 ring-1 ring-primary-100">
+              <TrendingUp className="h-4 w-4" aria-hidden="true" />
+            </span>
             <div>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-900">Serial Disease Progression Analysis</h2>
-              <p className="text-xs text-slate-500">Compare current laboratory panel against historical baseline panel.</p>
+              <h2 className="panel-title">Serial Disease Progression Analysis</h2>
+              <p className="panel-subtitle">Compare the current laboratory panel against the historical baseline panel.</p>
             </div>
           </div>
           <button type="button" onClick={clearForm} className="btn-ghost text-sm">
-            <RotateCcw className="h-4 w-4" />
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
             Clear values
           </button>
         </div>
 
-        {/* Interval Context Bar */}
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field
-            label="Elapsed Time (Months)"
-            htmlFor="months"
-            required
-            hint="Months elapsed between baseline and current follow-up test"
-          >
-            <input
-              id="months"
-              type="number"
-              min="1"
-              placeholder="e.g. 6"
-              value={formData.monthsSinceLastTest}
-              onChange={(e) => handleInputChange('monthsSinceLastTest', e.target.value)}
+        <div className="panel-body space-y-5">
+          {/* Interval Context Bar */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field
+              label="Elapsed Time (Months)"
+              htmlFor="months"
               required
-              className="field"
-            />
-          </Field>
+              hint="Months elapsed between baseline and current follow-up test"
+            >
+              <input
+                id="months"
+                type="number"
+                min="1"
+                placeholder="e.g. 6"
+                value={formData.monthsSinceLastTest}
+                onChange={(e) => handleInputChange('monthsSinceLastTest', e.target.value)}
+                required
+                className="field tabular-nums"
+              />
+            </Field>
 
-          <Field label="Baseline Record Date" htmlFor="baselineDate">
-            <input
-              id="baselineDate"
-              type="text"
-              value={baselineDate}
-              readOnly
-              className="field bg-slate-50 text-slate-600 font-semibold"
-            />
-          </Field>
-        </div>
-
-        {/* Side-by-side Baseline vs Follow-up Grid */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Baseline Record Panel */}
-          <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900">Historical Baseline Record</h3>
-              <Badge tone="slate">Baseline</Badge>
-            </div>
-            <dl className="grid grid-cols-2 gap-4 text-sm">
-              {baselineFields.map((field) => (
-                <div key={field.label} className="rounded-lg border border-slate-200 bg-white p-3">
-                  <dt className="text-slate-500 font-medium">{field.label}</dt>
-                  <dd className="mt-1 font-bold text-slate-900">{field.value}</dd>
-                </div>
-              ))}
-            </dl>
+            <Field label="Baseline Record Date" htmlFor="baselineDate">
+              <input
+                id="baselineDate"
+                type="text"
+                value={baselineDate}
+                readOnly
+                className="field field-readonly"
+              />
+            </Field>
           </div>
 
-          {/* Follow-up Measurement Inputs */}
-          <div className="rounded-lg border border-blue-200 bg-blue-50/30 p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-blue-200 pb-3">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-blue-950">Follow-Up Measurements</h3>
-              <Badge tone="blue">Current Entry</Badge>
+          {/* Side-by-side Baseline vs Follow-up Grid */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            {/* Baseline Record Panel */}
+            <div className="rounded-md border border-slate-200 bg-slate-50/50 p-4 space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                <h3 className="text-[13px] font-semibold text-slate-900">Historical Baseline Record</h3>
+                <Badge tone="slate">Baseline</Badge>
+              </div>
+              <dl className="grid grid-cols-2 gap-3 text-sm">
+                {baselineFields.map((field) => (
+                  <div key={field.label} className="rounded-md bg-white px-3 py-2.5 ring-1 ring-inset ring-slate-200">
+                    <dt className="text-xs font-medium text-slate-500">{field.label}</dt>
+                    <dd className="mt-0.5 tabular-nums font-semibold text-slate-900">{field.value}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Current Age" htmlFor="currentAge" required>
-                <input id="currentAge" type="number" step="0.1" value={formData.currentAge}
-                  onChange={(e) => handleInputChange('currentAge', e.target.value)} required className="field" />
-              </Field>
-              <Field label="Biological Sex" htmlFor="currentGender" required>
-                <select id="currentGender" value={formData.currentGender}
-                  onChange={(e) => handleInputChange('currentGender', e.target.value)} required className="field">
-                  <option value="">Select</option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                </select>
-              </Field>
-              <Field label="ESR (mm/hr)" htmlFor="currentESR" required>
-                <input id="currentESR" type="number" step="0.1" value={formData.currentESR}
-                  onChange={(e) => handleInputChange('currentESR', e.target.value)} required className="field" />
-              </Field>
-              <Field label="CRP (mg/L)" htmlFor="currentCRP" required>
-                <input id="currentCRP" type="number" step="0.1" value={formData.currentCRP}
-                  onChange={(e) => handleInputChange('currentCRP', e.target.value)} required className="field" />
-              </Field>
-              <Field label="RF (IU/mL)" htmlFor="currentRF" required>
-                <input id="currentRF" type="number" step="0.1" value={formData.currentRF}
-                  onChange={(e) => handleInputChange('currentRF', e.target.value)} required className="field" />
-              </Field>
-              <Field label="Anti-CCP (U/mL)" htmlFor="currentAntiCCP" required>
-                <input id="currentAntiCCP" type="number" step="0.1" value={formData.currentAntiCCP}
-                  onChange={(e) => handleInputChange('currentAntiCCP', e.target.value)} required className="field" />
-              </Field>
+
+            {/* Follow-up Measurement Inputs */}
+            <div className="rounded-md border border-primary-200 bg-primary-50/30 p-4 space-y-4">
+              <div className="flex items-center justify-between border-b border-primary-200 pb-3">
+                <h3 className="text-[13px] font-semibold text-primary-950">Follow-Up Measurements</h3>
+                <Badge tone="primary">Current Entry</Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Current Age" htmlFor="currentAge" required>
+                  <input id="currentAge" type="number" step="0.1" value={formData.currentAge}
+                    onChange={(e) => handleInputChange('currentAge', e.target.value)} required className="field tabular-nums" />
+                </Field>
+                <Field label="Biological Sex" htmlFor="currentGender" required>
+                  <select id="currentGender" value={formData.currentGender}
+                    onChange={(e) => handleInputChange('currentGender', e.target.value)} required className="field">
+                    <option value="">Select</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                  </select>
+                </Field>
+                <Field label="ESR (mm/hr)" htmlFor="currentESR" required>
+                  <input id="currentESR" type="number" step="0.1" value={formData.currentESR}
+                    onChange={(e) => handleInputChange('currentESR', e.target.value)} required className="field tabular-nums" />
+                </Field>
+                <Field label="CRP (mg/L)" htmlFor="currentCRP" required>
+                  <input id="currentCRP" type="number" step="0.1" value={formData.currentCRP}
+                    onChange={(e) => handleInputChange('currentCRP', e.target.value)} required className="field tabular-nums" />
+                </Field>
+                <Field label="RF (IU/mL)" htmlFor="currentRF" required>
+                  <input id="currentRF" type="number" step="0.1" value={formData.currentRF}
+                    onChange={(e) => handleInputChange('currentRF', e.target.value)} required className="field tabular-nums" />
+                </Field>
+                <Field label="Anti-CCP (U/mL)" htmlFor="currentAntiCCP" required>
+                  <input id="currentAntiCCP" type="number" step="0.1" value={formData.currentAntiCCP}
+                    onChange={(e) => handleInputChange('currentAntiCCP', e.target.value)} required className="field tabular-nums" />
+                </Field>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-end border-t border-slate-200 pt-5">
+        <div className="panel-footer">
           <button type="submit" disabled={isSubmitting} className="btn-primary">
             {isSubmitting ? (
               <>
@@ -332,7 +334,7 @@ const ProgressTracking = () => {
               </>
             ) : (
               <>
-                <Activity className="h-4 w-4" />
+                <Activity className="h-4 w-4" aria-hidden="true" />
                 Run Comparative ML Progression Analysis
               </>
             )}
@@ -342,85 +344,87 @@ const ProgressTracking = () => {
 
       {/* Progression Report Results */}
       {comparisonResult && (
-        <div className="rounded-lg border border-slate-200 bg-white p-6 space-y-6">
-          <div className="flex flex-col gap-4 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-800 border border-blue-200">
-                <Activity className="h-4 w-4" />
-              </div>
+        <div className="panel overflow-hidden">
+          <div className="panel-header">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary-50 text-primary-700 ring-1 ring-primary-100">
+                <Activity className="h-4 w-4" aria-hidden="true" />
+              </span>
               <div>
-                <h2 className="text-sm font-bold uppercase tracking-widest text-slate-900">Progression Trajectory Report</h2>
-                <p className="text-xs text-slate-500">Comparative ML output for serial biomarker change.</p>
+                <h2 className="panel-title">Progression Trajectory Report</h2>
+                <p className="panel-subtitle">Comparative ML output for serial biomarker change.</p>
               </div>
             </div>
             <Badge tone={trendTone} showDot>Trend Classification: {comparisonResult.riskTrend}</Badge>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2">
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 text-center">
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Baseline Risk Probability</p>
-              <p className="mt-2 text-3xl font-bold text-slate-900">{comparisonResult.previousProbability}%</p>
-            </div>
-            <div className="rounded-lg border border-blue-200 bg-blue-50/60 p-5 text-center">
-              <p className="text-xs font-bold uppercase tracking-widest text-blue-900">Follow-Up Risk Probability</p>
-              <p className="mt-2 text-3xl font-bold text-blue-950">{comparisonResult.currentProbability}%</p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm font-semibold">
-            <span className="text-slate-600">Net Risk Score Delta over {comparisonResult.monthsBetweenTests} Months:</span>
-            <span className={`flex items-center gap-1.5 font-bold ${comparisonResult.probabilityChange > 0 ? 'text-rose-700' : 'text-emerald-700'}`}>
-              {comparisonResult.probabilityChange > 0 ? (
-                <>
-                  <ArrowUpRight className="h-4 w-4 text-rose-600" />
-                  +{comparisonResult.probabilityChange}%
-                </>
-              ) : comparisonResult.probabilityChange < 0 ? (
-                <>
-                  <ArrowDownRight className="h-4 w-4 text-emerald-600" />
-                  {comparisonResult.probabilityChange}%
-                </>
-              ) : (
-                <>
-                  <Minus className="h-4 w-4 text-slate-400" />
-                  0% (Stable)
-                </>
-              )}
-            </span>
-          </div>
-
-          {comparisonResult.biomarkerChanges && comparisonResult.biomarkerChanges.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Biomarker Delta Matrix</h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {comparisonResult.biomarkerChanges.map((change, idx) => (
-                  <div key={idx} className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-3 text-xs">
-                    <span className="font-semibold text-slate-800">{change.name}</span>
-                    <div className="text-right">
-                      <span className="font-bold text-slate-900">{change.change}</span>
-                      <span className={`block text-[11px] font-bold ${change.percentChange > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                        {change.percentChange > 0 ? '+' : ''}{change.percentChange}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
+          <div className="panel-body space-y-5">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-md bg-slate-50 p-5 text-center ring-1 ring-inset ring-slate-200">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Baseline Risk Probability</p>
+                <p className="mt-1.5 tabular-nums text-3xl font-bold text-slate-900">{comparisonResult.previousProbability}%</p>
+              </div>
+              <div className="rounded-md bg-primary-50 p-5 text-center ring-1 ring-inset ring-primary-200">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-900">Follow-Up Risk Probability</p>
+                <p className="mt-1.5 tabular-nums text-3xl font-bold text-primary-950">{comparisonResult.currentProbability}%</p>
               </div>
             </div>
-          )}
 
-          {comparisonResult.interpretation && (
-            <div className="space-y-1.5 rounded-md border border-slate-200 bg-slate-50 p-3.5">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Clinical Interpretation</h3>
-              <p className="text-xs leading-relaxed text-slate-700">{comparisonResult.interpretation}</p>
+            <div className="flex items-center justify-between rounded-md bg-slate-50 px-4 py-3 text-sm font-medium ring-1 ring-inset ring-slate-200">
+              <span className="text-slate-600">Net Risk Score Delta over {comparisonResult.monthsBetweenTests} months</span>
+              <span className={`flex items-center gap-1.5 tabular-nums font-bold ${comparisonResult.probabilityChange > 0 ? 'text-rose-700' : 'text-emerald-700'}`}>
+                {comparisonResult.probabilityChange > 0 ? (
+                  <>
+                    <ArrowUpRight className="h-4 w-4 text-rose-600" aria-hidden="true" />
+                    +{comparisonResult.probabilityChange}%
+                  </>
+                ) : comparisonResult.probabilityChange < 0 ? (
+                  <>
+                    <ArrowDownRight className="h-4 w-4 text-emerald-600" aria-hidden="true" />
+                    {comparisonResult.probabilityChange}%
+                  </>
+                ) : (
+                  <>
+                    <Minus className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                    0% (Stable)
+                  </>
+                )}
+              </span>
             </div>
-          )}
 
-          {comparisonResult.summary && (
-            <div className="space-y-1.5 rounded-md border border-teal-200 bg-teal-50/70 p-3.5">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-teal-950">Summary Protocol Report</h3>
-              <p className="whitespace-pre-line text-xs leading-relaxed text-slate-800 font-medium">{comparisonResult.summary}</p>
-            </div>
-          )}
+            {comparisonResult.biomarkerChanges && comparisonResult.biomarkerChanges.length > 0 && (
+              <div>
+                <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Biomarker Delta Matrix</h3>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {comparisonResult.biomarkerChanges.map((change, idx) => (
+                    <div key={idx} className="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2.5 text-sm ring-1 ring-inset ring-slate-200">
+                      <span className="font-medium text-slate-800">{change.name}</span>
+                      <div className="text-right">
+                        <span className="tabular-nums font-semibold text-slate-900">{change.change}</span>
+                        <span className={`block text-[11px] font-semibold tabular-nums ${change.percentChange > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                          {change.percentChange > 0 ? '+' : ''}{change.percentChange}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {comparisonResult.interpretation && (
+              <div className="rounded-md bg-slate-50 p-4 ring-1 ring-inset ring-slate-200">
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Clinical Interpretation</h3>
+                <p className="mt-1 text-sm leading-relaxed text-slate-700">{comparisonResult.interpretation}</p>
+              </div>
+            )}
+
+            {comparisonResult.summary && (
+              <div className="rounded-md bg-primary-50 p-4 ring-1 ring-inset ring-primary-200">
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-950">Summary Protocol Report</h3>
+                <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-slate-800">{comparisonResult.summary}</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

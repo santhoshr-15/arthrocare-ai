@@ -1,14 +1,35 @@
 import React from 'react';
 
-const Stat = ({ label, value, sub, valueClass = 'text-slate-900', subClass = 'text-slate-500', icon: Icon }) => {
+const iconToneClasses = {
+  slate: 'bg-slate-100 text-slate-500',
+  primary: 'bg-primary-50 text-primary-700',
+  emerald: 'bg-emerald-50 text-emerald-700',
+  amber: 'bg-amber-50 text-amber-700'
+};
+
+const Stat = ({
+  label,
+  value,
+  sub,
+  valueClass = 'text-slate-900',
+  subClass = 'text-slate-500',
+  icon: Icon,
+  iconTone = 'primary'
+}) => {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-5">
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">{label}</p>
-        {Icon && <Icon className="h-5 w-5 shrink-0 text-slate-400" />}
+    <div className="panel flex flex-col justify-between p-5">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</p>
+        {Icon && (
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${iconToneClasses[iconTone] || iconToneClasses.slate}`}>
+            <Icon className="h-4 w-4" aria-hidden="true" />
+          </span>
+        )}
       </div>
-      <p className={`mt-2 text-3xl font-bold tracking-tight ${valueClass}`}>{value}</p>
-      {sub && <p className={`mt-1 text-sm font-medium ${subClass}`}>{sub}</p>}
+      <div className="mt-3">
+        <p className={`text-[26px] font-bold leading-none tracking-tight tabular-nums ${valueClass}`}>{value}</p>
+        {sub && <p className={`mt-1.5 text-[13px] font-medium ${subClass}`}>{sub}</p>}
+      </div>
     </div>
   );
 };
